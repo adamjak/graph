@@ -29,11 +29,11 @@ public class GraphFactory
 			Graph graph;
 			if (canCast)
 			{
-				graph = new Graph<Integer>();
+				graph = Graph.createGraph(Integer.class);
 			}
 			else
 			{
-				graph = new Graph<String>();
+				graph = Graph.createGraph(String.class);
 			}
 			
 			for (Graphml.Graph.Node n : graphml.getGraph().getNode())
@@ -50,7 +50,7 @@ public class GraphFactory
 
 			for (Graphml.Graph.Edge e : graphml.getGraph().getEdge())
 			{
-
+				// TODO: 21.12.2015 - naladovat vrcholy 
 			}
 
 			return graph;

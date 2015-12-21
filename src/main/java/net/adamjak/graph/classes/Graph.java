@@ -9,11 +9,19 @@ import java.util.*;
  */
 public class Graph<T extends Comparable>
 {
-	private Map<Vertex<T>, List<Edge<T>>> structure = new TreeMap<Vertex<T>, List<Edge<T>>>();
+	private final Class<? extends T> graphType;
 
-	public Map<Vertex<T>, List<Edge<T>>> getStructure ()
+	private Map<Vertex<T>, List<Edge<T>>> structure;
+
+	private Graph(Class<? extends T> type)
 	{
-		return this.structure;
+		this.graphType = type;
+		structure = new TreeMap<Vertex<T>, List<Edge<T>>>();
+	}
+
+	public static <U extends Comparable> Graph<U> createGraph(Class<? extends U> type)
+	{
+		return new Graph<U>(type);
 	}
 
 	public void addVertex (Vertex<T> vertex)
@@ -25,7 +33,7 @@ public class Graph<T extends Comparable>
 
 	public void addEdge (Vertex<T> startVertex, Vertex<T> endVertex)
 	{
-		Edge<T> edge = new Edge<T>(startVertex,endVertex);
+		Edge<T> edge = new Edge<T>(startVertex, endVertex);
 		this.addEdge(edge);
 	}
 	
@@ -51,5 +59,15 @@ public class Graph<T extends Comparable>
 			}
 			System.out.println();
 		}
+	}
+
+	public Class<? extends T> getGraphType ()
+	{
+		return this.graphType;
+	}
+
+	public Map<Vertex<T>, List<Edge<T>>> getStructure ()
+	{
+		return this.structure;
 	}
 }
