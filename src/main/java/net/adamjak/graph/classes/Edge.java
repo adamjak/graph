@@ -9,11 +9,18 @@ public class Edge<T extends Comparable>
 {
 	private Vertex<T> start;
 	private Vertex<T> end;
+	private T content;
 
-	public Edge (Vertex<T> start, Vertex<T> end)
+	public Edge (T content, Vertex<T> start, Vertex<T> end)
 	{
+		this.content = content;
 		this.start = start;
 		this.end = end;
+	}
+
+	public T getContent ()
+	{
+		return this.content;
 	}
 
 	public Vertex<T> getStart ()

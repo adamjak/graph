@@ -11,12 +11,16 @@ public class Graph<T extends Comparable>
 {
 	private final Class<? extends T> graphType;
 
-	private Map<Vertex<T>, List<Edge<T>>> structure;
+	private Map<Vertex<T>, List<Edge<T>>> structure = new TreeMap<Vertex<T>, List<Edge<T>>>();
+
+	private Graph()
+	{
+		throw new IllegalStateException();
+	}
 
 	private Graph(Class<? extends T> type)
 	{
 		this.graphType = type;
-		structure = new TreeMap<Vertex<T>, List<Edge<T>>>();
 	}
 
 	public static <U extends Comparable> Graph<U> createGraph(Class<? extends U> type)
@@ -31,21 +35,33 @@ public class Graph<T extends Comparable>
 		this.structure.put(vertex,new ArrayList<Edge<T>>());
 	}
 
-	public void addEdge (Vertex<T> startVertex, Vertex<T> endVertex)
+	public Vertex<T> getVertexByContent (T content)
 	{
-		Edge<T> edge = new Edge<T>(startVertex, endVertex);
-		this.addEdge(edge);
+		for (Vertex<T> v : this.structure.keySet())
+		{
+			if (v.getContent() == content)
+			{
+				return v;
+			}
+		}
+
+		return null;
 	}
 	
 	public void addEdge (Edge<T> edge)
 	{
-		if (this.structure.containsKey(edge.getStart())) throw new IllegalArgumentException("Vertex '" + edge.getStart() + "' is already in graph.");
-		if (this.structure.containsKey(edge.getEnd())) throw new IllegalArgumentException("Vertex '" + edge.getEnd() + "' is already in graph.");
+		if (!this.structure.containsKey(edge.getStart())) throw new IllegalArgumentException("Vertex '" + edge.getStart() + "' is not in graph.");
+		if (!this.structure.containsKey(edge.getEnd())) throw new IllegalArgumentException("Vertex '" + edge.getEnd() + "' is not in graph.");
 
-		if(this.structure.get(edge.getStart()).contains(edge) || this.structure.get(edge.getEnd()).contains(edge)) throw new IllegalArgumentException("Edge '" + edge + "' is already in graph.");
+		if (!this.structure.get(edge.getStart()).contains(edge))
+		{
+			this.structure.get(edge.getStart()).add(edge);
+		}
 
-		this.structure.get(edge.getStart()).add(edge);
-		this.structure.get(edge.getEnd()).add(edge);
+		if (!this.structure.get(edge.getEnd()).contains(edge))
+		{
+			this.structure.get(edge.getEnd()).add(edge);
+		}
 	}
 
 	public void print()

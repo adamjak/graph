@@ -7,7 +7,7 @@ import java.util.Comparator;
  * Copyright 2015, Tomas Adamjak
  * License: The BSD 3-Clause License
  */
-public class Vertex<T extends Comparable>
+public class Vertex<T extends Comparable> implements Comparable<T>
 {
 	private T content;
 
@@ -25,5 +25,11 @@ public class Vertex<T extends Comparable>
 	public String toString ()
 	{
 		return "Vertex: " + this.content.toString();
+	}
+
+	@Override
+	public int compareTo (T t)
+	{
+		return this.content.compareTo(t);
 	}
 }
