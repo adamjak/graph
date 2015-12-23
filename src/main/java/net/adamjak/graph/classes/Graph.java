@@ -10,6 +10,7 @@ import java.util.*;
 public class Graph<T extends Comparable>
 {
 	private final Class<? extends T> graphType;
+	private boolean directed = false;
 
 	private Map<Vertex<T>, List<Edge<T>>> structure = new TreeMap<Vertex<T>, List<Edge<T>>>();
 
@@ -85,5 +86,15 @@ public class Graph<T extends Comparable>
 	public Map<Vertex<T>, List<Edge<T>>> getStructure ()
 	{
 		return this.structure;
+	}
+
+	public void setDirected (boolean directed)
+	{
+		this.directed = directed;
+	}
+
+	public boolean isDirected ()
+	{
+		return this.directed;
 	}
 }

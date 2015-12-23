@@ -17,10 +17,11 @@ public class Main
 {
 	public static void main (String args[])
 	{
-		File file = new File("src/main/resources/ba/G-MIDZI.72");
+//		File file = new File("src/main/resources/ba/PETERSEN.10");
+//		GraphFactory.createGraphFromTextCatalog(file).get(0).print();
 
-		List<Graph<Integer>> g = GraphFactory.createGraphFromTextCatalog(file);
-		g.get(0).print();
+		File file = new File("src/main/resources/xml/test.xml");
+		GraphFactory.createGraphFromGraphml(file).print();
 
 		long startTime = Calendar.getInstance().getTime().getTime();
 		long endTime = Calendar.getInstance().getTime().getTime();

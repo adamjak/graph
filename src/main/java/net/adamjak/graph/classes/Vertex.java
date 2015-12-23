@@ -7,7 +7,7 @@ import java.util.Comparator;
  * Copyright 2015, Tomas Adamjak
  * License: The BSD 3-Clause License
  */
-public class Vertex<T extends Comparable> implements Comparable<T>
+public class Vertex<T extends Comparable> implements Comparable<Vertex<T>>
 {
 	private T content;
 
@@ -28,8 +28,28 @@ public class Vertex<T extends Comparable> implements Comparable<T>
 	}
 
 	@Override
-	public int compareTo (T t)
+	public boolean equals (Object obj)
 	{
-		return this.content.compareTo(t);
+		if (obj == null) return false;
+		if (!(obj instanceof Vertex<?>)) return false;
+
+		Vertex<T> other;
+
+		try
+		{
+			other = (Vertex<T>) obj;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+
+		return this.content.equals(other.getContent());
+	}
+
+	@Override
+	public int compareTo (Vertex<T> vertex)
+	{
+		return this.content.compareTo(vertex.getContent());
 	}
 }

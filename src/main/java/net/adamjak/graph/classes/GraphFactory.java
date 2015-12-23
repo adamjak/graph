@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Tomas Adamjak on 20.12.2015.
@@ -23,7 +24,7 @@ public class GraphFactory
 	 * XML format - GraphML
 	 *******************************************************/
 
-	public static Graph<? extends Comparable> createGraphFromGraphml(File xml)
+	public static Graph<String> createGraphFromGraphml(File xml)
 	{
 		try
 		{
@@ -33,42 +34,34 @@ public class GraphFactory
 
 			Graphml graphml = (Graphml) jaxbUnmarshaller.unmarshal(xml);
 
-			Graph graph;
-			if (GraphFactory.canGraphIdCastToInteger(graphml))
-			{
-				graph = Graph.createGraph(Integer.class);
-			}
-			else
-			{
-				graph = Graph.createGraph(String.class);
-			}
-			
+			Graph<String> graph = Graph.createGraph(String.class);
+
 			for (Graphml.Graph.Node n : graphml.getGraph().getNode())
 			{
-				if (graph.getGraphType() == Integer.class)
-				{
-					graph.addVertex(new Vertex<Integer>(Integer.parseInt(n.getId())));
-				}
-				else
-				{
-					graph.addVertex(new Vertex<String>(n.getId()));
-				}
+				graph.addVertex(new Vertex<String>(n.getId()));
 			}
 
 			for (Graphml.Graph.Edge e : graphml.getGraph().getEdge())
 			{
 
-				if (graph.getGraphType() == Integer.class)
-				{
-					Vertex<Integer> startVertex;
-					Vertex<Integer> endVertex;
+				Vertex<String> startVertex = null;
+				Vertex<String> endVertex = null;
 
-					// FIXME: 22.12.2015 - citanie keySetu
-				}
-				else
+				for (Vertex<String> v : graph.getStructure().keySet())
 				{
+					if (v.getContent().equals(e.getSource()))
+					{
+						startVertex = v;
+					}
 
+					if (v.getContent().equals(e.getTarget()))
+					{
+						endVertex = v;
+					}
 				}
+
+				graph.addEdge(new Edge<String>(e.getId(),startVertex,endVertex,false));
+
 			}
 
 			return graph;
@@ -180,7 +173,7 @@ public class GraphFactory
 						for (String s : neighbors)
 						{
 							Vertex<Integer> neighbor = g.getVertexByContent(Integer.parseInt(s));
-							g.addEdge(new Edge<Integer>(null,v,neighbor));
+							g.addEdge(new Edge<Integer>(1,v,neighbor,false));
 						}
 					}
 
