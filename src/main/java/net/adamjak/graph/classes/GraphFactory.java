@@ -9,6 +9,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +108,25 @@ public class GraphFactory
 	/*******************************************************
 	 * Graph6 format
 	 *******************************************************/
-	// TODO: 22.12.2015 - vytvorit citacku na format Graph6
+	// TODO: 24.12.2015 - zistit podrobnosti o formate g6 a implementovat citacku 
+//	public static Graph createGraphFromG6(File file)
+//	{
+//		Path p = FileSystems.getDefault().getPath("", file.getPath());
+//		try
+//		{
+//			byte[] fileData = Files.readAllBytes(p);
+//			for (byte b : fileData)
+//			{
+//				System.out.println(b);
+//			}
+//		}
+//		catch (IOException e)
+//		{
+//			e.printStackTrace();
+//		}
+//
+//		return null;
+//	}
 
 	/*******************************************************
 	 * TXT catalog (using in Bratislava)

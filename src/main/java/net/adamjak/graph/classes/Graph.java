@@ -88,6 +88,28 @@ public class Graph<T extends Comparable>
 		return this.structure;
 	}
 
+	/**
+	 * Kruskal's algorithm whitch returned spanning-tree of graph
+	 * Complexity - O(E*log(E))
+	 *
+	 * @return List<Edge<T>> with spanning tree edges
+	 */
+	public List<Edge<T>> getSpanningTree()
+	{
+		Map<Vertex<T>, Integer> components = new TreeMap<Vertex<T>, Integer>();
+
+		int i = 0;
+		for (Vertex<T> vertex : this.structure.keySet())
+		{
+			components.put(vertex,i);
+			i++;
+		}
+
+		// TODO: 31.12.2015 - dokoncit kostru 
+		
+		return null;
+	}
+
 	public void setDirected (boolean directed)
 	{
 		this.directed = directed;
