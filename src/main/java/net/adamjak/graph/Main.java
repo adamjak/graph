@@ -1,5 +1,6 @@
 package net.adamjak.graph;
 
+import net.adamjak.graph.classes.Edge;
 import net.adamjak.graph.classes.Graph;
 import net.adamjak.graph.classes.GraphFactory;
 import net.adamjak.graph.io.xsd.Graphml;
@@ -21,11 +22,17 @@ public class Main
 //		GraphFactory.createGraphFromTextCatalog(file).get(0).print();
 
 		File file = new File("src/main/resources/xml/test.xml");
-		GraphFactory.createGraphFromGraphml(file).print();
+		Graph<String> g = GraphFactory.createGraphFromGraphml(file);
+		g.print();
 
 		long startTime = Calendar.getInstance().getTime().getTime();
 		long endTime = Calendar.getInstance().getTime().getTime();
 
+
+		for (Edge e : g.getSpanningTree())
+		{
+			System.out.println(e);
+		}
 
 		System.out.println("Time: " + (endTime - startTime));
 

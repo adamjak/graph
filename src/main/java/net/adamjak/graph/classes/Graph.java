@@ -105,9 +105,47 @@ public class Graph<T extends Comparable>
 			i++;
 		}
 
-		// TODO: 31.12.2015 - dokoncit kostru 
+		List<Edge<T>> spanningTreeEdges = new ArrayList<Edge<T>>();
+
+		// TODO: 31.12.2015 - dokoncit kostru
+
+		for (Vertex<T> vertex : this.structure.keySet())
+		{
+			List<Edge<T>> edges = this.structure.get(vertex);
+
+			if (spanningTreeEdges.isEmpty())
+			{
+				for (Edge<T> edge : edges)
+				{
+					spanningTreeEdges.add(edge);
+					components.put(edge.getStart(),0);
+					components.put(edge.getEnd(),0);
+				}
+			}
+			else
+			{
+				for (Edge<T> edge : edges)
+				{
+					if (components.get(edge.getStart()) != components.get(edge.getEnd()))
+					{
+						spanningTreeEdges.add(edge);
+						int start = components.get(edge.getStart());
+						int end = components.get(edge.getEnd());
+
+						for (Vertex<T> v : components.keySet())
+						{
+							if (components.get(v) == start || components.get(v) == end)
+							{
+								components.put(v,start);
+							}
+						}
+					}
+				}
+			}
+
+		}
 		
-		return null;
+		return spanningTreeEdges;
 	}
 
 	public void setDirected (boolean directed)
