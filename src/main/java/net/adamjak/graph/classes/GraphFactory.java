@@ -27,6 +27,11 @@ public class GraphFactory
 	 * XML format - GraphML
 	 *******************************************************/
 
+	/**
+	 * Create graph from XML in GraphML format
+	 * @param xml File with GraphML xml
+	 * @return new Graph
+	 */
 	public static Graph<String> createGraphFromGraphml(File xml)
 	{
 		try
@@ -132,6 +137,11 @@ public class GraphFactory
 	 * TXT catalog (using in Bratislava)
 	 *******************************************************/
 
+	/**
+	 * Create graphs from text file
+	 * @param txt (File)
+	 * @return List of graphs from text file
+	 */
 	public static List<Graph<Integer>> createGraphFromTextCatalog(File txt)
 	{
 		List<Graph<Integer>> graphs = new ArrayList<Graph<Integer>>();
@@ -223,5 +233,10 @@ public class GraphFactory
 		}
 
 		return graphs;
+	}
+
+	public static Graph<T> cloneGraph(Graph<T> graph)
+	{
+		// TODO: 2.1.2016 vyrobit klon grafu
 	}
 }

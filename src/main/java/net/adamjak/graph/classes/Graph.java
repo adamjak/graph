@@ -107,8 +107,6 @@ public class Graph<T extends Comparable>
 
 		List<Edge<T>> spanningTreeEdges = new ArrayList<Edge<T>>();
 
-		// TODO: 31.12.2015 - dokoncit kostru
-
 		for (Vertex<T> vertex : this.structure.keySet())
 		{
 			List<Edge<T>> edges = this.structure.get(vertex);
@@ -146,6 +144,25 @@ public class Graph<T extends Comparable>
 		}
 		
 		return spanningTreeEdges;
+	}
+
+	public List<Edge<T>> getGraphMeat()
+	{
+		List<Edge<T>> meatEdges = new ArrayList<Edge<T>>();
+		List<Edge<T>> spanningTree = this.getSpanningTree();
+
+		for (Vertex<T> v : this.structure.keySet())
+		{
+			for (Edge<T> e : this.structure.get(v))
+			{
+				if (spanningTree.contains(e) == false && meatEdges.contains(e) == false)
+				{
+					meatEdges.add(e);
+				}
+			}
+		}
+
+		return meatEdges;
 	}
 
 	public void setDirected (boolean directed)
