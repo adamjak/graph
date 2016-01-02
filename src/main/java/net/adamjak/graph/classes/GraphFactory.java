@@ -235,8 +235,29 @@ public class GraphFactory
 		return graphs;
 	}
 
-	public static Graph<T> cloneGraph(Graph<T> graph)
+	/**
+	 * Create clone from inserted graph.
+	 * @param graph Instance of graph
+	 * @return new Instance os graph
+	 */
+	public static <U extends Comparable> Graph<U> cloneGraph(Graph<U> graph)
 	{
-		// TODO: 2.1.2016 vyrobit klon grafu
+		Graph<U> newGraph = Graph.createGraph(graph.getGraphType());
+		newGraph.setDirected(graph.isDirected());
+
+		for (Vertex<U> v : graph.getStructure().keySet())
+		{
+			newGraph.addVertex(new Vertex<U>(v.getContent()));
+		}
+
+		for (Vertex<U> v : newGraph.getStructure().keySet())
+		{
+			for (Edge<U> e : graph.getStructure().get(v))
+			{
+				newGraph.addEdge(new Edge<U>(e.getContent(),e.getStart(),e.getEnd(),e.isDirected()));
+			}
+		}
+
+		return newGraph;
 	}
 }
