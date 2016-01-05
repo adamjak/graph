@@ -29,9 +29,13 @@ public class Main
 		long endTime = Calendar.getInstance().getTime().getTime();
 
 
-		for (Edge e : g.getSpanningTree())
+		for (Integer[] i : g.getMatrixOfNeighborVertexes())
 		{
-			System.out.println(e);
+			for (Integer j : i)
+			{
+				System.out.print(j + " ");
+			}
+			System.out.println();
 		}
 
 		System.out.println("Time: " + (endTime - startTime));

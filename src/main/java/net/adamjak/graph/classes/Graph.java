@@ -1,6 +1,7 @@
 package net.adamjak.graph.classes;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * Created by Tomas Adamjak on 16.12.2015.
@@ -12,7 +13,7 @@ public class Graph<T extends Comparable>
 	private final Class<? extends T> graphType;
 	private boolean directed = false;
 
-	private Map<Vertex<T>, List<Edge<T>>> structure = new TreeMap<Vertex<T>, List<Edge<T>>>();
+	private Map<Vertex<T>, List<Edge<T>>> structure = new ConcurrentSkipListMap<Vertex<T>, List<Edge<T>>>();
 
 	private Graph()
 	{
@@ -163,6 +164,58 @@ public class Graph<T extends Comparable>
 		}
 
 		return meatEdges;
+	}
+
+	public Integer[][] getMatrixOfNeighborVertexes()
+	{
+		Map<Integer,Vertex<T>> vertexIndexes = new TreeMap<Integer, Vertex<T>>();
+
+		int i = 0;
+		for (Vertex<T> v : this.structure.keySet())
+		{
+			vertexIndexes.put(i,v);
+			i++;
+		}
+
+		Integer[][] matrix = new Integer[this.structure.keySet().size()][this.structure.keySet().size()];
+
+		for (i = 0; i < matrix.length; i++)
+		{
+			for (int j = 0; j < matrix.length; j++)
+			{
+				matrix[i][j] = 0;
+
+				Vertex<T> topVertex = vertexIndexes.get(i);
+				Vertex<T> leftVertex = vertexIndexes.get(j);
+
+				if (topVertex.equals(leftVertex) == false)
+				{
+					List<Edge<T>> topVertexList = this.structure.get(topVertex);
+
+					for (Edge<T> e : this.structure.get(leftVertex))
+					{
+						if (topVertexList.contains(e))
+						{
+							matrix[i][j] = 1;
+							break;
+						}
+					}
+				}
+				else
+				{
+					for (Edge<T> e : this.structure.get(leftVertex))
+					{
+						if (e.getStart().equals(leftVertex) && e.getEnd().equals(leftVertex))
+						{
+							matrix[i][j] = 1;
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		return matrix;
 	}
 
 	public void setDirected (boolean directed)
