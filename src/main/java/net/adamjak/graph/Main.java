@@ -29,12 +29,15 @@ public class Main
 		long endTime = Calendar.getInstance().getTime().getTime();
 
 
-		for (Integer[] i : g.getMatrixOfNeighborVertexes())
+		for (Edge<String> e : g.getMapOfNeighborEdges().keySet())
 		{
-			for (Integer j : i)
+			System.out.println(e);
+
+			for (Edge<String> edge : g.getMapOfNeighborEdges().get(e))
 			{
-				System.out.print(j + " ");
+				System.out.println(" - " + edge);
 			}
+
 			System.out.println();
 		}
 

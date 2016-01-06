@@ -52,15 +52,15 @@ public class Graph<T extends Comparable>
 	
 	public void addEdge (Edge<T> edge)
 	{
-		if (!this.structure.containsKey(edge.getStart())) throw new IllegalArgumentException("Vertex '" + edge.getStart() + "' is not in graph.");
-		if (!this.structure.containsKey(edge.getEnd())) throw new IllegalArgumentException("Vertex '" + edge.getEnd() + "' is not in graph.");
+		if (this.structure.containsKey(edge.getStart()) == false) throw new IllegalArgumentException("Vertex '" + edge.getStart() + "' is not in graph.");
+		if (this.structure.containsKey(edge.getEnd()) == false) throw new IllegalArgumentException("Vertex '" + edge.getEnd() + "' is not in graph.");
 
-		if (!this.structure.get(edge.getStart()).contains(edge))
+		if (this.structure.get(edge.getStart()).contains(edge) == false)
 		{
 			this.structure.get(edge.getStart()).add(edge);
 		}
 
-		if (!this.structure.get(edge.getEnd()).contains(edge))
+		if (this.structure.get(edge.getEnd()).contains(edge) == false)
 		{
 			this.structure.get(edge.getEnd()).add(edge);
 		}
@@ -147,6 +147,10 @@ public class Graph<T extends Comparable>
 		return spanningTreeEdges;
 	}
 
+	/**
+	 * @return List with all graph edges without spanning-tree edges.
+	 * @see Graph#getSpanningTree()
+	 */
 	public List<Edge<T>> getGraphMeat()
 	{
 		List<Edge<T>> meatEdges = new ArrayList<Edge<T>>();
@@ -164,6 +168,36 @@ public class Graph<T extends Comparable>
 		}
 
 		return meatEdges;
+	}
+
+	public Map<Edge<T>,List<Edge<T>>> getMapOfNeighborEdges()
+	{
+		Map<Edge<T>,List<Edge<T>>> map = new ConcurrentSkipListMap<Edge<T>,List<Edge<T>>>();
+
+		for (Edge<T> e : this.getListOfEdges())
+		{
+			List<Edge<T>> neighborEdges = new ArrayList<Edge<T>>();
+
+			for (Edge<T> edge : this.structure.get(e.getStart()))
+			{
+				if (neighborEdges.contains(edge) == false && edge.equals(e) == false)
+				{
+					neighborEdges.add(edge);
+				}
+			}
+
+			for (Edge<T> edge : this.structure.get(e.getEnd()))
+			{
+				if (neighborEdges.contains(edge) == false && edge.equals(e) == false)
+				{
+					neighborEdges.add(edge);
+				}
+			}
+
+			map.put(e,neighborEdges);
+		}
+
+		return map;
 	}
 
 	public Integer[][] getMatrixOfNeighborVertexes()
@@ -226,5 +260,26 @@ public class Graph<T extends Comparable>
 	public boolean isDirected ()
 	{
 		return this.directed;
+	}
+
+	/**
+	 * @return List of all graph edges
+	 */
+	public List<Edge<T>> getListOfEdges()
+	{
+		List<Edge<T>> edges = new ArrayList<Edge<T>>();
+
+		for (Vertex<T> v : this.structure.keySet())
+		{
+			for (Edge<T> e : this.structure.get(v))
+			{
+				if (edges.contains(e) == false)
+				{
+					edges.add(e);
+				}
+			}
+		}
+
+		return edges;
 	}
 }
