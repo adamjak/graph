@@ -11,6 +11,7 @@ public class Edge<T extends Comparable> implements Comparable<Edge<T>>
 	private Vertex<T> end;
 	private T content;
 	private boolean directed = false;
+	private Integer color;
 
 	public Edge (T content, Vertex<T> start, Vertex<T> end, boolean directed)
 	{
@@ -43,6 +44,16 @@ public class Edge<T extends Comparable> implements Comparable<Edge<T>>
 	public boolean isDirected ()
 	{
 		return this.directed;
+	}
+
+	public void setColor (Integer color)
+	{
+		this.color = color;
+	}
+
+	public Integer getColor ()
+	{
+		return this.color;
 	}
 
 	@Override
@@ -85,7 +96,14 @@ public class Edge<T extends Comparable> implements Comparable<Edge<T>>
 	@Override
 	public String toString ()
 	{
-		return "Edge from: " + this.start + " to: " + this.end;
+		String str = "Edge from: " + this.start + " to: " + this.end;
+
+		if (color != null)
+		{
+			str += " Color: " + this.color;
+		}
+
+		return str;
 	}
 
 	@Override

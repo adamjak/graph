@@ -3,11 +3,16 @@ package net.adamjak.graph;
 import net.adamjak.graph.classes.Edge;
 import net.adamjak.graph.classes.Graph;
 import net.adamjak.graph.classes.GraphFactory;
+import net.adamjak.graph.cubic.snarks.SnarkTestResult;
+import net.adamjak.graph.cubic.snarks.tests.EdgeBackTrace;
 import net.adamjak.graph.io.xsd.Graphml;
 
 import java.io.File;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by Tomas Adamjak on 4.11.2015.
@@ -18,30 +23,34 @@ public class Main
 {
 	public static void main (String args[])
 	{
-//		File file = new File("src/main/resources/ba/PETERSEN.10");
-//		GraphFactory.createGraphFromTextCatalog(file).get(0).print();
+		File file = new File("src/main/resources/ba/G-MIDZI.72");
+		Graph<Integer> g = GraphFactory.createGraphFromTextCatalog(file).get(0);
 
-		File file = new File("src/main/resources/xml/test.xml");
-		Graph<String> g = GraphFactory.createGraphFromGraphml(file);
-		g.print();
+//		File file = new File("src/main/resources/xml/test.xml");
+//		Graph<String> g = GraphFactory.createGraphFromGraphml(file);
 
-		long startTime = Calendar.getInstance().getTime().getTime();
-		long endTime = Calendar.getInstance().getTime().getTime();
+		ExecutorService executorService = Executors.newFixedThreadPool(3);
 
-
-		for (Edge<String> e : g.getMapOfNeighborEdges().keySet())
+		try
 		{
-			System.out.println(e);
+			SnarkTestResult snarkTestResult = executorService.submit(new EdgeBackTrace<Integer>(g)).get();
+			System.out.println("Snark test result:\n Time: " + snarkTestResult.getTime() + "\n Snark:" + snarkTestResult.isSnark());
 
-			for (Edge<String> edge : g.getMapOfNeighborEdges().get(e))
+			if (snarkTestResult.isSnark() == false)
 			{
-				System.out.println(" - " + edge);
+				g.print();
 			}
-
-			System.out.println();
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+		catch (ExecutionException e)
+		{
+			e.printStackTrace();
 		}
 
-		System.out.println("Time: " + (endTime - startTime));
+		executorService.shutdown();
 
 	}
 }

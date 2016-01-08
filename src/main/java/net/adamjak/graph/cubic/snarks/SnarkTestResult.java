@@ -10,7 +10,36 @@ import net.adamjak.graph.classes.Graph;
 public class SnarkTestResult
 {
 	private boolean snark;
+	private long time;
 	// TODO: 3.1.2016 - dorobit sem graf 
+
+	public SnarkTestResult(){}
+
+	public SnarkTestResult(long time)
+	{
+		this.setTime(time);
+	}
+
+	public SnarkTestResult (boolean isSnark)
+	{
+		this.setSnark(isSnark);
+	}
+
+	public SnarkTestResult (long time, boolean isSnark)
+	{
+		this.setTime(time);
+		this.setSnark(isSnark);
+	}
+
+	public void setTime (long time)
+	{
+		this.time = time;
+	}
+
+	public long getTime ()
+	{
+		return this.time;
+	}
 
 	public void setSnark (boolean snark)
 	{
