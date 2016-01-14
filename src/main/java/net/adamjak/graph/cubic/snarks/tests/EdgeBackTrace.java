@@ -38,7 +38,7 @@ public class EdgeBackTrace<T extends Comparable> implements Callable<SnarkTestRe
 		}
 
 		int i = 0;
-		while (i < edgesList.size())
+		while (true)
 		{
 			Edge<T> edge = edgesList.get(i);
 
@@ -55,14 +55,14 @@ public class EdgeBackTrace<T extends Comparable> implements Callable<SnarkTestRe
 				}
 				else
 				{
-					i--;
+					i--; // 4. step
 				}
 			}
 			else
 			{
 				boolean diferentColor = false;
 
-				for (Edge<T> e : neighborEdges.get(edge))
+				for (Edge<T> e : neighborEdges.get(edge)) // 5. step
 				{
 					if (e.getColor() == edge.getColor())
 					{
@@ -72,11 +72,11 @@ public class EdgeBackTrace<T extends Comparable> implements Callable<SnarkTestRe
 
 				if (diferentColor == false)
 				{
-					i++;
+					i++; // 6. step
 
 					if (i == edgesList.size())
 					{
-						snarkTestResult.setSnark(false);
+						snarkTestResult.setSnark(false); // 7. step
 						break;
 					}
 				}

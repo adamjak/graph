@@ -148,6 +148,8 @@ public class GraphFactory
 
 		BufferedReader bufferedReader = null;
 
+		int edgeNumber = 0;
+
 		try
 		{
 			bufferedReader = new BufferedReader(new FileReader(txt));
@@ -204,7 +206,8 @@ public class GraphFactory
 						for (String s : neighbors)
 						{
 							Vertex<Integer> neighbor = g.getVertexByContent(Integer.parseInt(s));
-							g.addEdge(new Edge<Integer>(1,v,neighbor,false));
+							g.addEdge(new Edge<Integer>(edgeNumber,v,neighbor,false));
+							edgeNumber++;
 						}
 					}
 
@@ -258,6 +261,13 @@ public class GraphFactory
 			}
 		}
 
+		return newGraph;
+	}
+
+	public static <U extends Comparable> Graph<U> permuteGraph(Graph<U> graph)
+	{
+		Graph<U> newGraph = GraphFactory.cloneGraph(graph);
+		// TODO: 8.1.2016 - vyspekulovat prepermutovanie hrana a vrcholov 
 		return newGraph;
 	}
 }

@@ -1,6 +1,7 @@
 package net.adamjak.graph.classes;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
@@ -13,7 +14,7 @@ public class Graph<T extends Comparable>
 	private final Class<? extends T> graphType;
 	private boolean directed = false;
 
-	private Map<Vertex<T>, List<Edge<T>>> structure = new ConcurrentSkipListMap<Vertex<T>, List<Edge<T>>>();
+	private ConcurrentMap<Vertex<T>, List<Edge<T>>> structure = new ConcurrentSkipListMap<Vertex<T>, List<Edge<T>>>();
 
 	private Graph()
 	{
@@ -34,7 +35,7 @@ public class Graph<T extends Comparable>
 	{
 		if (this.structure.containsKey(vertex)) throw new IllegalArgumentException("Vertex '" + vertex + "' is already in graph.");
 
-		this.structure.put(vertex,new ArrayList<Edge<T>>());
+		this.structure.put(vertex,Collections.synchronizedList(new ArrayList<Edge<T>>()));
 	}
 
 	public Vertex<T> getVertexByContent (T content)
@@ -170,13 +171,13 @@ public class Graph<T extends Comparable>
 		return meatEdges;
 	}
 
-	public Map<Edge<T>,List<Edge<T>>> getMapOfNeighborEdges()
+	public ConcurrentMap<Edge<T>,List<Edge<T>>> getMapOfNeighborEdges()
 	{
-		Map<Edge<T>,List<Edge<T>>> map = new ConcurrentSkipListMap<Edge<T>,List<Edge<T>>>();
+		ConcurrentMap<Edge<T>,List<Edge<T>>> map = new ConcurrentSkipListMap<Edge<T>,List<Edge<T>>>();
 
 		for (Edge<T> e : this.getListOfEdges())
 		{
-			List<Edge<T>> neighborEdges = new ArrayList<Edge<T>>();
+			List<Edge<T>> neighborEdges = Collections.synchronizedList(new ArrayList<Edge<T>>());
 
 			for (Edge<T> edge : this.structure.get(e.getStart()))
 			{
@@ -194,6 +195,11 @@ public class Graph<T extends Comparable>
 				}
 			}
 
+			if (map.containsKey(e))
+			{
+				int i = 0;
+				throw new RuntimeException();
+			}
 			map.put(e,neighborEdges);
 		}
 
@@ -267,7 +273,7 @@ public class Graph<T extends Comparable>
 	 */
 	public List<Edge<T>> getListOfEdges()
 	{
-		List<Edge<T>> edges = new ArrayList<Edge<T>>();
+		List<Edge<T>> edges = Collections.synchronizedList(new ArrayList<Edge<T>>());
 
 		for (Vertex<T> v : this.structure.keySet())
 		{

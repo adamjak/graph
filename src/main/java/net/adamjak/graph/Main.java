@@ -3,6 +3,7 @@ package net.adamjak.graph;
 import net.adamjak.graph.classes.Edge;
 import net.adamjak.graph.classes.Graph;
 import net.adamjak.graph.classes.GraphFactory;
+import net.adamjak.graph.classes.Vertex;
 import net.adamjak.graph.cubic.snarks.SnarkTestResult;
 import net.adamjak.graph.cubic.snarks.tests.EdgeBackTrace;
 import net.adamjak.graph.io.xsd.Graphml;
@@ -51,6 +52,5 @@ public class Main
 		}
 
 		executorService.shutdown();
-
 	}
 }
