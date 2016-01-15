@@ -24,31 +24,29 @@ public class Main
 {
 	public static void main (String args[])
 	{
-		File file = new File("src/main/resources/ba/G-MIDZI.72");
-		Graph<Integer> g = GraphFactory.createGraphFromTextCatalog(file).get(0);
+		File file = new File("src/main/resources/ba/SC4.24");
+		List<Graph<Integer>> listOfGraphs = GraphFactory.createGraphFromTextCatalog(file);
 
 //		File file = new File("src/main/resources/xml/test.xml");
 //		Graph<String> g = GraphFactory.createGraphFromGraphml(file);
 
 		ExecutorService executorService = Executors.newFixedThreadPool(3);
 
-		try
+		for (Graph<Integer> g : listOfGraphs)
 		{
-			SnarkTestResult snarkTestResult = executorService.submit(new EdgeBackTrace<Integer>(g)).get();
-			System.out.println("Snark test result:\n Time: " + snarkTestResult.getTime() + "\n Snark:" + snarkTestResult.isSnark());
-
-			if (snarkTestResult.isSnark() == false)
+			try
 			{
-				g.print();
+				SnarkTestResult snarkTestResult = executorService.submit(new EdgeBackTrace<Integer>(g)).get();
+				System.out.println("Snark test result:\n Time: " + snarkTestResult.getTime() + "\n Snark:" + snarkTestResult.isSnark());
 			}
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
-		catch (ExecutionException e)
-		{
-			e.printStackTrace();
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+			catch (ExecutionException e)
+			{
+				e.printStackTrace();
+			}
 		}
 
 		executorService.shutdown();

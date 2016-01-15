@@ -30,7 +30,7 @@ public class EdgeBackTrace<T extends Comparable> implements Callable<SnarkTestRe
 		List<Edge<T>> edgesList = this.graph.getListOfEdges();
 		Map<Edge<T>, List<Edge<T>>> neighborEdges =  this.graph.getMapOfNeighborEdges();
 
-		long startTime = Calendar.getInstance().getTime().getTime();
+		long startTime = System.nanoTime();
 
 		for (Edge<T> e : edgesList)
 		{
@@ -83,7 +83,7 @@ public class EdgeBackTrace<T extends Comparable> implements Callable<SnarkTestRe
 			}
 		}
 
-		long endTime = Calendar.getInstance().getTime().getTime();
+		long endTime = System.nanoTime();
 
 		snarkTestResult.setTime(endTime - startTime);
 
