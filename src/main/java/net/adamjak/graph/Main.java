@@ -11,6 +11,7 @@ import net.adamjak.graph.io.xsd.Graphml;
 import java.io.File;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,7 +25,7 @@ public class Main
 {
 	public static void main (String args[])
 	{
-		File file = new File("src/main/resources/ba/SC4.24");
+		File file = new File("src/main/resources/ba/G-MIDZI.72");
 		List<Graph<Integer>> listOfGraphs = GraphFactory.createGraphFromTextCatalog(file);
 
 //		File file = new File("src/main/resources/xml/test.xml");
@@ -50,5 +51,6 @@ public class Main
 		}
 
 		executorService.shutdown();
+
 	}
 }

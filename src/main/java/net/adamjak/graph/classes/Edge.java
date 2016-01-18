@@ -72,21 +72,18 @@ public class Edge<T extends Comparable> implements Comparable<Edge<T>>
 			return false;
 		}
 
-		if (this.content.equals(other.getContent()))
+		if (directed)
 		{
-			if (directed)
+			if (this.start.equals(other.getStart()) && this.end.equals(other.getEnd()))
 			{
-				if (this.start.equals(other.getStart()) && this.end.equals(other.getEnd()))
-				{
-					return true;
-				}
+				return true;
 			}
-			else
+		}
+		else
+		{
+			if ((this.start.equals(other.getStart()) && this.end.equals(other.getEnd())) || (this.start.equals(other.getEnd()) && this.end.equals(other.getStart())))
 			{
-				if ((this.start.equals(other.getStart()) && this.end.equals(other.getEnd())) || (this.start.equals(other.getEnd()) && this.end.equals(other.getStart())))
-				{
-					return true;
-				}
+				return true;
 			}
 		}
 
@@ -109,6 +106,7 @@ public class Edge<T extends Comparable> implements Comparable<Edge<T>>
 	@Override
 	public int compareTo (Edge<T> e)
 	{
+		// FIXME: 18.1.2016 
 		return this.content.compareTo(e.getContent());
 	}
 }
