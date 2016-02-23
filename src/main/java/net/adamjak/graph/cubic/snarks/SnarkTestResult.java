@@ -2,6 +2,8 @@ package net.adamjak.graph.cubic.snarks;
 
 import net.adamjak.graph.classes.Graph;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by Tomas Adamjak on 3.1.2016.
  * Copyright 2016, Tomas Adamjak
@@ -36,9 +38,18 @@ public class SnarkTestResult
 		this.time = time;
 	}
 
+	/**
+	 * @return Time in nanoseconds
+	 * @see System#nanoTime()
+	 */
 	public long getTime ()
 	{
 		return this.time;
+	}
+
+	public double getTimeInSeconds()
+	{
+		return (double) this.getTime() / 1000000000.0;
 	}
 
 	public void setSnark (boolean snark)

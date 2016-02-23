@@ -30,8 +30,23 @@ public class EdgeBackTrace<T extends Comparable> implements Callable<SnarkTestRe
 		List<Edge<T>> edgesList = this.graph.getListOfEdges();
 		Map<Edge<T>, List<Edge<T>>> neighborEdges =  this.graph.getMapOfNeighborEdges();
 
+		boolean result;
+
 		long startTime = System.nanoTime();
 
+		result = this.calculate(edgesList, neighborEdges); // calculate routine
+
+		long endTime = System.nanoTime();
+
+		snarkTestResult.setSnark(result);
+
+		snarkTestResult.setTime(endTime - startTime);
+
+		return snarkTestResult;
+	}
+
+	private boolean calculate (List<Edge<T>> edgesList, Map<Edge<T>, List<Edge<T>>> neighborEdges)
+	{
 		for (Edge<T> e : edgesList)
 		{
 			e.setColor(0); // 1. step
@@ -50,8 +65,7 @@ public class EdgeBackTrace<T extends Comparable> implements Callable<SnarkTestRe
 
 				if (i == 0)
 				{
-					snarkTestResult.setSnark(true); // 8. step
-					break;
+					return true; // 8. step
 				}
 				else
 				{
@@ -76,17 +90,10 @@ public class EdgeBackTrace<T extends Comparable> implements Callable<SnarkTestRe
 
 					if (i == edgesList.size())
 					{
-						snarkTestResult.setSnark(false); // 7. step
-						break;
+						return false; // 7. step
 					}
 				}
 			}
 		}
-
-		long endTime = System.nanoTime();
-
-		snarkTestResult.setTime(endTime - startTime);
-
-		return snarkTestResult;
 	}
 }

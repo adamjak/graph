@@ -106,7 +106,6 @@ public class Edge<T extends Comparable> implements Comparable<Edge<T>>
 	@Override
 	public int compareTo (Edge<T> e)
 	{
-		// FIXME: 18.1.2016 
 		return this.content.compareTo(e.getContent());
 	}
 }

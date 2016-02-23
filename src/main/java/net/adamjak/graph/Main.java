@@ -31,14 +31,14 @@ public class Main
 //		File file = new File("src/main/resources/xml/test.xml");
 //		Graph<String> g = GraphFactory.createGraphFromGraphml(file);
 
-		ExecutorService executorService = Executors.newFixedThreadPool(3);
+		ExecutorService executorService = Executors.newFixedThreadPool(1);
 
 		for (Graph<Integer> g : listOfGraphs)
 		{
 			try
 			{
 				SnarkTestResult snarkTestResult = executorService.submit(new EdgeBackTrace<Integer>(g)).get();
-				System.out.println("Snark test result:\n Time: " + snarkTestResult.getTime() + "\n Snark:" + snarkTestResult.isSnark());
+				System.out.println("Snark test result:\n Time: " + snarkTestResult.getTimeInSeconds() + "\n Snark:" + snarkTestResult.isSnark());
 			}
 			catch (InterruptedException e)
 			{
