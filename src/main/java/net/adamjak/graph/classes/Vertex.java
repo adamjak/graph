@@ -1,5 +1,7 @@
 package net.adamjak.graph.classes;
 
+import net.adamjak.graph.interfaces.Visitable;
+
 import java.util.Comparator;
 
 /**
@@ -7,9 +9,10 @@ import java.util.Comparator;
  * Copyright 2015, Tomas Adamjak
  * License: The BSD 3-Clause License
  */
-public class Vertex<T extends Comparable> implements Comparable<Vertex<T>>
+public class Vertex<T extends Comparable> implements Comparable<Vertex<T>>, Visitable
 {
 	private T content;
+	private boolean visited = false;
 
 	public Vertex(T content)
 	{
@@ -51,5 +54,17 @@ public class Vertex<T extends Comparable> implements Comparable<Vertex<T>>
 	public int compareTo (Vertex<T> vertex)
 	{
 		return this.content.compareTo(vertex.getContent());
+	}
+
+	@Override
+	public boolean isVisited ()
+	{
+		return this.visited;
+	}
+
+	@Override
+	public void setVisited (boolean visited)
+	{
+		this.visited = visited;
 	}
 }

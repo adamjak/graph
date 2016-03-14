@@ -47,8 +47,19 @@ public class Graph<T extends Comparable>
 				return v;
 			}
 		}
-
 		return null;
+	}
+
+	public List<Vertex<T>> getListOfVertexes ()
+	{
+		List<Vertex<T>> list = new ArrayList<Vertex<T>>();
+
+		for (Vertex<T> v : this.structure.keySet())
+		{
+			list.add(v);
+		}
+
+		return list;
 	}
 	
 	public void addEdge (Edge<T> edge)
