@@ -1,8 +1,10 @@
 package net.adamjak.graph.classes;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Created by Tomas Adamjak on 16.12.2015.
@@ -48,6 +50,11 @@ public class Graph<T extends Comparable>
 			}
 		}
 		return null;
+	}
+
+	public int getCountOfVertexes()
+	{
+		return this.getListOfVertexes().size();
 	}
 
 	public List<Vertex<T>> getListOfVertexes ()
@@ -298,5 +305,74 @@ public class Graph<T extends Comparable>
 		}
 
 		return edges;
+	}
+
+	public Set<Vertex<T>> getNeighborVertexes (Vertex<T> vertex)
+	{
+		Set<Vertex<T>> vertexes = new HashSet<Vertex<T>>();
+
+		for (Edge<T> edge : this.structure.get(vertex))
+		{
+			if (edge.getStart().equals(vertex))
+			{
+				vertexes.add(edge.getEnd());
+			}
+			else
+			{
+				vertexes.add(edge.getStart());
+			}
+		}
+
+		return vertexes;
+	}
+
+	/**
+	 * @return List of all cyrcles in graph
+	 */
+	public ConcurrentSkipListSet<Cyrcle<T>> getListOfAllCyrcles()
+	{
+		ConcurrentSkipListSet<Cyrcle<T>> cyrcleConcurrentSkipListSet = new ConcurrentSkipListSet<Cyrcle<T>>();
+
+		for (Vertex<T> rootVertex : this.structure.keySet())
+		{
+			ConcurrentLinkedQueue<List<Vertex<T>>> queue = new ConcurrentLinkedQueue<>();
+
+			for (Vertex<T> v : this.getNeighborVertexes(rootVertex))
+			{
+				List<Vertex<T>> lhs = Collections.synchronizedList(new ArrayList<Vertex<T>>());
+				lhs.add(v);
+				queue.add(lhs);
+			}
+
+			while (queue.isEmpty() == false && queue.peek().size() < this.structure.size())
+			{
+				List<Vertex<T>> lhs = queue.poll();
+				for (Vertex<T> v : this.getNeighborVertexes(lhs.get(lhs.size()-1)))
+				{
+					if (lhs.contains(v) == false)
+					{
+						if (v.equals(rootVertex))
+						{
+							Cyrcle<T> cyrcle = new Cyrcle<T>();
+
+							for (Vertex<T> cyrcleVertex : lhs)
+							{
+								cyrcle.addVertexIntoCyrcle(cyrcleVertex);
+							}
+
+							cyrcleConcurrentSkipListSet.add(cyrcle);
+						}
+						else
+						{
+							List<Vertex<T>> newPath = new ArrayList<>(lhs);
+							newPath.add(v);
+							queue.add(newPath);
+						}
+					}
+				}
+			}
+		}
+
+		return cyrcleConcurrentSkipListSet;
 	}
 }

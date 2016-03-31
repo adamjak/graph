@@ -6,9 +6,11 @@ import net.adamjak.graph.classes.GraphFactory;
 import net.adamjak.graph.classes.Vertex;
 import net.adamjak.graph.cubic.snarks.SnarkTestResult;
 import net.adamjak.graph.cubic.snarks.tests.EdgeBackTrace;
+import net.adamjak.graph.cubic.snarks.tests.OneFactor;
 import net.adamjak.graph.io.xsd.Graphml;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +39,11 @@ public class Main
 		{
 			try
 			{
-				SnarkTestResult snarkTestResult = executorService.submit(new EdgeBackTrace<Integer>(g)).get();
-				System.out.println("Snark test result:\n Time: " + snarkTestResult.getTimeInSeconds() + "\n Snark:" + snarkTestResult.isSnark());
+				SnarkTestResult strEdgeBackTrace = executorService.submit(new EdgeBackTrace<Integer>(g)).get();
+				SnarkTestResult strOneFactor = executorService.submit(new OneFactor<Integer>(g)).get();
+				System.out.println("Snark test result Edge Back Trace:\n Time: " + strEdgeBackTrace.getTimeInSeconds() + " second\n Snark:" + strEdgeBackTrace.isSnark());
+				System.out.println();
+				System.out.println("Snark test result One Factor:\n Time: " + strOneFactor.getTimeInSeconds() + " second\n Snark:" + strOneFactor.isSnark());
 			}
 			catch (InterruptedException e)
 			{
@@ -51,6 +56,5 @@ public class Main
 		}
 
 		executorService.shutdown();
-
 	}
 }
