@@ -1,6 +1,5 @@
 package net.adamjak.graph.classes;
 
-import java.util.Stack;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
@@ -8,11 +7,11 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * Copyright 2016, Tomas Adamjak
  * License: The BSD 3-Clause License
  */
-public class Cyrcle<T extends Comparable> implements Comparable<Cyrcle<T>>
+public class Cycle<T extends Comparable> implements Comparable<Cycle<T>>
 {
 	ConcurrentSkipListSet<Vertex<T>> cyrcleElements = new ConcurrentSkipListSet<Vertex<T>>();
 
-	public Cyrcle<T> addVertexIntoCyrcle(Vertex<T> vertex)
+	public Cycle<T> addVertexIntoCyrcle(Vertex<T> vertex)
 	{
 		this.cyrcleElements.add(vertex);
 		return this;
@@ -28,9 +27,9 @@ public class Cyrcle<T extends Comparable> implements Comparable<Cyrcle<T>>
 		return this.cyrcleElements.size();
 	}
 
-	public boolean hasCommonVertex (Cyrcle<T> cyrcle)
+	public boolean hasCommonVertex (Cycle<T> cycle)
 	{
-		for (Vertex<T> v : cyrcle.getCyrcleElements())
+		for (Vertex<T> v : cycle.getCyrcleElements())
 		{
 			if (this.cyrcleElements.contains(v)) return true;
 		}
@@ -56,13 +55,13 @@ public class Cyrcle<T extends Comparable> implements Comparable<Cyrcle<T>>
 	public boolean equals (Object obj)
 	{
 		if (obj == null) return false;
-		if (!(obj instanceof Cyrcle<?>)) return false;
+		if (!(obj instanceof Cycle<?>)) return false;
 
-		Cyrcle<T> other;
+		Cycle<T> other;
 
 		try
 		{
-			other = (Cyrcle<T>) obj;
+			other = (Cycle<T>) obj;
 		}
 		catch (Exception e)
 		{
@@ -80,11 +79,11 @@ public class Cyrcle<T extends Comparable> implements Comparable<Cyrcle<T>>
 	}
 
 	@Override
-	public int compareTo (Cyrcle<T> cyrcle)
+	public int compareTo (Cycle<T> cycle)
 	{
-		if (this.equals(cyrcle)) return 0;
+		if (this.equals(cycle)) return 0;
 
-		if (this.cyrcleElements.size() < cyrcle.getCyrcleElements().size())
+		if (this.cyrcleElements.size() < cycle.getCyrcleElements().size())
 		{
 			return -1;
 		}

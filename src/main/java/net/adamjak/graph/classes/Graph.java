@@ -329,9 +329,9 @@ public class Graph<T extends Comparable>
 	/**
 	 * @return List of all cyrcles in graph
 	 */
-	public ConcurrentSkipListSet<Cyrcle<T>> getListOfAllCyrcles()
+	public ConcurrentSkipListSet<Cycle<T>> getListOfAllCyrcles()
 	{
-		ConcurrentSkipListSet<Cyrcle<T>> cyrcleConcurrentSkipListSet = new ConcurrentSkipListSet<Cyrcle<T>>();
+		ConcurrentSkipListSet<Cycle<T>> cycleConcurrentSkipListSet = new ConcurrentSkipListSet<Cycle<T>>();
 
 		for (Vertex<T> rootVertex : this.structure.keySet())
 		{
@@ -340,31 +340,33 @@ public class Graph<T extends Comparable>
 			for (Vertex<T> v : this.getNeighborVertexes(rootVertex))
 			{
 				List<Vertex<T>> lhs = Collections.synchronizedList(new ArrayList<Vertex<T>>());
+				lhs.add(rootVertex);
 				lhs.add(v);
 				queue.add(lhs);
 			}
 
-			while (queue.isEmpty() == false && queue.peek().size() < this.structure.size())
+			while (queue.isEmpty() == false && queue.peek().size() <= this.structure.size())
 			{
 				List<Vertex<T>> lhs = queue.poll();
+
 				for (Vertex<T> v : this.getNeighborVertexes(lhs.get(lhs.size()-1)))
 				{
 					if (lhs.contains(v) == false)
 					{
 						if (v.equals(rootVertex))
 						{
-							Cyrcle<T> cyrcle = new Cyrcle<T>();
+							Cycle<T> cycle = new Cycle<T>();
 
 							for (Vertex<T> cyrcleVertex : lhs)
 							{
-								cyrcle.addVertexIntoCyrcle(cyrcleVertex);
+								cycle.addVertexIntoCyrcle(cyrcleVertex);
 							}
 
-							cyrcleConcurrentSkipListSet.add(cyrcle);
+							cycleConcurrentSkipListSet.add(cycle);
 						}
 						else
 						{
-							List<Vertex<T>> newPath = new ArrayList<>(lhs);
+							List<Vertex<T>> newPath = Collections.synchronizedList(new ArrayList<Vertex<T>>(lhs));
 							newPath.add(v);
 							queue.add(newPath);
 						}
@@ -373,6 +375,6 @@ public class Graph<T extends Comparable>
 			}
 		}
 
-		return cyrcleConcurrentSkipListSet;
+		return cycleConcurrentSkipListSet;
 	}
 }

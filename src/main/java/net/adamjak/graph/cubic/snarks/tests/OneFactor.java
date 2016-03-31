@@ -1,11 +1,9 @@
 package net.adamjak.graph.cubic.snarks.tests;
 
-import net.adamjak.graph.classes.Cyrcle;
+import net.adamjak.graph.classes.Cycle;
 import net.adamjak.graph.classes.Graph;
-import net.adamjak.graph.classes.Vertex;
 import net.adamjak.graph.cubic.snarks.SnarkTestResult;
 
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -43,18 +41,18 @@ public class OneFactor<T extends Comparable> implements Callable<SnarkTestResult
 		return snarkTestResult;
 	}
 
-	private boolean calculate(ConcurrentSkipListSet<Cyrcle<T>> cyrcleConcurrentSkipListSet)
+	private boolean calculate(ConcurrentSkipListSet<Cycle<T>> cycleConcurrentSkipListSet)
 	{
-		for (Cyrcle<T> firstCyrcle : cyrcleConcurrentSkipListSet)
+		for (Cycle<T> firstCycle : cycleConcurrentSkipListSet)
 		{
-			for (Cyrcle<T> secondCyrcle : cyrcleConcurrentSkipListSet)
+			for (Cycle<T> secondCycle : cycleConcurrentSkipListSet)
 			{
-				if ((firstCyrcle.equals(secondCyrcle)) == false &&
-						(firstCyrcle.getCyrcleSize() + secondCyrcle.getCyrcleSize()) == graph.getCountOfVertexes() &&
-						(firstCyrcle.getCyrcleSize() % 2 == 0) &&
-						(secondCyrcle.getCyrcleSize() % 2 == 0))
+				if ((firstCycle.equals(secondCycle)) == false &&
+						(firstCycle.getCyrcleSize() + secondCycle.getCyrcleSize()) == graph.getCountOfVertexes() &&
+						(firstCycle.getCyrcleSize() % 2 == 0) &&
+						(secondCycle.getCyrcleSize() % 2 == 0))
 				{
-					if (firstCyrcle.hasCommonVertex(secondCyrcle) == false)
+					if (firstCycle.hasCommonVertex(secondCycle) == false)
 					{
 						// TODO: 30.3.2016 -- najst perfektny matching
 						return true;
