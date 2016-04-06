@@ -40,10 +40,10 @@ public class Main
 			try
 			{
 				SnarkTestResult strEdgeBackTrace = executorService.submit(new EdgeBackTrace<Integer>(g)).get();
-				SnarkTestResult strOneFactor = executorService.submit(new OneFactor<Integer>(g)).get();
+				//SnarkTestResult strOneFactor = executorService.submit(new OneFactor<Integer>(g)).get();
 				System.out.println("Snark test result Edge Back Trace:\n Time: " + strEdgeBackTrace.getTimeInSeconds() + " second\n Snark:" + strEdgeBackTrace.isSnark());
 				System.out.println();
-				System.out.println("Snark test result One Factor:\n Time: " + strOneFactor.getTimeInSeconds() + " second\n Snark:" + strOneFactor.isSnark());
+				//System.out.println("Snark test result One Factor:\n Time: " + strOneFactor.getTimeInSeconds() + " second\n Snark:" + strOneFactor.isSnark());
 			}
 			catch (InterruptedException e)
 			{

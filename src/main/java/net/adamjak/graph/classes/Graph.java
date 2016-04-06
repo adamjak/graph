@@ -359,7 +359,7 @@ public class Graph<T extends Comparable>
 
 							for (Vertex<T> cyrcleVertex : lhs)
 							{
-								cycle.addVertexIntoCyrcle(cyrcleVertex);
+								cycle.addVertexIntoCycle(cyrcleVertex);
 							}
 
 							cycleConcurrentSkipListSet.add(cycle);

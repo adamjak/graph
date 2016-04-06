@@ -1,5 +1,9 @@
 package net.adamjak.graph.classes;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
@@ -9,29 +13,34 @@ import java.util.concurrent.ConcurrentSkipListSet;
  */
 public class Cycle<T extends Comparable> implements Comparable<Cycle<T>>
 {
-	ConcurrentSkipListSet<Vertex<T>> cyrcleElements = new ConcurrentSkipListSet<Vertex<T>>();
+	List<Vertex<T>> cycleElements = new ArrayList<Vertex<T>>();
 
-	public Cycle<T> addVertexIntoCyrcle(Vertex<T> vertex)
+	public Cycle<T> addVertexIntoCycle(Vertex<T> vertex)
 	{
-		this.cyrcleElements.add(vertex);
+		this.cycleElements.add(vertex);
 		return this;
 	}
 
-	public ConcurrentSkipListSet<Vertex<T>> getCyrcleElements()
+	public List<Vertex<T>> getCycleElements()
 	{
-		return this.cyrcleElements;
+		return Collections.unmodifiableList(this.cycleElements);
 	}
 
 	public int getCyrcleSize()
 	{
-		return this.cyrcleElements.size();
+		return this.cycleElements.size();
 	}
 
+	/**
+	 * hasCommonVertex - return true if 2 cycles has common vertex. Using List#contains
+	 * @param cycle in which to seek common vertex
+	 * @return boolean
+	 */
 	public boolean hasCommonVertex (Cycle<T> cycle)
 	{
-		for (Vertex<T> v : cycle.getCyrcleElements())
+		for (Vertex<T> v : cycle.getCycleElements())
 		{
-			if (this.cyrcleElements.contains(v)) return true;
+			if (this.cycleElements.contains(v)) return true;
 		}
 
 		return false;
@@ -42,8 +51,8 @@ public class Cycle<T extends Comparable> implements Comparable<Cycle<T>>
 	{
 		String str = new String();
 		
-		str += "Cytcle:\n";
-		for (Vertex<T> v : this.cyrcleElements)
+		str += "Cycle:\n";
+		for (Vertex<T> v : this.cycleElements)
 		{
 			str += v.toString();
 		}
@@ -68,11 +77,30 @@ public class Cycle<T extends Comparable> implements Comparable<Cycle<T>>
 			return false;
 		}
 
-		if (this.cyrcleElements.size() != other.getCyrcleElements().size()) return false;
+		if (this.cycleElements.size() != other.getCycleElements().size()) return false;
 
-		for (Vertex<T> v : this.cyrcleElements)
+		Vertex<T> firstVertex = this.getCycleElements().get(0);
+
+		int posun = other.getCycleElements().lastIndexOf(firstVertex);
+
+		if (posun < 0) return false;
+
+		if (posun != 0)
 		{
-			if (!other.getCyrcleElements().contains(v)) return false;
+			other = this.rotateCycle(other,posun);
+		}
+
+		if (this.cycleElements.get(1).equals(other.getCycleElements().get(1)) == false)
+		{
+			other = this.flip(other);
+		}
+
+		for (int i = 0; i < this.cycleElements.size(); i++)
+		{
+			if (this.cycleElements.get(i).equals(other.getCycleElements().get(i)) == false)
+			{
+				return false;
+			}
 		}
 
 		return true;
@@ -83,7 +111,7 @@ public class Cycle<T extends Comparable> implements Comparable<Cycle<T>>
 	{
 		if (this.equals(cycle)) return 0;
 
-		if (this.cyrcleElements.size() < cycle.getCyrcleElements().size())
+		if (this.cycleElements.size() < cycle.getCycleElements().size())
 		{
 			return -1;
 		}
@@ -91,5 +119,35 @@ public class Cycle<T extends Comparable> implements Comparable<Cycle<T>>
 		{
 			return 1;
 		}
+	}
+
+	private Cycle<T> rotateCycle (Cycle<T> cycle, int times)
+	{
+		Cycle<T> newCycle = new Cycle<T>();
+
+		for (int i = times; i < cycle.getCycleElements().size(); i++)
+		{
+			newCycle.addVertexIntoCycle(cycle.getCycleElements().get(i));
+		}
+
+		for (int i = 0; i < times; i++)
+		{
+			newCycle.addVertexIntoCycle(cycle.getCycleElements().get(i));
+		}
+
+		return newCycle;
+	}
+
+	private Cycle<T> flip (Cycle<T> cycle)
+	{
+		Cycle<T> newCycle = new Cycle<T>();
+		newCycle.addVertexIntoCycle(cycle.getCycleElements().get(0));
+
+		for (int i = cycle.getCyrcleSize() - 1; i > 0; i--)
+		{
+			newCycle.addVertexIntoCycle(cycle.getCycleElements().get(i));
+		}
+
+		return newCycle;
 	}
 }
