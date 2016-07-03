@@ -1,11 +1,12 @@
 package net.adamjak.graph.cubic.snarks.tests;
 
 
-import net.adamjak.graph.classes.Edge;
-import net.adamjak.graph.classes.Graph;
+import net.adamjak.graph.api.Edge;
+import net.adamjak.graph.api.Graph;
 import net.adamjak.graph.cubic.snarks.SnarkTestResult;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**

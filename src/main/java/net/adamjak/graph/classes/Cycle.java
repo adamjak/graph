@@ -1,10 +1,10 @@
 package net.adamjak.graph.classes;
 
+import net.adamjak.graph.api.Vertex;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Created by Tomas Adamjak on 25.3.2016.
@@ -121,6 +121,12 @@ public class Cycle<T extends Comparable> implements Comparable<Cycle<T>>
 		}
 	}
 
+	/**
+	 * @param cycle whitch we want rotate
+	 * @param times
+	 *
+	 * @return New rotated cycle.
+	 */
 	private Cycle<T> rotateCycle (Cycle<T> cycle, int times)
 	{
 		Cycle<T> newCycle = new Cycle<T>();
@@ -138,6 +144,11 @@ public class Cycle<T extends Comparable> implements Comparable<Cycle<T>>
 		return newCycle;
 	}
 
+	/**
+	 * @param cycle whitch we want flip
+	 *
+	 * @return New fliped cycle
+	 */
 	private Cycle<T> flip (Cycle<T> cycle)
 	{
 		Cycle<T> newCycle = new Cycle<T>();

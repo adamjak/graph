@@ -1,11 +1,14 @@
 package net.adamjak.graph.classes;
 
+import net.adamjak.graph.api.Edge;
+import net.adamjak.graph.api.Vertex;
+
 /**
  * Created by Tomas Adamjak on 16.12.2015.
  * Copyright 2015, Tomas Adamjak
  * License: The BSD 3-Clause License
  */
-public class Edge<T extends Comparable> implements Comparable<Edge<T>>
+public class EdgeImpl<T extends Comparable> implements Comparable<Edge<T>>, Edge<T>
 {
 	private Vertex<T> start;
 	private Vertex<T> end;
@@ -13,7 +16,7 @@ public class Edge<T extends Comparable> implements Comparable<Edge<T>>
 	private boolean directed = false;
 	private Integer color;
 
-	public Edge (T content, Vertex<T> start, Vertex<T> end, boolean directed)
+	public EdgeImpl (T content, Vertex<T> start, Vertex<T> end, boolean directed)
 	{
 		this.content = content;
 		this.start = start;
@@ -21,26 +24,31 @@ public class Edge<T extends Comparable> implements Comparable<Edge<T>>
 		this.directed = directed;
 	}
 
+	@Override
 	public T getContent ()
 	{
 		return this.content;
 	}
 
+	@Override
 	public Vertex<T> getStart ()
 	{
 		return this.start;
 	}
 
+	@Override
 	public Vertex<T> getEnd ()
 	{
 		return this.end;
 	}
 
+	@Override
 	public void setDirected (boolean directed)
 	{
 		this.directed = directed;
 	}
 
+	@Override
 	public boolean isDirected ()
 	{
 		return this.directed;
@@ -93,7 +101,7 @@ public class Edge<T extends Comparable> implements Comparable<Edge<T>>
 	@Override
 	public String toString ()
 	{
-		String str = "Edge from: " + this.start + " to: " + this.end;
+		String str = "EdgeImpl from: " + this.start + " to: " + this.end;
 
 		if (color != null)
 		{

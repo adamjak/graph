@@ -1,24 +1,24 @@
 package net.adamjak.graph.classes;
 
+import net.adamjak.graph.api.Vertex;
 import net.adamjak.graph.interfaces.Visitable;
-
-import java.util.Comparator;
 
 /**
  * Created by Tomas Adamjak on 16.12.2015.
  * Copyright 2015, Tomas Adamjak
  * License: The BSD 3-Clause License
  */
-public class Vertex<T extends Comparable> implements Comparable<Vertex<T>>, Visitable
+public class VertexImpl<T extends Comparable> implements Visitable, Vertex<T>
 {
 	private T content;
 	private boolean visited = false;
 
-	public Vertex(T content)
+	public VertexImpl (T content)
 	{
 		this.content = content;
 	}
 
+	@Override
 	public T getContent ()
 	{
 		return this.content;
@@ -27,7 +27,7 @@ public class Vertex<T extends Comparable> implements Comparable<Vertex<T>>, Visi
 	@Override
 	public String toString ()
 	{
-		return "Vertex: " + this.content.toString();
+		return "VertexImpl: " + this.content.toString();
 	}
 
 	@Override

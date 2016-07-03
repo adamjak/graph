@@ -1,5 +1,8 @@
 package net.adamjak.graph.classes;
 
+import net.adamjak.graph.api.Edge;
+import net.adamjak.graph.api.Graph;
+import net.adamjak.graph.api.Vertex;
 import net.adamjak.graph.io.xsd.Graphml;
 
 import javax.xml.bind.JAXBContext;
@@ -9,12 +12,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Tomas Adamjak on 20.12.2015.
@@ -30,7 +29,7 @@ public class GraphFactory
 	/**
 	 * Create graph from XML in GraphML format
 	 * @param xml File with GraphML xml
-	 * @return new Graph
+	 * @return new GraphImpl
 	 */
 	public static Graph<String> createGraphFromGraphml(File xml)
 	{
@@ -42,11 +41,11 @@ public class GraphFactory
 
 			Graphml graphml = (Graphml) jaxbUnmarshaller.unmarshal(xml);
 
-			Graph<String> graph = Graph.createGraph(String.class);
+			Graph<String> graph = GraphImpl.createGraph(String.class);
 
 			for (Graphml.Graph.Node n : graphml.getGraph().getNode())
 			{
-				graph.addVertex(new Vertex<String>(n.getId()));
+				graph.addVertex(new VertexImpl<String>(n.getId()));
 			}
 
 			for (Graphml.Graph.Edge e : graphml.getGraph().getEdge())
@@ -68,7 +67,7 @@ public class GraphFactory
 					}
 				}
 
-				graph.addEdge(new Edge<String>(e.getId(),startVertex,endVertex,false));
+				graph.addEdge(new EdgeImpl<String>(e.getId(), startVertex, endVertex, false));
 
 			}
 
@@ -114,7 +113,7 @@ public class GraphFactory
 	 * Graph6 format
 	 *******************************************************/
 	// TODO: 24.12.2015 - zistit podrobnosti o formate g6 a implementovat citacku 
-//	public static Graph createGraphFromG6(File file)
+//	public static GraphImpl createGraphFromG6(File file)
 //	{
 //		Path p = FileSystems.getDefault().getPath("", file.getPath());
 //		try
@@ -176,7 +175,7 @@ public class GraphFactory
 
 				if (cisloGrafu == i)
 				{
-					Graph<Integer> g = Graph.createGraph(Integer.class);
+					Graph<Integer> g = GraphImpl.createGraph(Integer.class);
 
 					do
 					{
@@ -188,7 +187,7 @@ public class GraphFactory
 
 					for (int j = 0; j < pocetVrcholov; j++)
 					{
-						g.addVertex(new Vertex<Integer>(j));
+						g.addVertex(new VertexImpl<Integer>(j));
 					}
 
 					for (int j = 0; j < pocetVrcholov; j++)
@@ -206,7 +205,7 @@ public class GraphFactory
 						for (String s : neighbors)
 						{
 							Vertex<Integer> neighbor = g.getVertexByContent(Integer.parseInt(s));
-							g.addEdge(new Edge<Integer>(edgeNumber,v,neighbor,false));
+							g.addEdge(new EdgeImpl<Integer>(edgeNumber, v, neighbor, false));
 							edgeNumber++;
 						}
 					}
@@ -245,19 +244,19 @@ public class GraphFactory
 	 */
 	public static <U extends Comparable> Graph<U> cloneGraph(Graph<U> graph)
 	{
-		Graph<U> newGraph = Graph.createGraph(graph.getGraphType());
+		Graph<U> newGraph = GraphImpl.createGraph(graph.getGraphType());
 		newGraph.setDirected(graph.isDirected());
 
 		for (Vertex<U> v : graph.getStructure().keySet())
 		{
-			newGraph.addVertex(new Vertex<U>(v.getContent()));
+			newGraph.addVertex(new VertexImpl<U>(v.getContent()));
 		}
 
 		for (Vertex<U> v : newGraph.getStructure().keySet())
 		{
 			for (Edge<U> e : graph.getStructure().get(v))
 			{
-				newGraph.addEdge(new Edge<U>(e.getContent(),e.getStart(),e.getEnd(),e.isDirected()));
+				newGraph.addEdge(new EdgeImpl<U>(e.getContent(), e.getStart(), e.getEnd(), e.isDirected()));
 			}
 		}
 

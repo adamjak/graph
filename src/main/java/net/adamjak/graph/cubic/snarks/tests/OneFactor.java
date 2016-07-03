@@ -1,7 +1,7 @@
 package net.adamjak.graph.cubic.snarks.tests;
 
+import net.adamjak.graph.api.Graph;
 import net.adamjak.graph.classes.Cycle;
-import net.adamjak.graph.classes.Graph;
 import net.adamjak.graph.cubic.snarks.SnarkTestResult;
 
 import java.util.concurrent.Callable;

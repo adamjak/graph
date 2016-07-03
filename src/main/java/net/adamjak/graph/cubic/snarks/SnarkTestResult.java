@@ -1,9 +1,5 @@
 package net.adamjak.graph.cubic.snarks;
 
-import net.adamjak.graph.classes.Graph;
-
-import java.util.concurrent.TimeUnit;
-
 /**
  * Created by Tomas Adamjak on 3.1.2016.
  * Copyright 2016, Tomas Adamjak

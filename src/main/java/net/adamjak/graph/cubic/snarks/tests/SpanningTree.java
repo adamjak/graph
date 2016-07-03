@@ -1,6 +1,6 @@
 package net.adamjak.graph.cubic.snarks.tests;
 
-import net.adamjak.graph.classes.Graph;
+import net.adamjak.graph.classes.GraphImpl;
 import net.adamjak.graph.cubic.snarks.SnarkTestResult;
 
 import java.util.concurrent.Callable;
@@ -12,9 +12,9 @@ import java.util.concurrent.Callable;
  */
 public class SpanningTree<T extends Comparable> implements Callable<SnarkTestResult>
 {
-	private Graph<T> graph;
+	private GraphImpl<T> graph;
 
-	public SpanningTree (Graph<T> graph)
+	public SpanningTree (GraphImpl<T> graph)
 	{
 		this.graph = graph;
 	}

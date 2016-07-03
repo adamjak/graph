@@ -1,5 +1,9 @@
 package net.adamjak.graph.classes;
 
+import net.adamjak.graph.api.Edge;
+import net.adamjak.graph.api.Graph;
+import net.adamjak.graph.api.Vertex;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
@@ -11,35 +15,37 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * Copyright 2015, Tomas Adamjak
  * License: The BSD 3-Clause License
  */
-public class Graph<T extends Comparable>
+public class GraphImpl<T extends Comparable> implements Graph<T>
 {
 	private final Class<? extends T> graphType;
 	private boolean directed = false;
 
 	private ConcurrentMap<Vertex<T>, List<Edge<T>>> structure = new ConcurrentSkipListMap<Vertex<T>, List<Edge<T>>>();
 
-	private Graph()
+	private GraphImpl ()
 	{
 		throw new IllegalStateException();
 	}
 
-	private Graph(Class<? extends T> type)
+	private GraphImpl (Class<? extends T> type)
 	{
 		this.graphType = type;
 	}
 
-	public static <U extends Comparable> Graph<U> createGraph(Class<? extends U> type)
+	public static <U extends Comparable> GraphImpl<U> createGraph(Class<? extends U> type)
 	{
-		return new Graph<U>(type);
+		return new GraphImpl<U>(type);
 	}
 
+	@Override
 	public void addVertex (Vertex<T> vertex)
 	{
-		if (this.structure.containsKey(vertex)) throw new IllegalArgumentException("Vertex '" + vertex + "' is already in graph.");
+		if (this.structure.containsKey(vertex)) throw new IllegalArgumentException("VertexImpl '" + vertex + "' is already in graph.");
 
 		this.structure.put(vertex,Collections.synchronizedList(new ArrayList<Edge<T>>()));
 	}
 
+	@Override
 	public Vertex<T> getVertexByContent (T content)
 	{
 		for (Vertex<T> v : this.structure.keySet())
@@ -52,11 +58,13 @@ public class Graph<T extends Comparable>
 		return null;
 	}
 
-	public int getCountOfVertexes()
+	@Override
+	public int getCountOfVertexes ()
 	{
 		return this.getListOfVertexes().size();
 	}
 
+	@Override
 	public List<Vertex<T>> getListOfVertexes ()
 	{
 		List<Vertex<T>> list = new ArrayList<Vertex<T>>();
@@ -69,10 +77,11 @@ public class Graph<T extends Comparable>
 		return list;
 	}
 	
+	@Override
 	public void addEdge (Edge<T> edge)
 	{
-		if (this.structure.containsKey(edge.getStart()) == false) throw new IllegalArgumentException("Vertex '" + edge.getStart() + "' is not in graph.");
-		if (this.structure.containsKey(edge.getEnd()) == false) throw new IllegalArgumentException("Vertex '" + edge.getEnd() + "' is not in graph.");
+		if (this.structure.containsKey(edge.getStart()) == false) throw new IllegalArgumentException("VertexImpl '" + edge.getStart() + "' is not in graph.");
+		if (this.structure.containsKey(edge.getEnd()) == false) throw new IllegalArgumentException("VertexImpl '" + edge.getEnd() + "' is not in graph.");
 
 		if (this.structure.get(edge.getStart()).contains(edge) == false)
 		{
@@ -98,6 +107,7 @@ public class Graph<T extends Comparable>
 		}
 	}
 
+	@Override
 	public Class<? extends T> getGraphType ()
 	{
 		return this.graphType;
@@ -112,9 +122,10 @@ public class Graph<T extends Comparable>
 	 * Kruskal's algorithm whitch returned spanning-tree of graph
 	 * Complexity - O(E*log(E))
 	 *
-	 * @return List<Edge<T>> with spanning tree edges
+	 * @return {@link List}&lt;{@link Edge}&lt;{@link T}&gt;&gt; with spanning tree edges
 	 */
-	public List<Edge<T>> getSpanningTree()
+	@Override
+	public List<Edge<T>> getSpanningTree ()
 	{
 		Map<Vertex<T>, Integer> components = new TreeMap<Vertex<T>, Integer>();
 
@@ -168,7 +179,7 @@ public class Graph<T extends Comparable>
 
 	/**
 	 * @return List with all graph edges without spanning-tree edges.
-	 * @see Graph#getSpanningTree()
+	 * @see GraphImpl#getSpanningTree()
 	 */
 	public List<Edge<T>> getGraphMeat()
 	{
@@ -276,11 +287,13 @@ public class Graph<T extends Comparable>
 		return matrix;
 	}
 
+	@Override
 	public void setDirected (boolean directed)
 	{
 		this.directed = directed;
 	}
 
+	@Override
 	public boolean isDirected ()
 	{
 		return this.directed;
@@ -289,7 +302,8 @@ public class Graph<T extends Comparable>
 	/**
 	 * @return List of all graph edges
 	 */
-	public List<Edge<T>> getListOfEdges()
+	@Override
+	public List<Edge<T>> getListOfEdges ()
 	{
 		List<Edge<T>> edges = Collections.synchronizedList(new ArrayList<Edge<T>>());
 
@@ -307,6 +321,7 @@ public class Graph<T extends Comparable>
 		return edges;
 	}
 
+	@Override
 	public Set<Vertex<T>> getNeighborVertexes (Vertex<T> vertex)
 	{
 		Set<Vertex<T>> vertexes = new HashSet<Vertex<T>>();

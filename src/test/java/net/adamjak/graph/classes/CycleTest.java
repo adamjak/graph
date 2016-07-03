@@ -2,7 +2,7 @@ package net.adamjak.graph.classes;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Tomas Adamjak on 2.4.2016.
@@ -28,8 +28,8 @@ public class CycleTest
 	public void testGetCyrcleSize () throws Exception
 	{
 		Cycle<String> cycle = new Cycle<String>();
-		cycle.addVertexIntoCycle(new Vertex<String>("v1"));
-		cycle.addVertexIntoCycle(new Vertex<String>("v2"));
+		cycle.addVertexIntoCycle(new VertexImpl<String>("v1"));
+		cycle.addVertexIntoCycle(new VertexImpl<String>("v2"));
 		int result = cycle.getCyrcleSize();
 		int expectedResult = 2;
 		assertEquals(expectedResult, result);
@@ -38,9 +38,9 @@ public class CycleTest
 	@Test
 	public void testHasCommonVertexTrue () throws Exception
 	{
-		Vertex<String> v1 = new Vertex<String>("v1");
-		Vertex<String> v2 = new Vertex<String>("v2");
-		Vertex<String> v3 = new Vertex<String>("v3");
+		VertexImpl<String> v1 = new VertexImpl<String>("v1");
+		VertexImpl<String> v2 = new VertexImpl<String>("v2");
+		VertexImpl<String> v3 = new VertexImpl<String>("v3");
 
 		Cycle<String> c1 = new Cycle<String>();
 		c1.addVertexIntoCycle(v1);
@@ -58,10 +58,10 @@ public class CycleTest
 	@Test
 	public void testHasCommonVertexFalse () throws Exception
 	{
-		Vertex<String> v1 = new Vertex<String>("v1");
-		Vertex<String> v2 = new Vertex<String>("v2");
-		Vertex<String> v3 = new Vertex<String>("v3");
-		Vertex<String> v4 = new Vertex<String>("v4");
+		VertexImpl<String> v1 = new VertexImpl<String>("v1");
+		VertexImpl<String> v2 = new VertexImpl<String>("v2");
+		VertexImpl<String> v3 = new VertexImpl<String>("v3");
+		VertexImpl<String> v4 = new VertexImpl<String>("v4");
 
 		Cycle<String> c1 = new Cycle<String>();
 		c1.addVertexIntoCycle(v1);
@@ -79,10 +79,10 @@ public class CycleTest
 	@Test
 	public void testEquals1 () throws Exception
 	{
-		Vertex<String> v1 = new Vertex<String>("v1");
-		Vertex<String> v2 = new Vertex<String>("v2");
-		Vertex<String> v3 = new Vertex<String>("v3");
-		Vertex<String> v4 = new Vertex<String>("v4");
+		VertexImpl<String> v1 = new VertexImpl<String>("v1");
+		VertexImpl<String> v2 = new VertexImpl<String>("v2");
+		VertexImpl<String> v3 = new VertexImpl<String>("v3");
+		VertexImpl<String> v4 = new VertexImpl<String>("v4");
 
 		Cycle<String> c1 = new Cycle<String>();
 		c1.addVertexIntoCycle(v1);
@@ -100,9 +100,9 @@ public class CycleTest
 	@Test
 	public void testEquals2 () throws Exception
 	{
-		Vertex<String> v1 = new Vertex<String>("v1");
-		Vertex<String> v2 = new Vertex<String>("v2");
-		Vertex<String> v3 = new Vertex<String>("v3");
+		VertexImpl<String> v1 = new VertexImpl<String>("v1");
+		VertexImpl<String> v2 = new VertexImpl<String>("v2");
+		VertexImpl<String> v3 = new VertexImpl<String>("v3");
 
 		Cycle<String> c1 = new Cycle<String>();
 		c1.addVertexIntoCycle(v1);
@@ -120,10 +120,10 @@ public class CycleTest
 	@Test
 	public void testEquals3 () throws Exception
 	{
-		Vertex<String> v1 = new Vertex<String>("v1");
-		Vertex<String> v2 = new Vertex<String>("v2");
-		Vertex<String> v3 = new Vertex<String>("v3");
-		Vertex<String> v4 = new Vertex<String>("v4");
+		VertexImpl<String> v1 = new VertexImpl<String>("v1");
+		VertexImpl<String> v2 = new VertexImpl<String>("v2");
+		VertexImpl<String> v3 = new VertexImpl<String>("v3");
+		VertexImpl<String> v4 = new VertexImpl<String>("v4");
 
 		Cycle<String> c1 = new Cycle<String>();
 		c1.addVertexIntoCycle(v1);
@@ -145,10 +145,10 @@ public class CycleTest
 	@Test
 	public void testEquals4 () throws Exception
 	{
-		Vertex<String> v1 = new Vertex<String>("v1");
-		Vertex<String> v2 = new Vertex<String>("v2");
-		Vertex<String> v3 = new Vertex<String>("v3");
-		Vertex<String> v4 = new Vertex<String>("v4");
+		VertexImpl<String> v1 = new VertexImpl<String>("v1");
+		VertexImpl<String> v2 = new VertexImpl<String>("v2");
+		VertexImpl<String> v3 = new VertexImpl<String>("v3");
+		VertexImpl<String> v4 = new VertexImpl<String>("v4");
 
 		Cycle<String> c1 = new Cycle<String>();
 		c1.addVertexIntoCycle(v1);
@@ -170,10 +170,10 @@ public class CycleTest
 	@Test
 	public void testEquals5 () throws Exception
 	{
-		Vertex<String> v1 = new Vertex<String>("v1");
-		Vertex<String> v2 = new Vertex<String>("v2");
-		Vertex<String> v3 = new Vertex<String>("v3");
-		Vertex<String> v4 = new Vertex<String>("v4");
+		VertexImpl<String> v1 = new VertexImpl<String>("v1");
+		VertexImpl<String> v2 = new VertexImpl<String>("v2");
+		VertexImpl<String> v3 = new VertexImpl<String>("v3");
+		VertexImpl<String> v4 = new VertexImpl<String>("v4");
 
 		Cycle<String> c1 = new Cycle<String>();
 		c1.addVertexIntoCycle(v1);
@@ -195,10 +195,10 @@ public class CycleTest
 	@Test
 	public void testEquals6 () throws Exception
 	{
-		Vertex<String> v1 = new Vertex<String>("v1");
-		Vertex<String> v2 = new Vertex<String>("v2");
-		Vertex<String> v3 = new Vertex<String>("v3");
-		Vertex<String> v4 = new Vertex<String>("v4");
+		VertexImpl<String> v1 = new VertexImpl<String>("v1");
+		VertexImpl<String> v2 = new VertexImpl<String>("v2");
+		VertexImpl<String> v3 = new VertexImpl<String>("v3");
+		VertexImpl<String> v4 = new VertexImpl<String>("v4");
 
 		Cycle<String> c1 = new Cycle<String>();
 		c1.addVertexIntoCycle(v1);
@@ -219,10 +219,10 @@ public class CycleTest
 	@Test
 	public void testEquals7 () throws Exception
 	{
-		Vertex<String> v1 = new Vertex<String>("v1");
-		Vertex<String> v2 = new Vertex<String>("v2");
-		Vertex<String> v3 = new Vertex<String>("v3");
-		Vertex<String> v4 = new Vertex<String>("v4");
+		VertexImpl<String> v1 = new VertexImpl<String>("v1");
+		VertexImpl<String> v2 = new VertexImpl<String>("v2");
+		VertexImpl<String> v3 = new VertexImpl<String>("v3");
+		VertexImpl<String> v4 = new VertexImpl<String>("v4");
 
 		Cycle<String> c1 = new Cycle<String>();
 		c1.addVertexIntoCycle(v2);
