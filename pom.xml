@@ -20,11 +20,6 @@
 			<artifactId>jaxb2-basics-runtime</artifactId>
 			<version>0.6.2</version>
 		</dependency>
-		<dependency>
-			<groupId>com.zenjava</groupId>
-			<artifactId>javafx-maven-plugin</artifactId>
-			<version>8.5.0</version>
-		</dependency>
 
 	</dependencies>
 	<packaging>jar</packaging>
