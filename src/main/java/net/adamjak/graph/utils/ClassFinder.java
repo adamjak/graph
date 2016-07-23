@@ -2,6 +2,7 @@ package net.adamjak.graph.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
@@ -30,30 +31,30 @@ public class ClassFinder
 		this.classLoader = classLoader;
 	}
 
-//	public Set<Class<?>> findAnnotatedClasses(String packageName, boolean includeSubpackage, Class<? extends Annotation>... annotation)
-//	{
-//		Set<Class<?>> classes = findClasses(packageName, includeSubpackage);
-//		Set<Class<?>> output = new LinkedHashSet<Class<?>>();
-//
-//		if(classes == null || classes.isEmpty() || (annotation == null || annotation.length == 0))
-//		{
-//			return output;
-//		}
-//
-//		for(Class<?> c : classes)
-//		{
-//			for(Class<? extends Annotation> ac : annotation)
-//			{
-//
-//				if(c.getAnnotationsByType(ac).length > 0)
-//				{
-//					output.add(c);
-//					break;
-//				}
-//			}
-//		}
-//		return output;
-//	}
+	public Set<Class<?>> findAnnotatedClasses(String packageName, boolean includeSubpackage, Class<? extends Annotation>... annotation)
+	{
+		Set<Class<?>> classes = findClasses(packageName, includeSubpackage);
+		Set<Class<?>> output = new LinkedHashSet<Class<?>>();
+
+		if(classes == null || classes.isEmpty() || (annotation == null || annotation.length == 0))
+		{
+			return output;
+		}
+
+		for(Class<?> c : classes)
+		{
+			for(Class<? extends Annotation> ac : annotation)
+			{
+
+				if(c.getAnnotationsByType(ac).length > 0)
+				{
+					output.add(c);
+					break;
+				}
+			}
+		}
+		return output;
+	}
 
 	public Set<Class<?>> findClasses(String packageName, boolean includeSubpackage)
 	{
