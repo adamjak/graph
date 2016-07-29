@@ -4,6 +4,7 @@ package net.adamjak.graph.cubic.snarks.tests;
 import net.adamjak.graph.api.Edge;
 import net.adamjak.graph.api.Graph;
 import net.adamjak.graph.cubic.snarks.SnarkTestResult;
+import net.adamjak.graph.interfaces.anot.Benchmarked;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.concurrent.Callable;
  * Copyright 2016, Tomas Adamjak
  * License: The BSD 3-Clause License
  */
+@Benchmarked
 public class EdgeBackTrace<T extends Comparable> implements Callable<SnarkTestResult>
 {
 	private Graph<T> graph;

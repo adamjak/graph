@@ -31,6 +31,14 @@ public class ClassFinder
 		this.classLoader = classLoader;
 	}
 
+	/**
+	 * Find all annoted classes from package.
+	 *
+	 * @param packageName paskage with annoted classes
+	 * @param includeSubpackage set if method can find in subpackages
+	 * @param annotation find annotation
+	 * @return {@link Set}&lt;{@link Class}&lt;?&gt;&gt; of annoted classes.
+	 */
 	public Set<Class<?>> findAnnotatedClasses(String packageName, boolean includeSubpackage, Class<? extends Annotation>... annotation)
 	{
 		Set<Class<?>> classes = findClasses(packageName, includeSubpackage);
@@ -56,6 +64,11 @@ public class ClassFinder
 		return output;
 	}
 
+	/**
+	 * Find all classes in package. If parameter {@code includeSubpackage} is true method find in subpackages too.
+	 *
+	 * @return {@link Set}&lt;{@link Class}&lt;?&gt;&gt; in package.
+	 */
 	public Set<Class<?>> findClasses(String packageName, boolean includeSubpackage)
 	{
 		String sourceName = this.changePackageNameToPath(packageName);
@@ -111,6 +124,11 @@ public class ClassFinder
 
 	}
 
+	/**
+	 * Method get all class paths from file. If file is directory, method find in subdirectories too.
+	 *
+	 * @return {@link Set}&lt;{@link String}&gt; with class paths.
+	 */
 	private Set<String> findClassFileNames (File file)
 	{
 		Set<String> output = new LinkedHashSet<String>();
@@ -138,6 +156,14 @@ public class ClassFinder
 		return output;
 	}
 
+	/**
+	 * Method convert package name to real system path. Use {@link File#separator}.<br />
+	 * Example for Linux:<br />
+	 * <em>Input:</em> <code>net.adamjak.thomas</code><br />
+	 * <em>Output:</em> <code>net/adamjak/thomas</code>
+	 * @param value package name
+	 * @return Real system path from package name or if value is {@code null} return {@code null}.
+	 */
 	private String changePackageNameToPath(String value)
 	{
 		if (value == null)

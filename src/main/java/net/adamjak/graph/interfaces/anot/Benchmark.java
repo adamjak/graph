@@ -8,6 +8,10 @@ import java.lang.annotation.RetentionPolicy;
  * Copyright 2016, Tomas Adamjak
  * License: The BSD 3-Clause License
  */
+
+/**
+ * Class annotation whitch mark class ready for benchmark.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Benchmark
 {

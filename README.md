@@ -1,5 +1,5 @@
 Graph
-==========
+=====
 
 Author: Tomáš Adamják
 
