@@ -2,11 +2,17 @@ package net.adamjak.graph;
 
 import net.adamjak.graph.api.Graph;
 import net.adamjak.graph.classes.GraphFactory;
-import net.adamjak.graph.interfaces.anot.Benchmark;
+import net.adamjak.graph.cubic.snarks.SnarkTest;
+import net.adamjak.graph.cubic.snarks.SnarkTestResult;
+import net.adamjak.graph.interfaces.anot.Benchmarked;
 import net.adamjak.graph.utils.ClassFinder;
+import net.adamjak.graph.utils.Utils;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by Tomas Adamjak on 4.11.2015.
@@ -22,12 +28,49 @@ public class Main
 
 		ClassFinder classFinder = new ClassFinder();
 
-		String packageName = "net.adamjak.graph.cubic.snarks.tests";
+		String packageName = "net.adamjak.graph.cubic.snarks";
 
-		for (Class<?> c : classFinder.findAnnotatedClasses(packageName, true, Benchmark.class)) // FIXME: 29.7.2016
+		ExecutorService executorService = Executors.newFixedThreadPool(1);
+
+		for (Class<?> c : classFinder.findAnnotatedClasses(packageName, true, Benchmarked.class))
 		{
-			System.out.println(c.getName());
+			try
+			{
+				for (Graph<Integer> g : listOfGraphs)
+				{
+					if (Utils.implementsInterface(c,SnarkTest.class))
+					{
+						SnarkTest snarkTest = (SnarkTest) c.newInstance();
+						snarkTest.init(g);
+						SnarkTestResult snarkTestResult = (SnarkTestResult) executorService.submit(snarkTest).get();
+
+						System.out.println("Snark test result " + snarkTest.getClass().getSimpleName() + ":\n Time: " + snarkTestResult.getTimeInSeconds() + " second\n Snark:" + snarkTestResult.isSnark());
+					}
+				}
+			}
+			catch (InstantiationException e)
+			{
+				e.printStackTrace();
+			}
+			catch (IllegalAccessException e)
+			{
+				e.printStackTrace();
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+			catch (ExecutionException e)
+			{
+				e.printStackTrace();
+			}
+			catch (ClassCastException e)
+			{
+				e.printStackTrace();
+			}
 		}
+
+		executorService.shutdown();
 
 //		File file = new File("src/main/resources/xml/test.xml");
 //		GraphImpl<String> g = GraphFactory.createGraphFromGraphml(file);

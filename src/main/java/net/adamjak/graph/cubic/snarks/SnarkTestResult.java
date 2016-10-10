@@ -29,6 +29,10 @@ public class SnarkTestResult
 		this.setSnark(isSnark);
 	}
 
+	/**
+	 * @param time time in nanoseconds
+	 * @see System#nanoTime()
+	 */
 	public void setTime (long time)
 	{
 		this.time = time;

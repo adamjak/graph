@@ -2,9 +2,10 @@ package net.adamjak.graph.cubic.snarks.tests;
 
 import net.adamjak.graph.api.Graph;
 import net.adamjak.graph.classes.Cycle;
+import net.adamjak.graph.cubic.snarks.SnarkTest;
 import net.adamjak.graph.cubic.snarks.SnarkTestResult;
+import net.adamjak.graph.interfaces.anot.Benchmarked;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
@@ -12,11 +13,16 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * Copyright 2016, Tomas Adamjak
  * License: The BSD 3-Clause License
  */
-public class OneFactor<T extends Comparable> implements Callable<SnarkTestResult>
+@Benchmarked
+public class OneFactor<T extends Comparable> implements SnarkTest<T>
 {
 	private Graph<T> graph;
 
-	public OneFactor (Graph<T> graph)
+	public OneFactor ()
+	{}
+
+	@Override
+	public void init (Graph<T> graph)
 	{
 		this.graph = graph;
 	}
