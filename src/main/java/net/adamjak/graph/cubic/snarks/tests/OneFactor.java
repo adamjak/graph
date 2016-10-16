@@ -14,10 +14,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * License: The BSD 3-Clause License
  */
 @Benchmarked
-public class OneFactor<T extends Comparable> implements SnarkTest<T>
+public class OneFactor<T extends Comparable> extends SnarkTest<T>
 {
-	private Graph<T> graph;
-
 	public OneFactor ()
 	{}
 
@@ -28,9 +26,9 @@ public class OneFactor<T extends Comparable> implements SnarkTest<T>
 	}
 
 	@Override
-	public SnarkTestResult call() throws Exception
+	public SnarkTestResult call()
 	{
-		SnarkTestResult snarkTestResult = new SnarkTestResult();
+		SnarkTestResult snarkTestResult = new SnarkTestResult(this.getClass());
 
 		boolean result;
 
@@ -47,6 +45,17 @@ public class OneFactor<T extends Comparable> implements SnarkTest<T>
 		return snarkTestResult;
 	}
 
+	/**
+	 * The main computation performed by this task.
+	 *
+	 * @return the result of the computation
+	 */
+	@Override
+	protected SnarkTestResult compute ()
+	{
+		return this.call();
+	}
+
 	private boolean calculate(ConcurrentSkipListSet<Cycle<T>> cycleConcurrentSkipListSet)
 	{
 		for (Cycle<T> firstCycle : cycleConcurrentSkipListSet)
@@ -61,12 +70,12 @@ public class OneFactor<T extends Comparable> implements SnarkTest<T>
 					if (firstCycle.hasCommonVertex(secondCycle) == false)
 					{
 						// TODO: 30.3.2016 -- najst perfektny matching
-						return true;
+						return false;
 					}
 				}
 			}
 		}
 
-		return false;
+		return true;
 	}
 }

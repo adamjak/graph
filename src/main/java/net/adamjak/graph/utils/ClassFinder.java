@@ -32,6 +32,28 @@ public class ClassFinder
 	}
 
 	/**
+	 * @param classes {@link Set} of classes for search
+	 * @param extendedClass
+	 * @return Return only classes whitch extends class from param {@code extendedClass}.
+	 */
+	public Set<Class<?>> findClassesWhitchExtends (Set<Class<?>> classes, Class<?> extendedClass)
+	{
+		if (classes == null || extendedClass == null) throw new IllegalArgumentException("Params can not be null.");
+
+		Set<Class<?>> classesWhitchExtends = new LinkedHashSet<Class<?>>();
+
+		for (Class<?> c :classes)
+		{
+			if (c.getSuperclass().equals(extendedClass))
+			{
+				classesWhitchExtends.add(c);
+			}
+		}
+
+		return classesWhitchExtends;
+	}
+
+	/**
 	 * Find all annoted classes from package.
 	 *
 	 * @param packageName paskage with annoted classes

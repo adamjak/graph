@@ -9,11 +9,12 @@ public class SnarkTestResult
 {
 	private boolean snark;
 	private long time;
+	private Class<?> snarkTesterClass;
 	// TODO: 3.1.2016 - dorobit sem graf 
 
 	public SnarkTestResult(){}
 
-	public SnarkTestResult(long time)
+	public SnarkTestResult (long time)
 	{
 		this.setTime(time);
 	}
@@ -23,10 +24,22 @@ public class SnarkTestResult
 		this.setSnark(isSnark);
 	}
 
+	public SnarkTestResult (Class<?> snarkTesterClass)
+	{
+		this.setSnarkTesterClass(snarkTesterClass);
+	}
+
 	public SnarkTestResult (long time, boolean isSnark)
 	{
 		this.setTime(time);
 		this.setSnark(isSnark);
+	}
+
+	public SnarkTestResult (long time, boolean isSnark, Class<?> snarkTesterClass)
+	{
+		this.setTime(time);
+		this.setSnark(isSnark);
+		this.setSnarkTesterClass(snarkTesterClass);
 	}
 
 	/**
@@ -60,5 +73,15 @@ public class SnarkTestResult
 	public boolean isSnark ()
 	{
 		return this.snark;
+	}
+
+	public Class<?> getSnarkTesterClass ()
+	{
+		return this.snarkTesterClass;
+	}
+
+	public void setSnarkTesterClass (Class<?> snarkTesterClass)
+	{
+		this.snarkTesterClass = snarkTesterClass;
 	}
 }

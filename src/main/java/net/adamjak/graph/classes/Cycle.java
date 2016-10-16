@@ -2,8 +2,8 @@ package net.adamjak.graph.classes;
 
 import net.adamjak.graph.api.Vertex;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class Cycle<T extends Comparable> implements Comparable<Cycle<T>>
 {
-	List<Vertex<T>> cycleElements = new ArrayList<Vertex<T>>();
+	List<Vertex<T>> cycleElements = new LinkedList<Vertex<T>>();
 
 	public Cycle<T> addVertexIntoCycle(Vertex<T> vertex)
 	{

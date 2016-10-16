@@ -16,21 +16,20 @@ import java.util.Map;
  * License: The BSD 3-Clause License
  */
 @Benchmarked
-public class EdgeBackTrace<T extends Comparable> implements SnarkTest<T>
+public class EdgeBackTrace<T extends Comparable> extends SnarkTest<T>
 {
-	private Graph<T> graph;
-
 	public EdgeBackTrace () {}
 
+	@Override
 	public void init (Graph<T> graph)
 	{
 		this.graph = graph;
 	}
 
 	@Override
-	public SnarkTestResult call () throws Exception
+	public SnarkTestResult call ()
 	{
-		SnarkTestResult snarkTestResult = new SnarkTestResult();
+		SnarkTestResult snarkTestResult = new SnarkTestResult(this.getClass());
 
 		List<Edge<T>> edgesList = this.graph.getListOfEdges();
 		Map<Edge<T>, List<Edge<T>>> neighborEdges =  this.graph.getMapOfNeighborEdges();
@@ -48,6 +47,17 @@ public class EdgeBackTrace<T extends Comparable> implements SnarkTest<T>
 		snarkTestResult.setTime(endTime - startTime);
 
 		return snarkTestResult;
+	}
+
+	/**
+	 * The main computation performed by this task.
+	 *
+	 * @return the result of the computation
+	 */
+	@Override
+	protected SnarkTestResult compute ()
+	{
+		return this.call();
 	}
 
 	private boolean calculate (List<Edge<T>> edgesList, Map<Edge<T>, List<Edge<T>>> neighborEdges)
