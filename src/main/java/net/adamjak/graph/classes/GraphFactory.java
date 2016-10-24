@@ -10,9 +10,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -29,7 +31,7 @@ public class GraphFactory
 	/**
 	 * Create graph from XML in GraphML format
 	 * @param xml File with GraphML xml
-	 * @return new GraphImpl
+	 * @return new Graph
 	 */
 	public static Graph<String> createGraphFromGraphml(File xml)
 	{
@@ -112,25 +114,103 @@ public class GraphFactory
 	/*******************************************************
 	 * Graph6 format
 	 *******************************************************/
-	// TODO: 24.12.2015 - zistit podrobnosti o formate g6 a implementovat citacku 
-//	public static GraphImpl createGraphFromG6(File file)
-//	{
-//		Path p = FileSystems.getDefault().getPath("", file.getPath());
-//		try
-//		{
-//			byte[] fileData = Files.readAllBytes(p);
-//			for (byte b : fileData)
-//			{
-//				System.out.println(b);
-//			}
-//		}
-//		catch (IOException e)
-//		{
-//			e.printStackTrace();
-//		}
-//
-//		return null;
-//	}
+	// TODO: 24.12.2015 - zistit podrobnosti o formate g6 a implementovat citacku
+
+	/**
+	 * create new instance of Graph from graph6 format.
+	 * @param file File in Graph6 format
+	 * @return new Graph
+	 * @see <code><a href="http://pallini.di.uniroma1.it/">pallini.di.uniroma1.it</a></code> - graph6 doc
+	 */
+	public static Graph<Integer> createGraphFromGraph6 (File file) throws IOException
+	{
+		FileInputStream fileInputStream = new FileInputStream(file);
+
+		int c;
+		List<Integer> bytes = new ArrayList<Integer>();
+		while ((c = fileInputStream.read()) != -1)
+		{
+			bytes.add(c);
+		}
+
+		int n = 0; // pocet vrcholov
+		int start = 0;
+
+		if (bytes.get(0).intValue() < 126)
+		{
+			n = bytes.get(0).intValue() - 63;
+			start = 1;
+		}
+		else if (bytes.get(0).intValue() == 126 && bytes.get(1).intValue() < 126)
+		{
+			String strN = byteToBitesString(bytes.get(1)) + byteToBitesString(bytes.get(2)) + byteToBitesString(bytes.get(3));
+			n = Integer.parseInt(strN, 2);
+			start = 4;
+		}
+		else
+		{
+			String strN = byteToBitesString(bytes.get(2)) +
+					byteToBitesString(bytes.get(3)) +
+					byteToBitesString(bytes.get(4)) +
+					byteToBitesString(bytes.get(5)) +
+					byteToBitesString(bytes.get(6)) +
+					byteToBitesString(bytes.get(7));
+			n = Integer.parseInt(strN, 2);
+			start = 8;
+		}
+
+		String mat = "";
+
+		for (int i = start; i < bytes.size(); i++)
+		{
+			mat += byteToBitesString(bytes.get(i));
+		}
+
+		mat = mat.substring(0,(n*(n-1)/2));
+
+		Graph<Integer> g = GraphImpl.createGraph(Integer.class);
+
+		for (int i = 0; i < n; i++)
+		{
+			g.addVertex(new VertexImpl<Integer>(i));
+		}
+
+		int edgeNumber = 0;
+
+		List<Vertex<Integer>> vertexList = g.getListOfVertexes();
+
+		char[] charArray = mat.toCharArray();
+		int k = 0;
+		for (int i = 1; i < n; i++)
+		{
+			for (int j = 0; j < i; j++)
+			{
+				if (charArray[k] == '1')
+				{
+					g.addEdge(new EdgeImpl<Integer>(edgeNumber,vertexList.get(i),vertexList.get(j),false));
+				}
+				k++;
+			}
+		}
+
+		return g;
+	}
+
+	private static String byteToBitesString (int c)
+	{
+		c = c - 63;
+		String s = Integer.toBinaryString(c);
+
+		if (s.length() < 6)
+		{
+			while (s.length() < 6)
+			{
+				s = "0" + s;
+			}
+		}
+
+		return s;
+	}
 
 	/*******************************************************
 	 * TXT catalog (using in Bratislava)
@@ -143,7 +223,7 @@ public class GraphFactory
 	 */
 	public static List<Graph<Integer>> createGraphFromTextCatalog(File txt)
 	{
-		List<Graph<Integer>> graphs = new ArrayList<Graph<Integer>>();
+		List<Graph<Integer>> graphs = new LinkedList<Graph<Integer>>();
 
 		BufferedReader bufferedReader = null;
 

@@ -8,7 +8,9 @@ import net.adamjak.graph.interfaces.anot.Benchmarked;
 import net.adamjak.graph.utils.ClassFinder;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -23,8 +25,19 @@ public class Main
 {
 	public static void main (String args[])
 	{
-		File file = new File("src/main/resources/ba/SC4.24");
-		List<Graph<Integer>> listOfGraphs = GraphFactory.createGraphFromTextCatalog(file);
+		File file1 = new File("src/main/resources/g6/Generated_graphs.20.04.sn.cyc4.g6");
+		File file2 = new File("src/main/resources/g6/Generated_graphs.28.05.sn.cyc4.g6");
+		List<Graph<Integer>> listOfGraphs = new LinkedList<Graph<Integer>>();
+		try
+		{
+			listOfGraphs.add(GraphFactory.createGraphFromGraph6(file1));
+			//listOfGraphs.add(GraphFactory.createGraphFromGraph6(file2));
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+
 
 		ClassFinder classFinder = new ClassFinder();
 
