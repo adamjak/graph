@@ -227,7 +227,7 @@ public class GraphImpl<T extends Comparable> implements Graph<T>
 			if (map.containsKey(e))
 			{
 				int i = 0;
-				throw new RuntimeException();
+				//throw new RuntimeException();
 			}
 			map.put(e,neighborEdges);
 		}
