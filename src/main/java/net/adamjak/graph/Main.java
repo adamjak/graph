@@ -5,10 +5,12 @@ import net.adamjak.graph.classes.GraphFactory;
 import net.adamjak.graph.cubic.snarks.SnarkTest;
 import net.adamjak.graph.cubic.snarks.SnarkTestResult;
 import net.adamjak.graph.interfaces.anot.Benchmarked;
+import net.adamjak.graph.ui.Manager;
 import net.adamjak.graph.utils.ClassFinder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +27,8 @@ public class Main
 {
 	public static void main (String args[])
 	{
+
+
 		File file1 = new File("src/main/resources/g6/Generated_graphs.20.04.sn.cyc4.g6");
 		File file2 = new File("src/main/resources/g6/Generated_graphs.28.05.sn.cyc4.g6");
 		List<Graph<Integer>> listOfGraphs = new LinkedList<Graph<Integer>>();
@@ -41,9 +45,9 @@ public class Main
 
 		ClassFinder classFinder = new ClassFinder();
 
-		String packageName = "net.adamjak.graph.cubic.snarks";
+		Set<String> packageNames = new LinkedHashSet<String>(Arrays.asList("net.adamjak.graph.cubic.snarks"));
 
-		Set<Class<?>> classes = classFinder.findClassesWhitchExtends(classFinder.findAnnotatedClasses(packageName, true, Benchmarked.class),SnarkTest.class);
+		Set<Class<?>> classes = classFinder.findClassesWhitchExtends(classFinder.findAnnotatedClasses(packageNames, true, Benchmarked.class),SnarkTest.class);
 
 		for (Graph<Integer> g : listOfGraphs)
 		{
@@ -101,6 +105,9 @@ public class Main
 
 			System.out.println("Snark test result " + snarkTestResult.getSnarkTesterClass().getSimpleName() + ":\n Time: " + snarkTestResult.getTimeInSeconds() + " second\n Snark:" + snarkTestResult.isSnark());
 
+
+			Manager manager = new Manager();
+			manager.start();
 		}
 	}
 }

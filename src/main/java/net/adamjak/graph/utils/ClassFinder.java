@@ -56,14 +56,14 @@ public class ClassFinder
 	/**
 	 * Find all annoted classes from package.
 	 *
-	 * @param packageName paskage with annoted classes
+	 * @param packageNames {@link Set} of package name with annoted classes
 	 * @param includeSubpackage set if method can find in subpackages
 	 * @param annotation find annotation
 	 * @return {@link Set}&lt;{@link Class}&lt;?&gt;&gt; of annoted classes.
 	 */
-	public Set<Class<?>> findAnnotatedClasses(String packageName, boolean includeSubpackage, Class<? extends Annotation>... annotation)
+	public Set<Class<?>> findAnnotatedClasses(Set<String> packageNames, boolean includeSubpackage, Class<? extends Annotation>... annotation)
 	{
-		Set<Class<?>> classes = findClasses(packageName, includeSubpackage);
+		Set<Class<?>> classes = findClasses(packageNames, includeSubpackage);
 		Set<Class<?>> output = new LinkedHashSet<Class<?>>();
 
 		if(classes == null || classes.isEmpty() || (annotation == null || annotation.length == 0))
@@ -91,54 +91,61 @@ public class ClassFinder
 	 *
 	 * @return {@link Set}&lt;{@link Class}&lt;?&gt;&gt; in package.
 	 */
-	public Set<Class<?>> findClasses(String packageName, boolean includeSubpackage)
+	public Set<Class<?>> findClasses(Set<String> packageNames, boolean includeSubpackage)
 	{
-		String sourceName = this.changePackageNameToPath(packageName);
-		Set<String> classNameSet = new LinkedHashSet<String>();
-
-		Enumeration<URL> resources = null;
-		try
-		{
-			resources = this.classLoader.getResources(sourceName);
-		}
-		catch (IOException e)
-		{
-			return new LinkedHashSet<>();
-		}
-
-		while (resources.hasMoreElements())
-		{
-			URL resUrl = resources.nextElement();
-			if (ClassFinder.FILE_PROTOCOL.equals(resUrl.getProtocol()))
-			{
-				File file = new File(resUrl.getFile());
-				classNameSet.addAll(this.findClassFileNames(file));
-			}
-		}
-
 		Set<Class<?>> output = new LinkedHashSet<Class<?>>();
-		String packageSearchPattern = packageName.replace(ClassFinder.DOT,File.separator);
 
-		int maxDots = Utils.countCharInString(packageName, '.') + 1;
-
-		for(String classFileName : classNameSet)
+		for (String packageName : packageNames)
 		{
-			int startIndex = classFileName.lastIndexOf(packageSearchPattern);
+			String sourceName = this.changePackageNameToPath(packageName);
+			Set<String> classNameSet = new LinkedHashSet<String>();
 
-			if(startIndex >= 0)
+			Enumeration<URL> resources = null;
+			try
 			{
-				final int endIndex = classFileName.length() - ClassFinder.CLASS_SUFFIX.length();
-				String className = classFileName.substring(startIndex,endIndex).replace(File.separator, ClassFinder.DOT);
+				resources = this.classLoader.getResources(sourceName);
+			}
+			catch (IOException e)
+			{
+				return new LinkedHashSet<>();
+			}
 
-				if(includeSubpackage || maxDots>= Utils.countCharInString(className, '.'))
+			while (resources.hasMoreElements())
+			{
+				URL resUrl = resources.nextElement();
+				if (ClassFinder.FILE_PROTOCOL.equals(resUrl.getProtocol()))
 				{
-					Class<?> cls;
-					try
+					File file = new File(resUrl.getFile());
+					classNameSet.addAll(this.findClassFileNames(file));
+				}
+			}
+
+
+			String packageSearchPattern = packageName.replace(ClassFinder.DOT, File.separator);
+
+			int maxDots = Utils.countCharInString(packageName, '.') + 1;
+
+			for (String classFileName : classNameSet)
+			{
+				int startIndex = classFileName.lastIndexOf(packageSearchPattern);
+
+				if (startIndex >= 0)
+				{
+					final int endIndex = classFileName.length() - ClassFinder.CLASS_SUFFIX.length();
+					String className = classFileName.substring(startIndex, endIndex).replace(File.separator, ClassFinder.DOT);
+
+					if (includeSubpackage || maxDots >= Utils.countCharInString(className, '.'))
 					{
-						cls = this.classLoader.loadClass(className);
-						output.add(cls);
+						Class<?> cls;
+						try
+						{
+							cls = this.classLoader.loadClass(className);
+							output.add(cls);
+						}
+						catch (ClassNotFoundException ex)
+						{
+						}
 					}
-					catch (ClassNotFoundException ex) {}
 				}
 			}
 		}

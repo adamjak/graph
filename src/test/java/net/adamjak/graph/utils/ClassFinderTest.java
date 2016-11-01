@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -20,7 +22,7 @@ public class ClassFinderTest
 	{
 		ClassFinder classFinder = new ClassFinder();
 
-		Set<Class<?>> foundClasses = classFinder.findAnnotatedClasses(this.getClass().getPackage().getName(), false, TestAnnotation.class);
+		Set<Class<?>> foundClasses = classFinder.findAnnotatedClasses(new LinkedHashSet<String>(Arrays.asList(this.getClass().getPackage().getName())), false, TestAnnotation.class);
 
 		assertEquals(1,foundClasses.size());
 		assertEquals(AnnotatedClassFroTest.class, foundClasses.toArray()[0]);
@@ -30,7 +32,7 @@ public class ClassFinderTest
 	public void findClassesTest () throws Exception
 	{
 		ClassFinder classFinder = new ClassFinder();
-		for (Class<?> c : classFinder.findClasses("net.adamjak.graph.utils", false))
+		for (Class<?> c : classFinder.findClasses(new LinkedHashSet<String>(Arrays.asList("net.adamjak.graph.utils")), false))
 		{
 			System.out.println(c.getName());
 		}

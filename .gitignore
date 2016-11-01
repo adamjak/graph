@@ -1,3 +1,5 @@
-.idea
+.idea/**
 target/**
-greph.iml
+*.iml
+.gitignore
+
