@@ -1,0 +1,55 @@
+package net.adamjak.thomas.graph.utils;
+
+/**
+ * Created by Tomas Adamjak on 17.7.2016.
+ * Copyright 2016, Tomas Adamjak
+ * License: The BSD 3-Clause License
+ */
+public class Utils
+{
+	/**
+	 * Determine the number of specific characters in the string.
+	 *
+	 * @return Number of specific characters in the string.
+	 * @throws IllegalArgumentException if second param {@code character} is {@code null}.
+	 */
+	public static int countCharInString (String string, Character character) throws IllegalArgumentException
+	{
+		if (character == null) throw new IllegalArgumentException("Second param (Character) can't be null.");
+
+		if (string == null || string.isEmpty())
+		{
+			return 0;
+		}
+
+		int count = 0;
+		for (char c : string.toCharArray())
+		{
+			if (c == character)
+			{
+				count++;
+			}
+		}
+
+		return count;
+	}
+
+	/**
+	 * @param clazz tested class
+	 * @param findInterface Interface whitch find
+	 * @return {@code true} - if clazz implements findInterface, <br />{@code false} - anythink else
+	 * @throws IllegalArgumentException if params are {@code null} or param {@code findInterface} is not an interface.
+	 */
+	public static boolean implementsInterface (Class<?> clazz, Class<?> findInterface) throws IllegalArgumentException
+	{
+		if (clazz == null || findInterface == null) throw new IllegalArgumentException("Params can not be null");
+		if (findInterface.isInterface() == false) throw new IllegalArgumentException("Param findInterface have to be interface.");
+
+		for (Class<?> c : clazz.getInterfaces())
+		{
+			if (c.equals(findInterface)) return true;
+		}
+
+		return false;
+	}
+}
