@@ -46,7 +46,7 @@
 				</executions>
 				<configuration>
 					<schemaDirectory>${basedir}/src/main/resources/xsd</schemaDirectory>
-					<generatePackage>net.adamjak.graph.io.xsd</generatePackage>
+					<generatePackage>net.adamjak.thomas.graph.io.xsd</generatePackage>
 					<extension>true</extension>
 					<plugins>
 						<plugin>
