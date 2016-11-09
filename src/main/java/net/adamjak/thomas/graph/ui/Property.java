@@ -2,7 +2,6 @@ package net.adamjak.thomas.graph.ui;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -17,7 +16,17 @@ public class Property
 	private String graphAlgorithmsPackage = null;
 	private Operations operation;
 
-	// TODO: 1.11.2016 -- vytvorit triedu
+    /**
+     * Create property class from property file.
+     * @param file property file
+     * @throws NullPointerException if the pathname argument is null
+     * @throws IllegalArgumentException if param file is directory
+     * @throws PropertyException if an error occurs while reading file or when property file has not correct values, keys or format.
+     */
+	public Property (String filePath) throws NullPointerException, IllegalArgumentException, PropertyException
+    {
+        this(new File(filePath));
+    }
     
     /**
      * Create property class from property file.

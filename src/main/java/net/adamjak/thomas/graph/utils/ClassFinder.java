@@ -120,7 +120,6 @@ public class ClassFinder
 				}
 			}
 
-
 			String packageSearchPattern = packageName.replace(ClassFinder.DOT, File.separator);
 
 			int maxDots = Utils.countCharInString(packageName, '.') + 1;

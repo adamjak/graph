@@ -1,6 +1,7 @@
 package net.adamjak.thomas.graph.ui;
 
 import java.util.Scanner;
+import net.adamjak.thomas.graph.Runner;
 
 /**
  * Created by Tomas Adamjak on 1.11.2016.
@@ -34,7 +35,24 @@ public class Manager
 					System.exit(0);
 					break;
 				default:
-					// TODO: 1.11.2016 -- ked zada cestu k property file
+                    try
+                    {
+                        Property p = new Property(input);
+                        Runner r = new Runner(p);
+                        r.start();
+                    }
+                    catch (NullPointerException e)
+                    {
+                        System.out.println("\tInput file not found!");
+                    }
+                    catch (IllegalArgumentException e)
+                    {
+                        System.out.println("\tParam file is directory!");
+                    }
+                    catch (PropertyException e)
+                    {
+                        System.out.println("\tAn error occurs while reading file or when property file has not correct values, keys or format!");
+                    }
 					break;
 			}
 		}
