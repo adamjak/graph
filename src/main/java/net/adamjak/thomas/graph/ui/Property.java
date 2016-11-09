@@ -1,5 +1,11 @@
 package net.adamjak.thomas.graph.ui;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 /**
  * Created by Tomas Adamjak on 1.11.2016.
  * Copyright 2016, Tomas Adamjak
@@ -7,11 +13,102 @@ package net.adamjak.thomas.graph.ui;
  */
 public class Property
 {
-	private String folderWithGraphs;
-	private String graphAlgorithmsPackage;
+	private File folderWithGraphs;
+	private String graphAlgorithmsPackage = null;
 	private Operations operation;
 
 	// TODO: 1.11.2016 -- vytvorit triedu
+    
+    /**
+     * Create property class from property file.
+     * @param file property file
+     * @throws IllegalArgumentException if param file is null or if is directory
+     * @throws PropertyException if an error occurs while reading file or when property file has not correct values, keys or format.
+     */
+    public Property (File file) throws IllegalArgumentException, PropertyException
+    {
+        if (file == null) throws new IllegalArgumentException("Param file can not by null");
+        if (file.isDirectory()) throw new IllegalArgumentException("File is directory");
+        
+        BufferedReader br = null;
+
+		try
+        {
+			String sCurrentLine;
+            
+			br = new BufferedReader(new FileReader(file));
+
+			while ((sCurrentLine = br.readLine()) != null)
+            {
+				String[] line = sCurrentLine.split("=");
+                if (line.length == 2)
+                {
+                    String key = line[0].trim();
+                    String value = line[1].trim();
+                    if (key.equals("folderWithGraphs"))
+                    {
+                        File folder = new File(value);
+                        if (folder.isDirectory())
+                        {
+                            this.folderWithGraphs = folder;
+                        }
+                    }
+                    else if (key.equals("graphAlgorithmsPackage"))
+                    {
+                        this.graphAlgorithmsPackage = value;
+                    }
+                    else if (key.equals("operation"))
+                    {
+                        if (value.equals(Operations.BENCHMARK_ALL_ALGORITHMS.name()))
+                        {
+                            this.operation = Operations.BENCHMARK_ALL_ALGORITHMS;
+                        }
+                        else if (value.equals(Operations.ONLY_SNARK_TEST.name()))
+                        {
+                            this.operation = Operations.ONLY_SNARK_TEST;
+                        }
+                    }
+                }
+                
+			}
+            
+            if (this.folderWithGraphs == null || this.operation == null)
+            {
+                throw new PropertyException("Property file has not correct values, keys or format.");
+            }
+
+		}
+        catch (IOException e)
+        {
+			throw new PropertyException(e.getMessage());
+		}
+        finally
+        {
+			try
+            {
+				if (br != null) br.close();
+			}
+            catch (IOException ex) {}
+		}
+    }
+
+    /**
+     * Create property class when you insert properties.
+     * @param folderWithGraphs directory with graphs
+     * @param graphAlgorithmsPackage name package with graph algorithms (can be null)
+     * @param operation opertion whitch you want to do, select from {@link Operations}
+     * @throws IllegalArgumentException if param folderWithGraphs or operation is {@code null}
+     */
+    public Property(File folderWithGraphs, String graphAlgorithmsPackage, Operations operation) throws IllegalArgumentException
+    {
+        if (folderWithGraphs == null || operation == null) throw new IllegalArgumentException("Params folderWithGraphs and operation can not be null.");
+        
+        this.folderWithGraphs = folderWithGraphs;
+        this.graphAlgorithmsPackage = graphAlgorithmsPackage;
+        this.operation = operation;
+    }
+    
+    
 
 	public static String getTextWithPropertyHelp()
 	{
@@ -32,5 +129,5 @@ public class Property
         sb.append("\t Example for third line: operation=BENCHMARK_ALL_ALGORITHMS\n");
 
 		return sb.toString();
-	}
+    }
 }
