@@ -1,14 +1,5 @@
 package net.adamjak.thomas.graph;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 import net.adamjak.thomas.graph.api.Graph;
 import net.adamjak.thomas.graph.classes.GraphFactory;
 import net.adamjak.thomas.graph.cubic.snarks.SnarkTest;
@@ -16,6 +7,16 @@ import net.adamjak.thomas.graph.cubic.snarks.SnarkTestResult;
 import net.adamjak.thomas.graph.interfaces.anot.Benchmarked;
 import net.adamjak.thomas.graph.ui.Property;
 import net.adamjak.thomas.graph.utils.ClassFinder;
+import net.adamjak.thomas.graph.utils.Utils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Created by Tomas Adamjak on 9.11.2016.
@@ -33,24 +34,41 @@ public class Runner {
     public void start()
     {
         // TODO -- edit this method by property file
-        
-        File file1 = new File("src/main/resources/g6/Generated_graphs.20.04.sn.cyc4.g6");
-		File file2 = new File("src/main/resources/g6/Generated_graphs.28.05.sn.cyc4.g6");
-		List<Graph<Integer>> listOfGraphs = new LinkedList<Graph<Integer>>();
-		try
-		{
-			listOfGraphs.add(GraphFactory.createGraphFromGraph6(file1));
-			//listOfGraphs.add(GraphFactory.createGraphFromGraph6(file2));
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
 
+		List<File> files = Utils.getListofFilesInFolder(this.property.getFolderWithGraphs());
+
+		List<Graph<Integer>> listOfGraphs = new LinkedList<Graph<Integer>>();
+
+		for (File f : files)
+		{
+			if (f.getName().endsWith(".g6"))
+			{
+				try
+				{
+					listOfGraphs.add(GraphFactory.createGraphFromGraph6(f));
+				}
+				catch (IOException e) {}
+			}
+			else
+			{
+				try
+				{
+					String[] parts = f.getName().split("\\.");
+					Integer.valueOf(parts[parts.length - 1]);
+					listOfGraphs.addAll(GraphFactory.createGraphFromTextCatalog(f));
+				}
+				catch (NumberFormatException e) {}
+			}
+		}
 
 		ClassFinder classFinder = new ClassFinder();
 
-		Set<String> packageNames = new LinkedHashSet<String>(Arrays.asList("net.adamjak.thomas.graph.cubic.snarks"));
+		Set<String> packageNames = new LinkedHashSet<String>();
+		packageNames.add("net.adamjak.thomas.graph.cubic.snarks");
+		if (this.property.getGraphAlgorithmsPackage() != null)
+		{
+			packageNames.add(this.property.getGraphAlgorithmsPackage());
+		}
 
 		Set<Class<?>> classes = classFinder.findClassesWhitchExtends(classFinder.findAnnotatedClasses(packageNames, true, Benchmarked.class), SnarkTest.class);
 

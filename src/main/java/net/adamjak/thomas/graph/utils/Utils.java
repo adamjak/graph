@@ -1,5 +1,9 @@
 package net.adamjak.thomas.graph.utils;
 
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created by Tomas Adamjak on 17.7.2016.
  * Copyright 2016, Tomas Adamjak
@@ -51,5 +55,32 @@ public class Utils
 		}
 
 		return false;
+	}
+
+	/**
+	 * @param folder folder whitch we want to scan
+	 * @return {@link List}&lt;{@link File}&gt; - get all files in inserted folder and subfolders
+	 * @throws IllegalArgumentException if param {@code folder} is {@code null} or if is not a folder
+	 */
+	public static List<File> getListofFilesInFolder (File folder) throws IllegalArgumentException
+	{
+		if (folder == null) throw new IllegalArgumentException("Param can not be null.");
+		if (folder.isDirectory() == false) throw new IllegalArgumentException("Inserted file is not a folder.");
+
+		List<File> files = new LinkedList<File>();
+
+		for (File f : folder.listFiles())
+		{
+			if (f.isFile())
+			{
+				files.add(f);
+			}
+			else if (f.isDirectory())
+			{
+				files.addAll(getListofFilesInFolder(f));
+			}
+		}
+
+		return files;
 	}
 }

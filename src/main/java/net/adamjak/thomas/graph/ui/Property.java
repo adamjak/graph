@@ -18,7 +18,7 @@ public class Property
 
     /**
      * Create property class from property file.
-     * @param file property file
+     * @param filePath property file
      * @throws NullPointerException if the pathname argument is null
      * @throws IllegalArgumentException if param file is directory
      * @throws PropertyException if an error occurs while reading file or when property file has not correct values, keys or format.
@@ -36,7 +36,7 @@ public class Property
      */
     public Property (File file) throws IllegalArgumentException, PropertyException
     {
-        if (file == null) throws new IllegalArgumentException("Param file can not by null");
+        if (file == null) throw new IllegalArgumentException("Param file can not by null");
         if (file.isDirectory()) throw new IllegalArgumentException("File is directory");
         
         BufferedReader br = null;
@@ -64,7 +64,10 @@ public class Property
                     }
                     else if (key.equals("graphAlgorithmsPackage"))
                     {
-                        this.graphAlgorithmsPackage = value;
+						if (value.equals("null") == false)
+						{
+							this.graphAlgorithmsPackage = value;
+						}
                     }
                     else if (key.equals("operation"))
                     {
@@ -95,7 +98,10 @@ public class Property
         {
 			try
             {
-				if (br != null) br.close();
+				if (br != null)
+				{
+					br.close();
+				}
 			}
             catch (IOException ex) {}
 		}
@@ -116,8 +122,6 @@ public class Property
         this.graphAlgorithmsPackage = graphAlgorithmsPackage;
         this.operation = operation;
     }
-    
-    
 
 	public static String getTextWithPropertyHelp()
 	{
@@ -139,4 +143,34 @@ public class Property
 
 		return sb.toString();
     }
+
+	public File getFolderWithGraphs ()
+	{
+		return folderWithGraphs;
+	}
+
+	public void setFolderWithGraphs (File folderWithGraphs)
+	{
+		this.folderWithGraphs = folderWithGraphs;
+	}
+
+	public String getGraphAlgorithmsPackage ()
+	{
+		return graphAlgorithmsPackage;
+	}
+
+	public void setGraphAlgorithmsPackage (String graphAlgorithmsPackage)
+	{
+		this.graphAlgorithmsPackage = graphAlgorithmsPackage;
+	}
+
+	public Operations getOperation ()
+	{
+		return operation;
+	}
+
+	public void setOperation (Operations operation)
+	{
+		this.operation = operation;
+	}
 }

@@ -1,7 +1,8 @@
 package net.adamjak.thomas.graph.ui;
 
-import java.util.Scanner;
 import net.adamjak.thomas.graph.Runner;
+
+import java.util.Scanner;
 
 /**
  * Created by Tomas Adamjak on 1.11.2016.
@@ -44,6 +45,7 @@ public class Manager
                     catch (NullPointerException e)
                     {
                         System.out.println("\tInput file not found!");
+						e.printStackTrace();
                     }
                     catch (IllegalArgumentException e)
                     {

@@ -114,7 +114,6 @@ public class GraphFactory
 	/*******************************************************
 	 * Graph6 format
 	 *******************************************************/
-	// TODO: 24.12.2015 - zistit podrobnosti o formate g6 a implementovat citacku
 
 	/**
 	 * create new instance of Graph from graph6 format.
