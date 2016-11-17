@@ -14,6 +14,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -94,7 +95,7 @@ public final class GraphSaver
 	}
 
 	/**
-	 * Save {@link Graph}&lt;T&gt; into text catalog using in Bratislava.
+	 * Save {@link List}&lt;{@link Graph}&lt;T&gt;&gt; into text catalog using in Bratislava.
 	 *
 	 * @param graphsToSave graph whitch you want save
 	 * @param fileToSave   file to which the program will save the graph
@@ -102,7 +103,7 @@ public final class GraphSaver
 	 * @throws GraphInputOutputException when creating file error occurred
 	 * @throws IllegalArgumentException  if some param is {@code null}
 	 */
-	public static <T extends Comparable> void graphsTotextCatalog (@NotNull List<Graph<T>> graphsToSave, @NotNull File fileToSave) throws GraphInputOutputException, IllegalArgumentException
+	public static <T extends Comparable> void graphsToTextCatalog (@NotNull List<Graph<T>> graphsToSave, @NotNull File fileToSave) throws GraphInputOutputException, IllegalArgumentException
 	{
 		if (graphsToSave == null || fileToSave == null) throw new IllegalArgumentException("Params can not by null!");
 
@@ -173,6 +174,129 @@ public final class GraphSaver
 			}
 			catch (IOException e) {}
 		}
+	}
+
+	/**
+	 * Save {@link List}&lt;{@link Graph}&lt;T&gt;&gt; into graph6 format.
+	 *
+	 * @param graphsToSave graph whitch you want save
+	 * @param fileToSave   file to which the program will save the graph
+	 * @param <T>          Must implements {@link Comparable}
+	 * @throws GraphInputOutputException when creating file error occurred
+	 * @throws IllegalArgumentException  if some param is {@code null}
+	 * @see <code><a href="http://pallini.di.uniroma1.it/">pallini.di.uniroma1.it</a></code> - graph6 doc
+	 */
+	public static <T extends Comparable> void graphsToGraph6Format (@NotNull List<Graph<T>> graphsToSave, @NotNull File fileToSave) throws GraphInputOutputException, IllegalArgumentException
+	{
+		if (graphsToSave == null || fileToSave == null) throw new IllegalArgumentException("Params can not by null!");
+
+		BufferedWriter bufferedWriter = null;
+
+		try
+		{
+			if (!fileToSave.exists())
+			{
+				fileToSave.createNewFile();
+			}
+
+			bufferedWriter = new BufferedWriter(new FileWriter(fileToSave.getAbsoluteFile()));
+
+			for (Graph<T> g : graphsToSave)
+			{
+				List<Byte> bytes = new ArrayList<Byte>();
+
+				int n = g.getCountOfVertexes();
+
+				if (n <= 62)
+				{
+					bytes.add(Integer.valueOf(n + 63).byteValue());
+				}
+				else if (n >= 63 && n <= 258047)
+				{
+					bytes.add((byte) 126);
+					String s = Integer.toBinaryString(n);
+					while (s.length() < 18)
+					{
+						s = "0" + s;
+					}
+					bytes.add(binaryStringToBytePlus63(s.substring(0,6)));
+					bytes.add(binaryStringToBytePlus63(s.substring(6,12)));
+					bytes.add(binaryStringToBytePlus63(s.substring(12,18)));
+				}
+				else
+				{
+					bytes.add((byte) 126);
+					bytes.add((byte) 126);
+					String s = Integer.toBinaryString(n);
+					while (s.length() < 36)
+					{
+						s = "0" + s;
+					}
+					bytes.add(binaryStringToBytePlus63(s.substring(0,6)));
+					bytes.add(binaryStringToBytePlus63(s.substring(6,12)));
+					bytes.add(binaryStringToBytePlus63(s.substring(12,18)));
+					bytes.add(binaryStringToBytePlus63(s.substring(18,24)));
+					bytes.add(binaryStringToBytePlus63(s.substring(24,30)));
+					bytes.add(binaryStringToBytePlus63(s.substring(30,36)));
+				}
+
+				Byte[][] martix = g.getAdjacencyMatrix();
+				String s = new String();
+				for (int stlpec = 1; stlpec < martix.length; stlpec++)
+				{
+					for (int riadok = 0; riadok < stlpec; riadok++)
+					{
+						s = s + martix[riadok][stlpec];
+					}
+				}
+
+				while (s.length() % 6 != 0)
+				{
+					s = s + "0";
+				}
+
+				for (int i = 0; i < s.length(); i = i+6)
+				{
+					bytes.add(binaryStringToBytePlus63(s.substring(i,i+6)));
+				}
+
+
+				bufferedWriter.write(new String(changeByteListToPrimitiveDataTypeArray(bytes),"UTF-8"));
+				bufferedWriter.newLine();
+			}
+
+		}
+		catch (IOException e)
+		{
+			throw new GraphInputOutputException(e.getMessage());
+		}
+		finally
+		{
+			try
+			{
+				if (bufferedWriter != null)
+				{
+					bufferedWriter.close();
+				}
+			}
+			catch (IOException e) {}
+		}
+	}
+
+	private static byte[] changeByteListToPrimitiveDataTypeArray (List<Byte> bytes)
+	{
+		byte[] array = new byte[bytes.size()];
+		for (int i = 0; i < bytes.size(); i++)
+		{
+			array[i] = bytes.get(i);
+		}
+
+		return array;
+	}
+
+	private static byte binaryStringToBytePlus63 (String binaryString)
+	{
+		return Integer.valueOf(Integer.valueOf(binaryString,2) + 63).byteValue();
 	}
 
 }

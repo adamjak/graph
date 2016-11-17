@@ -15,12 +15,25 @@ import java.util.concurrent.ConcurrentSkipListSet;
  */
 public interface Graph<T extends Comparable>
 {
+	/**
+	 * Add new vertex into graph.
+	 * @param vertex vertex to add
+	 */
 	void addVertex (Vertex<T> vertex);
 
+	/**
+	 * @return Return {@link Vertex} by inserted content.
+	 */
 	Vertex<T> getVertexByContent (T content);
 
+	/**
+	 * @return Return quantity of vertexes in graph.
+	 */
 	int getCountOfVertexes ();
 
+	/**
+	 * @return Return {@link List} of all vertexes.
+	 */
 	List<Vertex<T>> getListOfVertexes ();
 
 	void addEdge (Edge<T> edge);
@@ -42,4 +55,16 @@ public interface Graph<T extends Comparable>
 	ConcurrentMap<Edge<T>,List<Edge<T>>> getMapOfNeighborEdges();
 
 	ConcurrentSkipListSet<Cycle<T>> getListOfAllCyrcles();
+
+	/**
+	 * @return List of edges whitch start or end with inserted vertex.
+	 */
+	List<Edge<T>> getEdgesContainsVertex (Vertex<T> vertex);
+
+	/**
+	 * @return Return adjacency martix represented with two-dimensional array.
+	 */
+	Byte[][] getAdjacencyMatrix();
+
+	// TODO: 15.11.2016 -- dorobit javadoc
 }

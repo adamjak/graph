@@ -62,7 +62,7 @@ public class Utils
 	 * @return {@link List}&lt;{@link File}&gt; - get all files in inserted folder and subfolders
 	 * @throws IllegalArgumentException if param {@code folder} is {@code null} or if is not a folder
 	 */
-	public static List<File> getListofFilesInFolder (File folder) throws IllegalArgumentException
+	public static List<File> getListOfFilesInFolder (File folder) throws IllegalArgumentException
 	{
 		if (folder == null) throw new IllegalArgumentException("Param can not be null.");
 		if (folder.isDirectory() == false) throw new IllegalArgumentException("Inserted file is not a folder.");
@@ -77,7 +77,7 @@ public class Utils
 			}
 			else if (f.isDirectory())
 			{
-				files.addAll(getListofFilesInFolder(f));
+				files.addAll(getListOfFilesInFolder(f));
 			}
 		}
 

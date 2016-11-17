@@ -235,7 +235,11 @@ public class GraphImpl<T extends Comparable> implements Graph<T>
 		return map;
 	}
 
-	public Integer[][] getMatrixOfNeighborVertexes()
+	/**
+	 * @return Return adjacency martix represented with two-dimensional array.
+	 */
+	@Override
+	public Byte[][] getAdjacencyMatrix ()
 	{
 		Map<Integer,Vertex<T>> vertexIndexes = new TreeMap<Integer, Vertex<T>>();
 
@@ -246,7 +250,7 @@ public class GraphImpl<T extends Comparable> implements Graph<T>
 			i++;
 		}
 
-		Integer[][] matrix = new Integer[this.structure.keySet().size()][this.structure.keySet().size()];
+		Byte[][] matrix = new Byte[this.structure.keySet().size()][this.structure.keySet().size()];
 
 		for (i = 0; i < matrix.length; i++)
 		{
@@ -391,5 +395,22 @@ public class GraphImpl<T extends Comparable> implements Graph<T>
 		}
 
 		return cycleConcurrentSkipListSet;
+	}
+
+	/**
+	 * @return List of edges whitch start or end with inserted vertex.
+	 */
+	@Override
+	public List<Edge<T>> getEdgesContainsVertex (Vertex<T> vertex)
+	{
+		List<Edge<T>> edgeList = Collections.synchronizedList(new LinkedList<Edge<T>>());
+		for (Edge<T> e : this.getListOfEdges())
+		{
+			if (e.getStart().equals(vertex) || e.getEnd().equals(vertex))
+			{
+				edgeList.add(e);
+			}
+		}
+		return edgeList;
 	}
 }
