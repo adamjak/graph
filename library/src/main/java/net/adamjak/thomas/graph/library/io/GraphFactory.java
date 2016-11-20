@@ -33,6 +33,32 @@ public final class GraphFactory
 		throw new IllegalStateException("Class " + this.getClass().getSimpleName() + " can not be initialized!");
 	}
 
+	public static SupportedFormats getFileFormat(File file)
+	{
+		String[] name = file.getName().split("\\.");
+		String extension = name[name.length - 1];
+		extension = extension.toLowerCase();
+		if (extension.equals("xml"))
+		{
+			return SupportedFormats.GRAPHML;
+		}
+		else if (extension.equals("g6"))
+		{
+			return SupportedFormats.GRAPH6;
+		}
+		else
+		{
+			try
+			{
+				Integer.valueOf(extension);
+				return SupportedFormats.BRATISLAVA_TEXT_CATALOG;
+			}
+			catch (NumberFormatException e) {}
+		}
+
+		return null;
+	}
+
 	/*******************************************************
 	 * XML format - GraphML
 	 *******************************************************/
@@ -42,7 +68,7 @@ public final class GraphFactory
 	 * @param xml File with GraphML xml
 	 * @return new Graph
 	 */
-	public static Graph<String> createGraphFromGraphml(File xml)
+	public static Graph<Integer> createGraphFromGraphml(File xml)
 	{
 		try
 		{
@@ -52,20 +78,36 @@ public final class GraphFactory
 
 			Graphml graphml = (Graphml) jaxbUnmarshaller.unmarshal(xml);
 
-			Graph<String> graph = GraphImpl.createGraph(String.class);
+			boolean canCast = canGraphIdCastToInteger(graphml);
+
+			Graph<Integer> graph = GraphImpl.createGraph(Integer.class);
+
+			int vertexId = 0;
 
 			for (Graphml.Graph.Node n : graphml.getGraph().getNode())
 			{
-				graph.addVertex(new VertexImpl<String>(n.getId()));
+				Integer id;
+				if (canCast)
+				{
+					id = Integer.valueOf(n.getId());
+				}
+				else
+				{
+					id = vertexId;
+				}
+				graph.addVertex(new VertexImpl<Integer>(id));
+				vertexId++;
 			}
+
+			int edgeId = 0;
 
 			for (Graphml.Graph.Edge e : graphml.getGraph().getEdge())
 			{
 
-				Vertex<String> startVertex = null;
-				Vertex<String> endVertex = null;
+				Vertex<Integer> startVertex = null;
+				Vertex<Integer> endVertex = null;
 
-				for (Vertex<String> v : graph.getStructure().keySet())
+				for (Vertex<Integer> v : graph.getStructure().keySet())
 				{
 					if (v.getContent().equals(e.getSource()))
 					{
@@ -78,8 +120,18 @@ public final class GraphFactory
 					}
 				}
 
-				graph.addEdge(new EdgeImpl<String>(e.getId(), startVertex, endVertex, false));
+				Integer id;
+				if (canCast)
+				{
+					id = Integer.valueOf(e.getId());
+				}
+				else
+				{
+					id = vertexId;
+				}
 
+				graph.addEdge(new EdgeImpl<Integer>(id, startVertex, endVertex, false));
+				edgeId++;
 			}
 
 			return graph;
