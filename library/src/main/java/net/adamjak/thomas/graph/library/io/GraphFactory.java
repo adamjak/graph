@@ -24,16 +24,17 @@ import java.util.List;
  * License: The BSD 3-Clause License
  * <br /><br />
  * Final class whitch create {@link Graph} from various formats.
+ *
  * @see GraphSaver
  */
 public final class GraphFactory
 {
-	private GraphFactory()
+	private GraphFactory ()
 	{
 		throw new IllegalStateException("Class " + this.getClass().getSimpleName() + " can not be initialized!");
 	}
 
-	public static SupportedFormats getFileFormat(File file)
+	public static SupportedFormats getFileFormat (File file)
 	{
 		String[] name = file.getName().split("\\.");
 		String extension = name[name.length - 1];
@@ -53,7 +54,9 @@ public final class GraphFactory
 				Integer.valueOf(extension);
 				return SupportedFormats.BRATISLAVA_TEXT_CATALOG;
 			}
-			catch (NumberFormatException e) {}
+			catch (NumberFormatException e)
+			{
+			}
 		}
 
 		return null;
@@ -65,10 +68,11 @@ public final class GraphFactory
 
 	/**
 	 * Create graph from XML in GraphML format
+	 *
 	 * @param xml File with GraphML xml
 	 * @return new Graph
 	 */
-	public static Graph<Integer> createGraphFromGraphml(File xml)
+	public static Graph<Integer> createGraphFromGraphml (File xml)
 	{
 		try
 		{
@@ -143,7 +147,7 @@ public final class GraphFactory
 		}
 	}
 
-	private static boolean canGraphIdCastToInteger(Graphml g)
+	private static boolean canGraphIdCastToInteger (Graphml g)
 	{
 		for (Graphml.Graph.Node n : g.getGraph().getNode())
 		{
@@ -178,6 +182,7 @@ public final class GraphFactory
 
 	/**
 	 * create new instance of Graph from graph6 format.
+	 *
 	 * @param file File in Graph6 format
 	 * @return new Graph
 	 * @see <code><a href="http://pallini.di.uniroma1.it/">pallini.di.uniroma1.it</a></code> - graph6 doc
@@ -225,7 +230,7 @@ public final class GraphFactory
 				mat += byteToBitesString(bytes[i]);
 			}
 
-			mat = mat.substring(0,(n*(n-1)/2));
+			mat = mat.substring(0, (n * (n - 1) / 2));
 
 			Graph<Integer> g = GraphImpl.createGraph(Integer.class);
 
@@ -246,7 +251,7 @@ public final class GraphFactory
 				{
 					if (charArray[k] == '1')
 					{
-						g.addEdge(new EdgeImpl<Integer>(edgeNumber,vertexList.get(i),vertexList.get(j),false));
+						g.addEdge(new EdgeImpl<Integer>(edgeNumber, vertexList.get(i), vertexList.get(j), false));
 					}
 					k++;
 				}
@@ -262,7 +267,9 @@ public final class GraphFactory
 				bufferedReader.close();
 			}
 		}
-		catch (IOException e) {}
+		catch (IOException e)
+		{
+		}
 
 		return graphList;
 	}
@@ -289,10 +296,11 @@ public final class GraphFactory
 
 	/**
 	 * Create graphs from text file
+	 *
 	 * @param txt (File)
 	 * @return List of graphs from text file
 	 */
-	public static List<Graph<Integer>> createGraphFromTextCatalog(File txt) throws IOException
+	public static List<Graph<Integer>> createGraphFromTextCatalog (File txt) throws IOException
 	{
 		List<Graph<Integer>> graphs = new LinkedList<Graph<Integer>>();
 
@@ -309,7 +317,7 @@ public final class GraphFactory
 		{
 			line = bufferedReader.readLine();
 		}
-		while (line.trim().charAt(0) == '{');
+		while (line.trim().charAt(0) == '{' || line.trim().charAt(0) == '#');
 
 		Integer graphCounts = Integer.parseInt(line);
 
@@ -319,7 +327,7 @@ public final class GraphFactory
 			{
 				line = bufferedReader.readLine();
 			}
-			while (line.trim().charAt(0) == '{');
+			while (line.trim().charAt(0) == '{' || line.trim().charAt(0) == '#');
 
 			Integer cisloGrafu = Integer.parseInt(line);
 
@@ -331,7 +339,7 @@ public final class GraphFactory
 				{
 					line = bufferedReader.readLine();
 				}
-				while (line.trim().charAt(0) == '{');
+				while (line.trim().charAt(0) == '{' || line.trim().charAt(0) == '#');
 
 				Integer pocetVrcholov = Integer.parseInt(line);
 
@@ -348,7 +356,7 @@ public final class GraphFactory
 					{
 						line = bufferedReader.readLine();
 					}
-					while (line.trim().charAt(0) == '{');
+					while (line.trim().charAt(0) == '{' || line.trim().charAt(0) == '#');
 
 					String[] neighbors = line.trim().split(" ");
 
@@ -383,10 +391,11 @@ public final class GraphFactory
 
 	/**
 	 * Create clone from inserted graph.
+	 *
 	 * @param graph Instance of graph
 	 * @return new Instance os graph
 	 */
-	public static <U extends Comparable> Graph<U> cloneGraph(Graph<U> graph)
+	public static <U extends Comparable> Graph<U> cloneGraph (Graph<U> graph)
 	{
 		Graph<U> newGraph = GraphImpl.createGraph(graph.getGraphType());
 		newGraph.setDirected(graph.isDirected());
@@ -407,7 +416,7 @@ public final class GraphFactory
 		return newGraph;
 	}
 
-	public static <U extends Comparable> Graph<U> permuteGraph(Graph<U> graph)
+	public static <U extends Comparable> Graph<U> permuteGraph (Graph<U> graph)
 	{
 		Graph<U> newGraph = GraphFactory.cloneGraph(graph);
 		// TODO: 8.1.2016 - vyspekulovat prepermutovanie hrana a vrcholov 
