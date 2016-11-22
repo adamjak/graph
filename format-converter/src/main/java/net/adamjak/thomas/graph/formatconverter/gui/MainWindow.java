@@ -6,6 +6,7 @@ import net.adamjak.thomas.graph.library.io.GraphInputOutputException;
 import net.adamjak.thomas.graph.library.io.GraphSaver;
 import net.adamjak.thomas.graph.library.io.SupportedFormats;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -58,6 +59,9 @@ public class MainWindow extends JFrame
 		super(WINDOW_TITLE);
 
 		mainWindow = this;
+
+		ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("logo.png"));
+		setIconImage(imageIcon.getImage());
 
 		setContentPane(rootPanel);
 		pack();
@@ -122,54 +126,54 @@ public class MainWindow extends JFrame
 			boolean saveIntoOneFile = false;
 			jpbProces.setValue(0);
 			List<File> inputFiles = new LinkedList<File>();
-			
+
 			for (String path : tfInputGraph.getText().split(";"))
 			{
 				File f = new File(path);
 				if (f.isDirectory())
 				{
-					JOptionPane.showMessageDialog(mainWindow,"Input file can not be a directory.\nFile:" + f.getAbsolutePath(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(mainWindow, "Input file can not be a directory.\nFile:" + f.getAbsolutePath(), ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 				inputFiles.add(f);
 			}
-			
+
 			File outputDirectory = new File(tfNewGraphLocation.getText());
 
 			if (outputDirectory.isDirectory() == false)
 			{
-				JOptionPane.showMessageDialog(mainWindow,"Output location has to be directory.",ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(mainWindow, "Output location has to be directory.", ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			
+
 			SupportedFormats selectedFormat = (SupportedFormats) jcbOutputFormat.getSelectedItem();
-			
+
 			if (inputFiles.size() > 1 && selectedFormat != SupportedFormats.GRAPHML)
 			{
-				Object[] options = {"Save into one file","Save file separately"};
+				Object[] options = {"Save into one file", "Save file separately"};
 				int choice = JOptionPane.showOptionDialog(mainWindow, //Component parentComponent
-                               "Would you like save all graphs into 1 file?", //Object message,
-                               "Choose a save operation", //String title
-                               JOptionPane.YES_NO_OPTION, //int optionType
-                               JOptionPane.QUESTION_MESSAGE, //int messageType
-                               null, //Icon icon,
-                               options, //Object[] options,
-                               options[0]);//Object initialValue
+														  "Would you like save all graphs into 1 file?", //Object message,
+														  "Choose a save operation", //String title
+														  JOptionPane.YES_NO_OPTION, //int optionType
+														  JOptionPane.QUESTION_MESSAGE, //int messageType
+														  null, //Icon icon,
+														  options, //Object[] options,
+														  options[0]);//Object initialValue
 				if (choice == 0)
 				{
 					saveIntoOneFile = true;
 				}
 			}
-			
+
 			List<Graph<Integer>> allGraphs = new LinkedList<Graph<Integer>>();
-			
+
 			int k = 1;
 			for (File f : inputFiles)
 			{
 				SupportedFormats inputFileFormat = GraphFactory.getFileFormat(f);
-				
+
 				List<Graph<Integer>> graphList = null;
-				
+
 				switch (inputFileFormat)
 				{
 					case GRAPH6:
@@ -179,7 +183,7 @@ public class MainWindow extends JFrame
 						}
 						catch (IOException e)
 						{
-							JOptionPane.showMessageDialog(mainWindow,"File read error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(mainWindow, "File read error.\n" + e.getMessage(), ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE);
 							return;
 						}
 						break;
@@ -194,12 +198,12 @@ public class MainWindow extends JFrame
 						}
 						catch (IOException e)
 						{
-							JOptionPane.showMessageDialog(mainWindow,"File read error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(mainWindow, "File read error.\n" + e.getMessage(), ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE);
 							return;
 						}
 						break;
 				}
-				
+
 				if (saveIntoOneFile == true)
 				{
 					allGraphs.addAll(graphList);
@@ -214,17 +218,17 @@ public class MainWindow extends JFrame
 							newFileName = outputDirectory.getAbsolutePath() + File.separator + f.getName() + "_convert.g6";
 							try
 							{
-								GraphSaver.graphsToGraph6Format(graphList,new File(newFileName));
+								GraphSaver.graphsToGraph6Format(graphList, new File(newFileName));
 							}
 							catch (GraphInputOutputException e)
 							{
-								JOptionPane.showMessageDialog(mainWindow,"File saving error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+								JOptionPane.showMessageDialog(mainWindow, "File saving error.\n" + e.getMessage(), ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE);
 								return;
 							}
 							break;
 						case BRATISLAVA_TEXT_CATALOG:
 							int graphVertexes = 0;
-							for (Graph g :graphList)
+							for (Graph g : graphList)
 							{
 								graphVertexes += g.getCountOfVertexes();
 							}
@@ -232,11 +236,11 @@ public class MainWindow extends JFrame
 							newFileName = outputDirectory.getAbsolutePath() + File.separator + f.getName() + "_convert." + graphVertexes;
 							try
 							{
-								GraphSaver.graphsToTextCatalog(graphList,new File(newFileName));
+								GraphSaver.graphsToTextCatalog(graphList, new File(newFileName));
 							}
 							catch (GraphInputOutputException e)
 							{
-								JOptionPane.showMessageDialog(mainWindow,"File saving error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+								JOptionPane.showMessageDialog(mainWindow, "File saving error.\n" + e.getMessage(), ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE);
 								return;
 							}
 							break;
@@ -247,27 +251,27 @@ public class MainWindow extends JFrame
 								{
 									newFileName = outputDirectory.getAbsolutePath() + File.separator + f.getName() + "_convert_" + (i + 1) + ".xml";
 									GraphSaver.graphToGraphMl(graphList.get(i), new File(newFileName));
-		
+
 									jpbProces.setValue(50 + ((50 / graphList.size()) * (i + 1)));
 								}
 							}
 							catch (GraphInputOutputException e)
 							{
-								JOptionPane.showMessageDialog(mainWindow,"File saving error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+								JOptionPane.showMessageDialog(mainWindow, "File saving error.\n" + e.getMessage(), ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE);
 								return;
 							}
 							break;
 					}
-					
+
 					jpbProces.setValue(100 / inputFiles.size() * k);
 				}
-				
+
 				k++;
 			}
-			
+
 			if (saveIntoOneFile == true)
 			{
-			
+
 				String newFileName = outputDirectory.getAbsolutePath() + File.separator + "all_graphs_convert";
 
 				switch (selectedFormat)
@@ -276,13 +280,13 @@ public class MainWindow extends JFrame
 						newFileName += ".g6";
 						try
 						{
-							GraphSaver.graphsToGraph6Format(allGraphs,new File(newFileName));
+							GraphSaver.graphsToGraph6Format(allGraphs, new File(newFileName));
 							jpbProces.setValue(100);
-							JOptionPane.showMessageDialog(mainWindow,"Everythink done.",OK_DIALOG_TITLE,JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(mainWindow, "Everythink done.", OK_DIALOG_TITLE, JOptionPane.INFORMATION_MESSAGE);
 						}
 						catch (GraphInputOutputException e)
 						{
-							JOptionPane.showMessageDialog(mainWindow,"File saving error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(mainWindow, "File saving error.\n" + e.getMessage(), ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE);
 							return;
 						}
 						break;
@@ -290,13 +294,13 @@ public class MainWindow extends JFrame
 						newFileName += ".BAGRAPH";
 						try
 						{
-							GraphSaver.graphsToTextCatalog(allGraphs,new File(newFileName));
+							GraphSaver.graphsToTextCatalog(allGraphs, new File(newFileName));
 							jpbProces.setValue(100);
-							JOptionPane.showMessageDialog(mainWindow,"Everythink done.",OK_DIALOG_TITLE,JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(mainWindow, "Everythink done.", OK_DIALOG_TITLE, JOptionPane.INFORMATION_MESSAGE);
 						}
 						catch (GraphInputOutputException e)
 						{
-							JOptionPane.showMessageDialog(mainWindow,"File saving error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(mainWindow, "File saving error.\n" + e.getMessage(), ERROR_DIALOG_TITLE, JOptionPane.ERROR_MESSAGE);
 							return;
 						}
 						break;
@@ -305,7 +309,7 @@ public class MainWindow extends JFrame
 			else
 			{
 				jpbProces.setValue(100);
-				JOptionPane.showMessageDialog(mainWindow,"Everythink done.",OK_DIALOG_TITLE,JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(mainWindow, "Everythink done.", OK_DIALOG_TITLE, JOptionPane.INFORMATION_MESSAGE);
 			}
 
 		}
