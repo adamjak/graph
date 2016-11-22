@@ -79,12 +79,24 @@ public class MainWindow extends JFrame
 		@Override
 		public void actionPerformed (ActionEvent e)
 		{
-			J_FILE_CHOOSER.setFileFilter(new GraphFileFilter());
+			J_FILE_CHOOSER.setMultiSelectionEnabled(true);
 			int status = J_FILE_CHOOSER.showOpenDialog(mainWindow);
 			if (status == JFileChooser.APPROVE_OPTION)
 			{
-				tfInputGraph.setText(J_FILE_CHOOSER.getSelectedFile().getAbsolutePath());
+				File[] files = J_FILE_CHOOSER.getSelectedFiles();
+				for (int i = 0; i < files.length; i++)
+				{
+					if (i == 0)
+					{
+						tfInputGraph.setText(files[i].getAbsolutePath());
+					}
+					else
+					{
+						tfInputGraph.setText(tfInputGraph.getText() + ";" + files[i].getAbsolutePath());
+					}
+				}
 			}
+			J_FILE_CHOOSER.setMultiSelectionEnabled(false);
 		}
 	}
 
@@ -107,122 +119,193 @@ public class MainWindow extends JFrame
 		@Override
 		public void actionPerformed (ActionEvent event)
 		{
-			File input = new File(tfInputGraph.getText());
-			File outputDirectory = new File(tfNewGraphLocation.getText());
-
-			if (input.isDirectory())
+			boolean saveIntoOneFile = false;
+			jpbProces.setValue(0);
+			List<File> inputFiles = new LinkedList<File>();
+			
+			for (String path : tfInputGraph.getText().split(";"))
 			{
-				JOptionPane.showMessageDialog(mainWindow,"Input file can not be a directory.",ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
-				return;
+				File f = new File(path);
+				if (f.isDirectory())
+				{
+					JOptionPane.showMessageDialog(mainWindow,"Input file can not be a directory.\nFile:" + f.getAbsolutePath(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				inputFiles.add(f);
 			}
+			
+			File outputDirectory = new File(tfNewGraphLocation.getText());
 
 			if (outputDirectory.isDirectory() == false)
 			{
 				JOptionPane.showMessageDialog(mainWindow,"Output location has to be directory.",ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-
-			SupportedFormats inputFileFormat = GraphFactory.getFileFormat(input);
-
-			if (inputFileFormat == null)
-			{
-				JOptionPane.showMessageDialog(mainWindow,"Input file is not in supported format.",ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-
-			List<Graph<Integer>> graphList = null;
-
-			switch (inputFileFormat)
-			{
-				case GRAPH6:
-					try
-					{
-						graphList = GraphFactory.createGraphFromGraph6(input);
-					}
-					catch (IOException e)
-					{
-						JOptionPane.showMessageDialog(mainWindow,"File read error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
-						return;
-					}
-					break;
-				case BRATISLAVA_TEXT_CATALOG:
-					try
-					{
-						graphList = GraphFactory.createGraphFromTextCatalog(input);
-					}
-					catch (IOException e)
-					{
-						JOptionPane.showMessageDialog(mainWindow,"File read error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
-						return;
-					}
-					break;
-				case GRAPHML:
-					graphList = new LinkedList<Graph<Integer>>();
-					graphList.add(GraphFactory.createGraphFromGraphml(input));
-					break;
-			}
-
-			jpbProces.setValue(50);
-
+			
 			SupportedFormats selectedFormat = (SupportedFormats) jcbOutputFormat.getSelectedItem();
-			String newFileName;
-
-			switch (selectedFormat)
+			
+			if (inputFiles.size() > 1 && selectedFormat != SupportedFormats.GRAPHML)
 			{
-				case GRAPH6:
-					newFileName = outputDirectory.getAbsolutePath() + File.separator + input.getName() + "_convert.g6";
-					try
-					{
-						GraphSaver.graphsToGraph6Format(graphList,new File(newFileName));
-						jpbProces.setValue(100);
-						JOptionPane.showMessageDialog(mainWindow,"Everythink done.",OK_DIALOG_TITLE,JOptionPane.INFORMATION_MESSAGE);
-					}
-					catch (GraphInputOutputException e)
-					{
-						JOptionPane.showMessageDialog(mainWindow,"File saving error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
-						return;
-					}
-					break;
-				case BRATISLAVA_TEXT_CATALOG:
-					int graphVertexes = 0;
-					for (Graph g :graphList)
-					{
-						graphVertexes += g.getCountOfVertexes();
-					}
-					graphVertexes = graphVertexes / graphList.size();
-					newFileName = outputDirectory.getAbsolutePath() + File.separator + input.getName() + "_convert." + graphVertexes;
-					try
-					{
-						GraphSaver.graphsToTextCatalog(graphList,new File(newFileName));
-						jpbProces.setValue(100);
-						JOptionPane.showMessageDialog(mainWindow,"Everythink done.",OK_DIALOG_TITLE,JOptionPane.INFORMATION_MESSAGE);
-					}
-					catch (GraphInputOutputException e)
-					{
-						JOptionPane.showMessageDialog(mainWindow,"File saving error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
-						return;
-					}
-					break;
-				case GRAPHML:
-					try
-					{
-						for (int i = 0; i < graphList.size(); i++)
+				Object[] options = {"Save into one file","Save file separately"};
+				int choice = JOptionPane.showOptionDialog(mainWindow, //Component parentComponent
+                               "Would you like save all graphs into 1 file?", //Object message,
+                               "Choose a save operation", //String title
+                               JOptionPane.YES_NO_OPTION, //int optionType
+                               JOptionPane.QUESTION_MESSAGE, //int messageType
+                               null, //Icon icon,
+                               options, //Object[] options,
+                               options[0]);//Object initialValue
+				if (choice == 0)
+				{
+					saveIntoOneFile = true;
+				}
+			}
+			
+			List<Graph<Integer>> allGraphs = new LinkedList<Graph<Integer>>();
+			
+			int k = 1;
+			for (File f : inputFiles)
+			{
+				SupportedFormats inputFileFormat = GraphFactory.getFileFormat(f);
+				
+				List<Graph<Integer>> graphList = null;
+				
+				switch (inputFileFormat)
+				{
+					case GRAPH6:
+						try
 						{
-							newFileName = outputDirectory.getAbsolutePath() + File.separator + input.getName() + "_convert_" + (i + 1) + ".xml";
-							GraphSaver.graphToGraphMl(graphList.get(i), new File(newFileName));
-
-							jpbProces.setValue(50 + ((50 / graphList.size()) * (i + 1)));
+							graphList = GraphFactory.createGraphFromGraph6(f);
 						}
-
-						jpbProces.setValue(100);
-						JOptionPane.showMessageDialog(mainWindow,"Everythink done.",OK_DIALOG_TITLE,JOptionPane.INFORMATION_MESSAGE);
-					}
-					catch (GraphInputOutputException e)
+						catch (IOException e)
+						{
+							JOptionPane.showMessageDialog(mainWindow,"File read error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+						break;
+					case GRAPHML:
+						graphList = new LinkedList<Graph<Integer>>();
+						graphList.add(GraphFactory.createGraphFromGraphml(f));
+						break;
+					default:
+						try
+						{
+							graphList = GraphFactory.createGraphFromTextCatalog(f);
+						}
+						catch (IOException e)
+						{
+							JOptionPane.showMessageDialog(mainWindow,"File read error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+						break;
+				}
+				
+				if (saveIntoOneFile == true)
+				{
+					allGraphs.addAll(graphList);
+					jpbProces.setValue(50 / inputFiles.size() * k);
+				}
+				else
+				{
+					String newFileName;
+					switch (selectedFormat)
 					{
-						JOptionPane.showMessageDialog(mainWindow,"File saving error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
-						return;
+						case GRAPH6:
+							newFileName = outputDirectory.getAbsolutePath() + File.separator + f.getName() + "_convert.g6";
+							try
+							{
+								GraphSaver.graphsToGraph6Format(graphList,new File(newFileName));
+							}
+							catch (GraphInputOutputException e)
+							{
+								JOptionPane.showMessageDialog(mainWindow,"File saving error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+								return;
+							}
+							break;
+						case BRATISLAVA_TEXT_CATALOG:
+							int graphVertexes = 0;
+							for (Graph g :graphList)
+							{
+								graphVertexes += g.getCountOfVertexes();
+							}
+							graphVertexes = graphVertexes / graphList.size();
+							newFileName = outputDirectory.getAbsolutePath() + File.separator + f.getName() + "_convert." + graphVertexes;
+							try
+							{
+								GraphSaver.graphsToTextCatalog(graphList,new File(newFileName));
+							}
+							catch (GraphInputOutputException e)
+							{
+								JOptionPane.showMessageDialog(mainWindow,"File saving error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+								return;
+							}
+							break;
+						case GRAPHML:
+							try
+							{
+								for (int i = 0; i < graphList.size(); i++)
+								{
+									newFileName = outputDirectory.getAbsolutePath() + File.separator + f.getName() + "_convert_" + (i + 1) + ".xml";
+									GraphSaver.graphToGraphMl(graphList.get(i), new File(newFileName));
+		
+									jpbProces.setValue(50 + ((50 / graphList.size()) * (i + 1)));
+								}
+							}
+							catch (GraphInputOutputException e)
+							{
+								JOptionPane.showMessageDialog(mainWindow,"File saving error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+								return;
+							}
+							break;
 					}
-					break;
+					
+					jpbProces.setValue(100 / inputFiles.size() * k);
+				}
+				
+				k++;
+			}
+			
+			if (saveIntoOneFile == true)
+			{
+			
+				String newFileName = outputDirectory.getAbsolutePath() + File.separator + "all_graphs_convert";
+
+				switch (selectedFormat)
+				{
+					case GRAPH6:
+						newFileName += ".g6";
+						try
+						{
+							GraphSaver.graphsToGraph6Format(allGraphs,new File(newFileName));
+							jpbProces.setValue(100);
+							JOptionPane.showMessageDialog(mainWindow,"Everythink done.",OK_DIALOG_TITLE,JOptionPane.INFORMATION_MESSAGE);
+						}
+						catch (GraphInputOutputException e)
+						{
+							JOptionPane.showMessageDialog(mainWindow,"File saving error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+						break;
+					case BRATISLAVA_TEXT_CATALOG:
+						newFileName += ".BAGRAPH";
+						try
+						{
+							GraphSaver.graphsToTextCatalog(allGraphs,new File(newFileName));
+							jpbProces.setValue(100);
+							JOptionPane.showMessageDialog(mainWindow,"Everythink done.",OK_DIALOG_TITLE,JOptionPane.INFORMATION_MESSAGE);
+						}
+						catch (GraphInputOutputException e)
+						{
+							JOptionPane.showMessageDialog(mainWindow,"File saving error.\n" + e.getMessage(),ERROR_DIALOG_TITLE,JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+						break;
+				}
+			}
+			else
+			{
+				jpbProces.setValue(100);
+				JOptionPane.showMessageDialog(mainWindow,"Everythink done.",OK_DIALOG_TITLE,JOptionPane.INFORMATION_MESSAGE);
 			}
 
 		}

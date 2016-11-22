@@ -39,7 +39,7 @@ public final class GraphFactory
 		String[] name = file.getName().split("\\.");
 		String extension = name[name.length - 1];
 		extension = extension.toLowerCase();
-		if (extension.equals("xml"))
+		if (extension.equals("xml") || extension.equals("graphml"))
 		{
 			return SupportedFormats.GRAPHML;
 		}
@@ -49,17 +49,8 @@ public final class GraphFactory
 		}
 		else
 		{
-			try
-			{
-				Integer.valueOf(extension);
-				return SupportedFormats.BRATISLAVA_TEXT_CATALOG;
-			}
-			catch (NumberFormatException e)
-			{
-			}
+			return SupportedFormats.BRATISLAVA_TEXT_CATALOG;
 		}
-
-		return null;
 	}
 
 	/*******************************************************
