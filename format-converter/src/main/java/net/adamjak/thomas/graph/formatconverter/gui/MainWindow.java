@@ -228,13 +228,7 @@ public class MainWindow extends JFrame
 							}
 							break;
 						case BRATISLAVA_TEXT_CATALOG:
-							int graphVertexes = 0;
-							for (Graph g : graphList)
-							{
-								graphVertexes += g.getCountOfVertexes();
-							}
-							graphVertexes = graphVertexes / graphList.size();
-							newFileName = outputDirectory.getAbsolutePath() + File.separator + f.getName() + "_convert." + graphVertexes;
+							newFileName = outputDirectory.getAbsolutePath() + File.separator + f.getName() + "_convert.ba";
 							try
 							{
 								GraphSaver.graphsToTextCatalog(graphList, new File(newFileName));
@@ -283,7 +277,7 @@ public class MainWindow extends JFrame
 						{
 							GraphSaver.graphsToGraph6Format(allGraphs, new File(newFileName));
 							jpbProces.setValue(100);
-							JOptionPane.showMessageDialog(mainWindow, "Everythink done.", OK_DIALOG_TITLE, JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(mainWindow, "Everything done.", OK_DIALOG_TITLE, JOptionPane.INFORMATION_MESSAGE);
 						}
 						catch (GraphInputOutputException e)
 						{
@@ -292,12 +286,12 @@ public class MainWindow extends JFrame
 						}
 						break;
 					case BRATISLAVA_TEXT_CATALOG:
-						newFileName += ".BAGRAPH";
+						newFileName += ".ba";
 						try
 						{
 							GraphSaver.graphsToTextCatalog(allGraphs, new File(newFileName));
 							jpbProces.setValue(100);
-							JOptionPane.showMessageDialog(mainWindow, "Everythink done.", OK_DIALOG_TITLE, JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(mainWindow, "Everything done.", OK_DIALOG_TITLE, JOptionPane.INFORMATION_MESSAGE);
 						}
 						catch (GraphInputOutputException e)
 						{
@@ -310,7 +304,7 @@ public class MainWindow extends JFrame
 			else
 			{
 				jpbProces.setValue(100);
-				JOptionPane.showMessageDialog(mainWindow, "Everythink done.", OK_DIALOG_TITLE, JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(mainWindow, "Everything done.", OK_DIALOG_TITLE, JOptionPane.INFORMATION_MESSAGE);
 			}
 
 		}
