@@ -12,6 +12,10 @@ import java.awt.event.KeyEvent;
  */
 public class GuiAccelerators
 {
+	public final static KeyStroke ALT_A = KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.ALT_MASK);
+	public final static KeyStroke ALT_D = KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.ALT_MASK);
+	public final static KeyStroke ALT_S = KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.ALT_MASK);
+
 	public final static KeyStroke CTRL_A = KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 	public final static KeyStroke CTRL_I = KeyStroke.getKeyStroke(KeyEvent.VK_I, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 	public final static KeyStroke CTRL_O = KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());

@@ -60,6 +60,7 @@ public class AppMainWindow extends JFrame
 		setContentPane(rootPanel);
 		pack();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setSize(1000,500);
 		setJMenuBar(this.createJMenuBar());
 	}
 
@@ -78,7 +79,7 @@ public class AppMainWindow extends JFrame
 		String[][] data = this.getTableData();
 
 		JTable jTable = new JTable(data, columnNames);
-		DefaultTableModel model = new DefaultTableModel(data.length, columnNames.length);
+		DefaultTableModel model = new DefaultTableModel(columnNames, data.length);
 		jTable.setModel(model);
 		return jTable;
 	}
@@ -153,8 +154,7 @@ public class AppMainWindow extends JFrame
 
 		JMenuItem jmiFileClose = new JMenuItem("Close");
 		jmiFileClose.setAccelerator(GuiAccelerators.CTRL_Q);
-		jmiFileClose.addActionListener(new ActionListener()
-		{
+		jmiFileClose.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed (ActionEvent e)
 			{
@@ -180,6 +180,32 @@ public class AppMainWindow extends JFrame
 		jmSelection.add(jmiSelectionInvert);
 
 		this.jMenuBar.add(jmSelection);
+
+		// Menu Actions
+		JMenu jmActions = new JMenu("Actions");
+
+		// Menu Actions items
+		JMenu jmActionsSnark = new JMenu("Snark tests");
+		// Menu Action Snark items
+		JMenuItem jmiActionSnarkTestAllAlgorithms = new JMenuItem("Run all algorithms");
+		jmiActionSnarkTestAllAlgorithms.setAccelerator(GuiAccelerators.ALT_A);
+		jmActionsSnark.add(jmiActionSnarkTestAllAlgorithms);
+
+		jmActions.add(jmActionsSnark);
+
+		// Menu Actions Products
+		JMenu jmActionsProducts = new JMenu("Products");
+		// Menu Actions Products items
+		JMenuItem jmiActionsProductsDot = new JMenuItem("Dot product");
+		jmiActionsProductsDot.setAccelerator(GuiAccelerators.ALT_D);
+		jmActionsProducts.add(jmiActionsProductsDot);
+		JMenuItem jmiActionsProductsStar = new JMenuItem("Star product");
+		jmiActionsProductsStar.setAccelerator(GuiAccelerators.ALT_S);
+		jmActionsProducts.add(jmiActionsProductsStar);
+
+		jmActions.add(jmActionsProducts);
+
+		this.jMenuBar.add(jmActions);
 
 		// Menu About
 		JMenu jmAbout = new JMenu("About");
