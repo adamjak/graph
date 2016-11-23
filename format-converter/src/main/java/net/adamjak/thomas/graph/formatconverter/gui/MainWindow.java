@@ -84,6 +84,7 @@ public class MainWindow extends JFrame
 		public void actionPerformed (ActionEvent e)
 		{
 			J_FILE_CHOOSER.setMultiSelectionEnabled(true);
+			J_FILE_CHOOSER.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			int status = J_FILE_CHOOSER.showOpenDialog(mainWindow);
 			if (status == JFileChooser.APPROVE_OPTION)
 			{
