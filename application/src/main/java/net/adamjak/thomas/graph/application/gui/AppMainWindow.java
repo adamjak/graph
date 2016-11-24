@@ -1,5 +1,6 @@
 package net.adamjak.thomas.graph.application.gui;
 
+import net.adamjak.thomas.graph.application.commons.Utils;
 import net.adamjak.thomas.graph.library.api.Graph;
 import net.adamjak.thomas.graph.library.io.GraphFactory;
 
@@ -171,12 +172,49 @@ public class AppMainWindow extends JFrame
 		// Menu Selection items
 		JMenuItem jmiSelectionSelectAll = new JMenuItem("Select all");
 		jmiSelectionSelectAll.setAccelerator(GuiAccelerators.CTRL_A);
+		jmiSelectionSelectAll.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent e)
+			{
+				jTable.selectAll();
+			}
+		});
 		jmSelection.add(jmiSelectionSelectAll);
 		JMenuItem jmiSelectionUnselectAll = new JMenuItem("Unselect all");
 		jmiSelectionUnselectAll.setAccelerator(GuiAccelerators.CTRL_SHIFT_A);
+		jmiSelectionUnselectAll.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent e)
+			{
+				jTable.clearSelection();
+			}
+		});
 		jmSelection.add(jmiSelectionUnselectAll);
 		JMenuItem jmiSelectionInvert = new JMenuItem("Invert");
 		jmiSelectionInvert.setAccelerator(GuiAccelerators.CTRL_I);
+		jmiSelectionInvert.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed (ActionEvent e)
+			{
+				int[] selected = jTable.getSelectedRows();
+
+				for (int i = 0; i < jTable.getRowCount(); i++)
+				{
+					if (Utils.isIntInArray(i, selected))
+					{
+						jTable.removeRowSelectionInterval(i, i);
+					}
+					else
+					{
+						jTable.addRowSelectionInterval(i, i);
+					}
+				}
+
+			}
+		});
 		jmSelection.add(jmiSelectionInvert);
 
 		this.jMenuBar.add(jmSelection);
