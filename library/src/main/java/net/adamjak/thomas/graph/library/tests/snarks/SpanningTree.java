@@ -1,7 +1,7 @@
-package net.adamjak.thomas.graph.library.cubic.snarks.tests;
+package net.adamjak.thomas.graph.library.tests.snarks;
 
 import net.adamjak.thomas.graph.library.classes.GraphImpl;
-import net.adamjak.thomas.graph.library.cubic.snarks.SnarkTestResult;
+import net.adamjak.thomas.graph.library.tests.SnarkTestResult;
 
 import java.util.concurrent.Callable;
 
@@ -22,7 +22,7 @@ public class SpanningTree<T extends Comparable> implements Callable<SnarkTestRes
 	@Override
 	public SnarkTestResult call () throws Exception
 	{
-		// TODO: 25.3.2016 -- porozumiet kosytrovemu algoritmu
+		// TODO: 25.3.2016 -- porozumiet kostrovemu algoritmu
 
 		return null;
 	}

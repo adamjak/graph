@@ -1,4 +1,4 @@
-package net.adamjak.thomas.graph.library.cubic.snarks;
+package net.adamjak.thomas.graph.library.tests;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,9 +1,9 @@
-package net.adamjak.thomas.graph.library.cubic.snarks.tests;
+package net.adamjak.thomas.graph.library.tests.snarks;
 
 import net.adamjak.thomas.graph.library.api.Graph;
 import net.adamjak.thomas.graph.library.classes.Cycle;
-import net.adamjak.thomas.graph.library.cubic.snarks.SnarkTest;
-import net.adamjak.thomas.graph.library.cubic.snarks.SnarkTestResult;
+import net.adamjak.thomas.graph.library.tests.GraphTest;
+import net.adamjak.thomas.graph.library.tests.SnarkTestResult;
 import net.adamjak.thomas.graph.library.interfaces.anot.Benchmarked;
 
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * License: The BSD 3-Clause License
  */
 @Benchmarked
-public class OneFactor<T extends Comparable> extends SnarkTest<T>
+public class OneFactor<T extends Comparable> extends GraphTest<T>
 {
 	public OneFactor ()
 	{}

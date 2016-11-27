@@ -1,4 +1,4 @@
-package net.adamjak.thomas.graph.library.cubic.snarks;
+package net.adamjak.thomas.graph.library.tests;
 
 import net.adamjak.thomas.graph.library.api.Graph;
 
@@ -12,7 +12,7 @@ import java.util.concurrent.RecursiveTask;
  * Copyright 2016, Tomas Adamjak
  * License: The BSD 3-Clause License
  */
-public abstract class SnarkTest<T extends Comparable> extends RecursiveTask<SnarkTestResult> implements Callable<SnarkTestResult>
+public abstract class GraphTest<T extends Comparable> extends RecursiveTask<GraphTestResult> implements Callable<GraphTestResult>
 {
 	protected Graph<T> graph;
 
@@ -29,7 +29,7 @@ public abstract class SnarkTest<T extends Comparable> extends RecursiveTask<Snar
 	 * @throws InterruptedException if the current thread is not a
 	 * member of a ForkJoinPool and was interrupted while waiting
 	 */
-	public final SnarkTestResult getResult() throws ExecutionException, InterruptedException
+	public final GraphTestResult getResult() throws ExecutionException, InterruptedException
 	{
 		return super.get();
 	}

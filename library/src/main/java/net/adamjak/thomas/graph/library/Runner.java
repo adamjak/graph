@@ -52,20 +52,20 @@ public class Runner {
 //			packageNames.add(this.property.getGraphAlgorithmsPackage());
 //		}
 //
-//		Set<Class<?>> classes = classFinder.findClassesWhitchExtends(classFinder.findAnnotatedClasses(packageNames, true, Benchmarked.class), SnarkTest.class);
+//		Set<Class<?>> classes = classFinder.findClassesWhitchExtends(classFinder.findAnnotatedClasses(packageNames, true, Benchmarked.class), GraphTest.class);
 //
 //		for (Graph<Integer> g : listOfGraphs)
 //		{
 //			ForkJoinPool forkJoinPool = new ForkJoinPool(classes.size());
 //
-//			Set<SnarkTest> snarkTests = new LinkedHashSet<SnarkTest>();
+//			Set<GraphTest> snarkTests = new LinkedHashSet<GraphTest>();
 //
 //			for (Class<?> c : classes)
 //			{
-//				SnarkTest snarkTest = null;
+//				GraphTest snarkTest = null;
 //				try
 //				{
-//					snarkTest = (SnarkTest) c.newInstance();
+//					snarkTest = (GraphTest) c.newInstance();
 //					snarkTest.init(g);
 //					snarkTests.add(snarkTest);
 //				}
@@ -79,7 +79,7 @@ public class Runner {
 //				}
 //			}
 //
-//			for (SnarkTest st : snarkTests)
+//			for (GraphTest st : snarkTests)
 //			{
 //				forkJoinPool.execute(st);
 //			}
@@ -88,7 +88,7 @@ public class Runner {
 //
 //			while (snarkTestResult == null)
 //			{
-//				for (SnarkTest st : snarkTests)
+//				for (GraphTest st : snarkTests)
 //				{
 //					if (st.isDone())
 //					{
