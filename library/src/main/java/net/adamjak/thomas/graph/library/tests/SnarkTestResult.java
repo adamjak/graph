@@ -102,6 +102,7 @@ public class SnarkTestResult implements GraphTestResult
 	{
 		this.time = time;
 		this.addValue("time",time);
+		this.addValue("timeInSeconds",this.getTimeInSeconds());
 	}
 
 	/**

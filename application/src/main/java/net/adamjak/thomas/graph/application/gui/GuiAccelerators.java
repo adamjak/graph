@@ -13,6 +13,7 @@ import java.awt.event.KeyEvent;
 public class GuiAccelerators
 {
 	public final static KeyStroke ALT_A = KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.ALT_MASK);
+	public final static KeyStroke ALT_C = KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.ALT_MASK);
 	public final static KeyStroke ALT_D = KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.ALT_MASK);
 	public final static KeyStroke ALT_S = KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.ALT_MASK);
 

@@ -2,7 +2,13 @@ package net.adamjak.thomas.graph.application.gui;
 
 import net.adamjak.thomas.graph.application.commons.Utils;
 import net.adamjak.thomas.graph.library.api.Graph;
+import net.adamjak.thomas.graph.library.interfaces.anot.Benchmarked;
 import net.adamjak.thomas.graph.library.io.GraphFactory;
+import net.adamjak.thomas.graph.library.tests.GraphTest;
+import net.adamjak.thomas.graph.library.tests.GraphTestResult;
+import net.adamjak.thomas.graph.library.utils.ClassFinder;
+import net.adamjak.thomas.graph.library.utils.Settings;
+import org.apache.log4j.Logger;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -22,8 +28,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Created by Tomas Adamjak on 22.11.2016.
@@ -36,6 +46,7 @@ public class AppMainWindow extends JFrame
 	// Constants
 	// --------------------------------------------------
 	private final static String WINDOW_TITLE = "Graph app";
+	final static Logger LOGGER = Logger.getLogger(AppMainWindow.class);
 
 	// --------------------------------------------------
 	// Components
@@ -74,7 +85,6 @@ public class AppMainWindow extends JFrame
 	{
 		String[] columnNames = {"ID",
 				"Count of vertexes",
-				"Snark",
 				"Time",
 				"Algorithm name"};
 		String[][] data = this.getTableData();
@@ -90,7 +100,7 @@ public class AppMainWindow extends JFrame
 		String[][] data;
 		if (this.graphList != null && this.graphList.size() > 0)
 		{
-			data = new String[this.graphList.size()][5];
+			data = new String[this.graphList.size()][4];
 
 			for (int i = 0; i < this.graphList.size(); i++)
 			{
@@ -98,12 +108,11 @@ public class AppMainWindow extends JFrame
 				data[i][1] = String.valueOf(this.graphList.get(i).getCountOfVertexes());
 				data[i][2] = "";
 				data[i][3] = "";
-				data[i][4] = "";
 			}
 		}
 		else
 		{
-			data = new String[0][5];
+			data = new String[0][4];
 		}
 
 		return data;
@@ -230,6 +239,90 @@ public class AppMainWindow extends JFrame
 		jmActionsSnark.add(jmiActionSnarkTestAllAlgorithms);
 
 		jmActions.add(jmActionsSnark);
+
+		JMenuItem jmiActionSnarkAlgorithmCompare = new JMenuItem("Run algorithm comparation");
+		jmiActionSnarkAlgorithmCompare.setAccelerator(GuiAccelerators.ALT_C);
+		jmiActionSnarkAlgorithmCompare.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed (ActionEvent event)
+			{
+				if (jTable.getSelectedRowCount() == 0)
+				{
+					JOptionPane.showMessageDialog(appMainWindow, "Please select at least one graph.", "Error!", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+
+				ClassFinder classFinder = new ClassFinder();
+				Set<String> packageNames = new LinkedHashSet<String>();
+				packageNames.add(Settings.getInstance().getSetting("packageName"));
+				Set<Class<?>> classes = classFinder.findClassesWhitchExtends(classFinder.findAnnotatedClasses(packageNames, true, Benchmarked.class), GraphTest.class);
+
+				for (int i : jTable.getSelectedRows())
+				{
+					Graph<Integer> g = graphList.get(i);
+					ForkJoinPool forkJoinPool = new ForkJoinPool(classes.size());
+					Set<GraphTest> snarkTests = new LinkedHashSet<GraphTest>();
+					for (Class<?> c : classes)
+					{
+						GraphTest snarkTest = null;
+						try
+						{
+							snarkTest = (GraphTest) c.newInstance();
+							snarkTest.init(g);
+							snarkTests.add(snarkTest);
+						}
+						catch (InstantiationException e)
+						{
+							e.printStackTrace();
+						}
+						catch (IllegalAccessException e)
+						{
+							e.printStackTrace();
+						}
+					}
+
+					for (GraphTest st : snarkTests)
+					{
+						forkJoinPool.execute(st);
+					}
+
+					GraphTestResult graphTestResult = null;
+
+					while (graphTestResult == null)
+					{
+						for (GraphTest st : snarkTests)
+						{
+							if (st.isDone())
+							{
+								try
+								{
+									graphTestResult = st.getResult();
+								}
+								catch (InterruptedException e)
+								{
+									e.printStackTrace();
+								}
+								catch (ExecutionException e)
+								{
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+
+					String className = ((Class<?>) graphTestResult.getValue("snarkTesterClass")).getSimpleName();
+					String sout = "Snark test result " +  ((Class<?>) graphTestResult.getValue("snarkTesterClass")).getSimpleName() + ": " +
+							      "Time: " + graphTestResult.getValue("timeInSeconds") + " second " +
+							      "Snark:" + graphTestResult.getValue("snark");
+					LOGGER.info(sout);
+
+					jTable.setValueAt(graphTestResult.getValue("timeInSeconds"),i,2);
+					jTable.setValueAt(className,i,3);
+				}
+
+			}
+		});
+		jmActionsSnark.add(jmiActionSnarkAlgorithmCompare);
 
 		// Menu Actions Products
 		JMenu jmActionsProducts = new JMenu("Products");
