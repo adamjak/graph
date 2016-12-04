@@ -23,18 +23,17 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
@@ -66,6 +65,7 @@ public class AppMainWindow extends JFrame
 	// --------------------------------------------------
 	private AppMainWindow appMainWindow;
 	private List<Graph<Integer>> graphList = null;
+	private String sourceFile;
 
 	public AppMainWindow ()
 	{
@@ -91,7 +91,7 @@ public class AppMainWindow extends JFrame
 		String[] columnNames = {"ID",
 				"Count of vertexes",
 				"Time",
-				"Algorithm name"};
+				"Info"};
 		String[][] data = this.getTableData();
 
 		JTable jTable = new JTable(data, columnNames);
@@ -150,22 +150,6 @@ public class AppMainWindow extends JFrame
 		jmiFileOpen.setAccelerator(GuiAccelerators.CTRL_O);
 		jmiFileOpen.addActionListener(new AlJmiFileOpen());
 		jmFile.add(jmiFileOpen);
-
-		// Submenu Save in File menu
-		JMenu jmFileSave = new JMenu("Save");
-
-		// Submenu Save items
-		JMenuItem jmiFileSaveResults = new JMenuItem("Save results");
-		jmiFileSaveResults.setAccelerator(GuiAccelerators.CTRL_S);
-		jmiFileSaveResults.addActionListener(new AlJmiFileSaveResults());
-		jmFileSave.add(jmiFileSaveResults);
-
-		JMenuItem jmiFileSaveSelected = new JMenuItem("Save selected items");
-		jmiFileSaveSelected.setAccelerator(GuiAccelerators.CTRL_SHIFT_S);
-		jmiFileSaveSelected.setEnabled(false);
-		jmFileSave.add(jmiFileSaveSelected);
-
-		jmFile.add(jmFileSave);
 
 		jmFile.addSeparator();
 
@@ -249,12 +233,40 @@ public class AppMainWindow extends JFrame
 
 		this.jMenuBar.add(jmAbout);
 
-		return jMenuBar;
+		return this.jMenuBar;
 	}
 
 	private void doSnarkAlgorithmCompare ()
 	{
-		Thread t = new Thread(new DoSnarkAlgorithmCompare());
+		if (jTable.getSelectedRowCount() == 0)
+		{
+			JOptionPane.showMessageDialog(appMainWindow, "Please select at least one graph.", "Error!", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		int times = 0;
+
+		while (times < 1)
+		{
+			String ans = JOptionPane.showInputDialog(appMainWindow, "How many times do you want to run?", "Setting", JOptionPane.QUESTION_MESSAGE);
+
+			if (ans == null)
+			{
+				return;
+			}
+
+			try
+			{
+				times = Integer.valueOf(ans);
+			}
+			catch (NumberFormatException e)
+			{
+				JOptionPane.showMessageDialog(appMainWindow, "You must enter an integer greater than 0!", "Error.", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+
+
+		Thread t = new Thread(new DoSnarkAlgorithmCompare(times));
 		t.start();
 	}
 
@@ -283,6 +295,7 @@ public class AppMainWindow extends JFrame
 
 				for (File f : jFileChooser.getSelectedFiles())
 				{
+					sourceFile += f.getAbsolutePath() + " ";
 					try
 					{
 						switch (GraphFactory.getFileFormat(f))
@@ -439,21 +452,22 @@ public class AppMainWindow extends JFrame
 		}
 	}
 
-
 	// ---------------------------------------------------
 	// Runners
 	// ---------------------------------------------------
 
 	private class DoSnarkAlgorithmCompare implements Runnable
 	{
+		private int times;
+
+		public DoSnarkAlgorithmCompare (int times)
+		{
+			this.times = times;
+		}
+
 		@Override
 		public void run ()
 		{
-			if (jTable.getSelectedRowCount() == 0)
-			{
-				JOptionPane.showMessageDialog(appMainWindow, "Please select at least one graph.", "Error!", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
 
 			LOGGER.info("Start snark algorithm comparation.");
 			jProgressBar.setValue(0);
@@ -465,146 +479,86 @@ public class AppMainWindow extends JFrame
 
 			int[] selectedRows = jTable.getSelectedRows();
 
-			for (int i : selectedRows)
+			GraphTestResult[][] results = new GraphTestResult[times][selectedRows.length];
+
+			for (int run = 0; run < times; run++)
 			{
-				Graph<Integer> g = graphList.get(i);
-				ForkJoinPool forkJoinPool = new ForkJoinPool(classes.size());
-				Set<GraphTest> snarkTests = new LinkedHashSet<GraphTest>();
-
-				for (Class<?> c : classes)
+				for (int i : selectedRows)
 				{
-					GraphTest snarkTest = null;
-					try
-					{
-						snarkTest = (GraphTest) c.newInstance();
-						snarkTest.init(g);
-						snarkTests.add(snarkTest);
-					}
-					catch (InstantiationException e)
-					{
-						e.printStackTrace();
-					}
-					catch (IllegalAccessException e)
-					{
-						e.printStackTrace();
-					}
-				}
+					Graph<Integer> g = graphList.get(i);
+					ForkJoinPool forkJoinPool = new ForkJoinPool(classes.size());
+					Set<GraphTest> snarkTests = new LinkedHashSet<GraphTest>();
 
-				for (GraphTest st : snarkTests)
-				{
-					forkJoinPool.execute(st);
-				}
+					for (Class<?> c : classes)
+					{
+						GraphTest snarkTest = null;
+						try
+						{
+							snarkTest = (GraphTest) c.newInstance();
+							snarkTest.init(g);
+							snarkTests.add(snarkTest);
+						}
+						catch (InstantiationException e)
+						{
+							e.printStackTrace();
+						}
+						catch (IllegalAccessException e)
+						{
+							e.printStackTrace();
+						}
+					}
 
-				GraphTestResult graphTestResult = null;
-
-				while (graphTestResult == null)
-				{
 					for (GraphTest st : snarkTests)
 					{
-						if (st.isDone())
+						forkJoinPool.execute(st);
+					}
+
+					GraphTestResult graphTestResult = null;
+
+					while (graphTestResult == null)
+					{
+						for (GraphTest st : snarkTests)
 						{
-							try
+							if (st.isDone())
 							{
-								graphTestResult = st.getResult();
-							}
-							catch (InterruptedException e)
-							{
-								e.printStackTrace();
-							}
-							catch (ExecutionException e)
-							{
-								e.printStackTrace();
+								try
+								{
+									graphTestResult = st.getResult();
+								}
+								catch (InterruptedException e)
+								{
+									e.printStackTrace();
+								}
+								catch (ExecutionException e)
+								{
+									e.printStackTrace();
+								}
 							}
 						}
 					}
+
+					String sout = "Testing run: " + (run + 1) + ", Graph id: " + i + ", Result: " + graphTestResult;
+					LOGGER.info(sout);
+
+					jTable.setValueAt(graphTestResult.getValue("timeInSeconds"), i, 2);
+					jTable.setValueAt(graphTestResult.toString(), i, 3);
+
+					results[run][i] = graphTestResult;
 				}
 
-				String className = ((Class<?>) graphTestResult.getValue("snarkTesterClass")).getSimpleName();
-				String sout = "Snark test result " + ((Class<?>) graphTestResult.getValue("snarkTesterClass")).getSimpleName() + ": " +
-						"Time: " + graphTestResult.getValue("timeInSeconds") + " second " +
-						"Snark:" + graphTestResult.getValue("snark");
-				LOGGER.info(sout);
-
-				jTable.setValueAt(graphTestResult.getValue("timeInSeconds"), i, 2);
-				jTable.setValueAt(className, i, 3);
-
-				jProgressBar.setValue(jProgressBar.getValue() + (100 / selectedRows.length));
+				jProgressBar.setValue(100 / times * (run + 1));
 			}
 
 			jProgressBar.setValue(100);
+
+			Map<String, Object> resultValues = new HashMap<String, Object>();
+			resultValues.put("test", "Snark algorithm comparation");
+			resultValues.put("resultsData", results);
+			resultValues.put("times", times);
+
+			new ResultsWidnow(resultValues);
 		}
 	}
 
-	private class AlJmiFileSaveResults implements ActionListener
-	{
-		@Override
-		public void actionPerformed (ActionEvent event)
-		{
-			JFileChooser jfc = new JFileChooser();
-			jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			jfc.setFileFilter(new FileFilter()
-			{
-				@Override
-				public boolean accept (File f)
-				{
-					if (f.isDirectory() || f.getName().split("\\.")[f.getName().split("\\.").length - 1].toLowerCase().equals("csv"))
-					{
-						return true;
-					}
-					return false;
-				}
 
-				@Override
-				public String getDescription ()
-				{
-					return "*.csv";
-				}
-			});
-
-			if (jfc.showOpenDialog(appMainWindow) == JFileChooser.APPROVE_OPTION)
-			{
-				File f = jfc.getSelectedFile();
-
-				if (f.exists() == false || (f.exists() == true && JOptionPane.showConfirmDialog(appMainWindow,"File exit. Would you like to rewrite it?","Warning",JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION))
-				{
-					LOGGER.info("Save into " + f.getAbsolutePath() + " file.");
-
-					StringBuilder sb = new StringBuilder();
-
-					sb.append("ID,Vertex count,Time,Test result\n");
-
-					for (Object[] o : Utils.getDataFromJTable(jTable))
-					{
-						sb.append(o[0] + "," + o[1] + "," + o[2] + "," + o[3] + "\n");
-					}
-
-					BufferedWriter bw = null;
-					FileWriter fw = null;
-					try
-					{
-						fw = new FileWriter(f);
-						bw = new BufferedWriter(fw);
-						bw.write(sb.toString());
-						JOptionPane.showMessageDialog(appMainWindow,"Saved.","OK",JOptionPane.INFORMATION_MESSAGE);
-					}
-					catch (IOException e)
-					{
-						JOptionPane.showMessageDialog(appMainWindow,"File write error.\n" + e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-					}
-					finally
-					{
-						try
-						{
-							if (bw != null) bw.close();
-							if (fw != null) fw.close();
-						}
-						catch (IOException e)
-						{
-							JOptionPane.showMessageDialog(appMainWindow,"File close error.\n" + e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-						}
-					}
-				}
-			}
-		}
-	}
 }

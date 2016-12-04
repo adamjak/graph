@@ -64,6 +64,7 @@ public class SnarkTestResult implements GraphTestResult
 		return false;
 	}
 
+
 	public SnarkTestResult () {}
 
 	public SnarkTestResult (long time)
@@ -139,5 +140,31 @@ public class SnarkTestResult implements GraphTestResult
 	{
 		this.snarkTesterClass = snarkTesterClass;
 		this.addValue("snarkTesterClass",snarkTesterClass);
+	}
+
+	@Override
+	public String toString ()
+	{
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("SnarkTestResult: {");
+
+		int i = 0;
+		for (String key : this.prop.keySet())
+		{
+			if (i == 0)
+			{
+				sb.append(key + ":" + this.prop.get(key));
+			}
+			else
+			{
+				sb.append(", " + key + ":" + this.prop.get(key));
+			}
+			i++;
+		}
+
+		sb.append("}");
+
+		return sb.toString();
 	}
 }

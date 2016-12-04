@@ -8,5 +8,11 @@ public class Main
 	{
 		AppMainWindow appMainWindow = new AppMainWindow();
 		appMainWindow.setVisible(true);
+
+
+//		Map<String, Object> resultValues = new HashMap<String, Object>();
+//		resultValues.put("test", "Snark algorithm comparation");
+//
+//		new ResultsWidnow(resultValues);
 	}
 }
