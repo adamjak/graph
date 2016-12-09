@@ -1,5 +1,7 @@
 package net.adamjak.thomas.graph.application.gui;
 
+import net.adamjak.thomas.graph.application.commons.Settings;
+import net.adamjak.thomas.graph.application.commons.SnarkTestTypes;
 import net.adamjak.thomas.graph.application.commons.Utils;
 import net.adamjak.thomas.graph.library.api.Graph;
 import net.adamjak.thomas.graph.library.interfaces.anot.Benchmarked;
@@ -7,7 +9,6 @@ import net.adamjak.thomas.graph.library.io.GraphFactory;
 import net.adamjak.thomas.graph.library.tests.GraphTest;
 import net.adamjak.thomas.graph.library.tests.GraphTestResult;
 import net.adamjak.thomas.graph.library.utils.ClassFinder;
-import net.adamjak.thomas.graph.library.utils.Settings;
 import org.apache.log4j.Logger;
 
 import javax.swing.Icon;
@@ -29,6 +30,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -36,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 
 /**
@@ -193,17 +197,26 @@ public class AppMainWindow extends JFrame
 		// Menu Actions items
 		JMenu jmActionsSnark = new JMenu("Snark tests");
 		// Menu Action Snark items
-		JMenuItem jmiActionSnarkTestAllAlgorithms = new JMenuItem("Run all algorithms");
-		jmiActionSnarkTestAllAlgorithms.setAccelerator(GuiAccelerators.ALT_A);
-		jmiActionSnarkTestAllAlgorithms.setEnabled(false);
-		jmActionsSnark.add(jmiActionSnarkTestAllAlgorithms);
+
+		for (SnarkTestTypes type : SnarkTestTypes.values())
+		{
+			JMenuItem jmiActionSnarkTest = new JMenuItem("Run " + type.getValue());
+			jmiActionSnarkTest.addActionListener(new AlActionTest(type));
+			jmActionsSnark.add(jmiActionSnarkTest);
+		}
+
+
+//		JMenuItem jmiActionSnarkTestAllAlgorithms = new JMenuItem("Run all algorithms");
+//		jmiActionSnarkTestAllAlgorithms.setAccelerator(GuiAccelerators.ALT_A);
+//		jmiActionSnarkTestAllAlgorithms.setEnabled(false);
+//		jmActionsSnark.add(jmiActionSnarkTestAllAlgorithms);
+
+//		JMenuItem jmiActionSnarkAlgorithmCompare = new JMenuItem("Run algorithm comparation");
+//		jmiActionSnarkAlgorithmCompare.setAccelerator(GuiAccelerators.ALT_C);
+//		jmiActionSnarkAlgorithmCompare.addActionListener(new AlActionTest(SnarkTestTypes.ALGORITHM_COMPARATION));
+//		jmActionsSnark.add(jmiActionSnarkAlgorithmCompare);
 
 		jmActions.add(jmActionsSnark);
-
-		JMenuItem jmiActionSnarkAlgorithmCompare = new JMenuItem("Run algorithm comparation");
-		jmiActionSnarkAlgorithmCompare.setAccelerator(GuiAccelerators.ALT_C);
-		jmiActionSnarkAlgorithmCompare.addActionListener(new AlJmiActionSnarkAlgorithmCompare());
-		jmActionsSnark.add(jmiActionSnarkAlgorithmCompare);
 
 		// Menu Actions Products
 		JMenu jmActionsProducts = new JMenu("Products");
@@ -267,6 +280,39 @@ public class AppMainWindow extends JFrame
 
 
 		Thread t = new Thread(new DoSnarkAlgorithmCompare(times));
+		t.start();
+	}
+
+	private void doSnarkAllAlgorithms ()
+	{
+		if (jTable.getSelectedRowCount() == 0)
+		{
+			JOptionPane.showMessageDialog(appMainWindow, "Please select at least one graph.", "Error!", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		int times = 0;
+
+		while (times < 1)
+		{
+			String ans = JOptionPane.showInputDialog(appMainWindow, "How many times do you want to run?", "Setting", JOptionPane.QUESTION_MESSAGE);
+
+			if (ans == null)
+			{
+				return;
+			}
+
+			try
+			{
+				times = Integer.valueOf(ans);
+			}
+			catch (NumberFormatException e)
+			{
+				JOptionPane.showMessageDialog(appMainWindow, "You must enter an integer greater than 0!", "Error.", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+
+		Thread t = new Thread(new DoSnarkAllAlgorithms(times));
 		t.start();
 	}
 
@@ -377,12 +423,27 @@ public class AppMainWindow extends JFrame
 	// Action menu listeners
 	// ---------------------------------------------------
 
-	private class AlJmiActionSnarkAlgorithmCompare implements ActionListener
+	private class AlActionTest implements ActionListener
 	{
-		@Override
-		public void actionPerformed (ActionEvent event)
+		private final SnarkTestTypes testType;
+
+		public AlActionTest (SnarkTestTypes type)
 		{
-			doSnarkAlgorithmCompare();
+			this.testType = type;
+		}
+
+		@Override
+		public void actionPerformed (ActionEvent e)
+		{
+			switch (testType)
+			{
+				case ALGORITHM_COMPARATION:
+					doSnarkAlgorithmCompare();
+					break;
+				case ALL_ALGORITHMS:
+					doSnarkAllAlgorithms();
+					break;
+			}
 		}
 	}
 
@@ -475,17 +536,23 @@ public class AppMainWindow extends JFrame
 			ClassFinder classFinder = new ClassFinder();
 			Set<String> packageNames = new LinkedHashSet<String>();
 			packageNames.add(Settings.getInstance().getSetting("packageName"));
+			LOGGER.debug(Settings.getInstance().getSetting("packageName"));
 			Set<Class<?>> classes = classFinder.findClassesWhitchExtends(classFinder.findAnnotatedClasses(packageNames, true, Benchmarked.class), GraphTest.class);
 
-			int[] selectedRows = jTable.getSelectedRows();
+			List<Graph<Integer>> graphsForTest = new LinkedList<Graph<Integer>>();
+			for (int i : jTable.getSelectedRows())
+			{
+				graphsForTest.add(graphList.get(i));
+			}
 
-			GraphTestResult[][] results = new GraphTestResult[times][selectedRows.length];
+			GraphTestResult[][] results = new GraphTestResult[times][graphsForTest.size()];
 
 			for (int run = 0; run < times; run++)
 			{
-				for (int i : selectedRows)
+				for (int i = 0; i < graphsForTest.size(); i++)
 				{
-					Graph<Integer> g = graphList.get(i);
+					Graph<Integer> g = graphsForTest.get(i);
+					LOGGER.debug("Classes size:" + classes.size());
 					ForkJoinPool forkJoinPool = new ForkJoinPool(classes.size());
 					Set<GraphTest> snarkTests = new LinkedHashSet<GraphTest>();
 
@@ -537,13 +604,108 @@ public class AppMainWindow extends JFrame
 						}
 					}
 
-					String sout = "Testing run: " + (run + 1) + ", Graph id: " + i + ", Result: " + graphTestResult;
+					int graphId = graphList.indexOf(g);
+
+					String sout = "Testing run: " + (run + 1) + ", Graph id: " + graphId + ", Result: " + graphTestResult;
 					LOGGER.info(sout);
 
-					jTable.setValueAt(graphTestResult.getValue("timeInSeconds"), i, 2);
-					jTable.setValueAt(graphTestResult.toString(), i, 3);
+					jTable.setValueAt(graphTestResult.getValue("timeInSeconds"), graphId, 2);
+					jTable.setValueAt(run + "/" + times, graphId, 3);
 
 					results[run][i] = graphTestResult;
+				}
+
+				jProgressBar.setValue(100 / times * (run + 1));
+			}
+
+			jProgressBar.setValue(100);
+
+			Map<String, Object> resultValues = new HashMap<String, Object>();
+			resultValues.put("test", "Snark algorithm comparation");
+			resultValues.put("resultsData", results);
+			resultValues.put("times", times);
+
+			new ResultsWidnow(resultValues);
+		}
+	}
+
+	private class DoSnarkAllAlgorithms implements Runnable
+	{
+		private int times;
+
+		public DoSnarkAllAlgorithms (int times)
+		{
+			this.times = times;
+		}
+
+		@Override
+		public void run ()
+		{
+
+			LOGGER.info("Start snark algorithm comparation.");
+			jProgressBar.setValue(0);
+
+			ClassFinder classFinder = new ClassFinder();
+			Set<String> packageNames = new LinkedHashSet<String>();
+			packageNames.add(Settings.getInstance().getSetting("packageName"));
+			LOGGER.debug(Settings.getInstance().getSetting("packageName"));
+			List<Class<?>> classes = new ArrayList<>(classFinder.findClassesWhitchExtends(classFinder.findAnnotatedClasses(packageNames, true, Benchmarked.class), GraphTest.class));
+
+			List<Graph<Integer>> graphsForTest = new LinkedList<Graph<Integer>>();
+			for (int i : jTable.getSelectedRows())
+			{
+				graphsForTest.add(graphList.get(i));
+			}
+
+			GraphTestResult[][][] results = new GraphTestResult[times][graphsForTest.size()][classes.size()];
+
+			for (int run = 0; run < times; run++)
+			{
+				for (int i = 0; i < graphsForTest.size(); i++)
+				{
+					Graph<Integer> g = graphsForTest.get(i);
+
+					for (int j = 0; j < classes.size(); j++)
+					{
+						try
+						{
+							GraphTest graphTest = (GraphTest) classes.get(j).newInstance();
+							graphTest.init(g);
+							// TODO: 9.12.2016 -- doriesit co s dlho trvajucim vypoctom
+							LOGGER.debug("Start executor service");
+							ExecutorService executorService = Executors.newFixedThreadPool(1);
+							LOGGER.debug("submit into executor service");
+							GraphTestResult graphTestResult = (GraphTestResult) executorService.submit(graphTest).get();
+							LOGGER.debug("Shutdown executor service");
+							executorService.shutdown();
+
+							int graphId = graphList.indexOf(g);
+
+							String sout = "Testing run: " + (run + 1) + ", Graph id: " + graphId + ", Result: " + graphTestResult;
+							LOGGER.info(sout);
+
+							jTable.setValueAt(graphTestResult.getValue("timeInSeconds"), graphId, 2);
+							jTable.setValueAt(run + "/" + times, graphId, 3);
+
+							results[run][i][j] = graphTestResult;
+						}
+						catch (InstantiationException e)
+						{
+							e.printStackTrace();
+						}
+						catch (IllegalAccessException e)
+						{
+							e.printStackTrace();
+						}
+						catch (InterruptedException e)
+						{
+							e.printStackTrace();
+						}
+						catch (ExecutionException e)
+						{
+							e.printStackTrace();
+						}
+					}
 				}
 
 				jProgressBar.setValue(100 / times * (run + 1));

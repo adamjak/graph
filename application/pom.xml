@@ -1,45 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>net.adamjak.thomas.graph</groupId>
-		<artifactId>parent</artifactId>
-		<version>0.1</version>
-	</parent>
+    <parent>
+        <groupId>net.adamjak.thomas.graph</groupId>
+        <artifactId>parent</artifactId>
+        <version>0.1</version>
+    </parent>
 
-	<artifactId>application</artifactId>
-	<packaging>jar</packaging>
-	<name>Graph application</name>
+    <artifactId>application</artifactId>
+    <packaging>jar</packaging>
+    <name>Graph application</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>net.adamjak.thomas.graph</groupId>
-			<artifactId>library</artifactId>
-			<version>0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-math3</artifactId>
-			<version>3.2</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.jopendocument/jOpenDocument -->
-		<dependency>
-			<groupId>org.jopendocument</groupId>
-			<artifactId>jOpenDocument</artifactId>
-			<version>1.3b1</version>
-		</dependency>
+    <dependencies>
+        <!-- Graph library -->
+        <dependency>
+            <groupId>net.adamjak.thomas.graph</groupId>
+            <artifactId>library</artifactId>
+            <version>0.1</version>
+        </dependency>
 
+        <!-- Log4J - logging framework -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
 
-	</dependencies>
+        <!-- Math library for statistic -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.2</version>
+        </dependency>
 
+        <!-- A pure Java library for OASIS Open Document files manipulation  -->
+        <dependency>
+            <groupId>org.jopendocument</groupId>
+            <artifactId>jOpenDocument</artifactId>
+            <version>1.3b1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>net.adamjak.thomas.graph.application.Main</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>ideauidesigner-maven-plugin</artifactId>
+                <version>1.0-beta-1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>javac2</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <fork>true</fork>
+                    <debug>true</debug>
+                    <failOnError>true</failOnError>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

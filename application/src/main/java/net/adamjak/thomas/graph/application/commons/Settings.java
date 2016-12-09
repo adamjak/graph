@@ -1,9 +1,7 @@
-package net.adamjak.thomas.graph.library.utils;
+package net.adamjak.thomas.graph.application.commons;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -21,13 +19,11 @@ public class Settings
 		throw new IllegalStateException("Can not call singleton constructor.");
 	}
 
-	private Settings (URL url)
+	private Settings (InputStream is)
 	{
-		InputStream input = null;
 		try
 		{
-			input = new FileInputStream(url.getFile());
-			this.prop.load(input);
+			this.prop.load(is);
 		}
 		catch (IOException e)
 		{
@@ -35,11 +31,11 @@ public class Settings
 		}
 		finally
 		{
-			if (input != null)
+			if (is != null)
 			{
 				try
 				{
-					input.close();
+					is.close();
 				}
 				catch (IOException e)
 				{
@@ -54,7 +50,7 @@ public class Settings
 	{
 		if (instance == null)
 		{
-			instance = new Settings(Settings.class.getClassLoader().getResource("config.properties"));
+			instance = new Settings(Settings.class.getResourceAsStream("/config.properties"));
 		}
 		return instance;
 	}

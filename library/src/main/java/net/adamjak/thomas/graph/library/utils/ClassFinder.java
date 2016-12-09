@@ -16,6 +16,7 @@ import java.util.Set;
 public class ClassFinder
 {
 	private static final String FILE_PROTOCOL = "file";
+	private static final String JAR_PROTOCOL = "jar";
 	private static final String CLASS_SUFFIX = ".class";
 	private static final String DOT = ".";
 
@@ -118,10 +119,14 @@ public class ClassFinder
 					File file = new File(resUrl.getFile());
 					classNameSet.addAll(this.findClassFileNames(file));
 				}
+				else if (ClassFinder.JAR_PROTOCOL.equals(resUrl.getProtocol()))
+				{
+					File file = new File(resUrl.getFile());
+					classNameSet.addAll(this.findClassFileNames(file));
+				}
 			}
 
 			String packageSearchPattern = packageName.replace(ClassFinder.DOT, File.separator);
-
 			int maxDots = Utils.countCharInString(packageName, '.') + 1;
 
 			for (String classFileName : classNameSet)
