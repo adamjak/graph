@@ -1,10 +1,9 @@
 package net.adamjak.thomas.graph.library.utils;
 
-import java.io.File;
+import com.google.common.reflect.ClassPath;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.net.URL;
-import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -15,21 +14,11 @@ import java.util.Set;
  */
 public class ClassFinder
 {
-	private static final String FILE_PROTOCOL = "file";
-	private static final String JAR_PROTOCOL = "jar";
-	private static final String CLASS_SUFFIX = ".class";
-	private static final String DOT = ".";
-
 	private final ClassLoader classLoader;
 
 	public ClassFinder ()
 	{
-		this.classLoader = Thread.currentThread().getContextClassLoader();
-	}
-
-	public ClassFinder (ClassLoader classLoader)
-	{
-		this.classLoader = classLoader;
+		this.classLoader = getClass().getClassLoader();
 	}
 
 	/**
@@ -55,155 +44,65 @@ public class ClassFinder
 	}
 
 	/**
-	 * Find all annoted classes from package.
+	 * Find all annoted classes from package and subpackages.
 	 *
 	 * @param packageNames {@link Set} of package name with annoted classes
-	 * @param includeSubpackage set if method can find in subpackages
 	 * @param annotation find annotation
 	 * @return {@link Set}&lt;{@link Class}&lt;?&gt;&gt; of annoted classes.
 	 */
-	public Set<Class<?>> findAnnotatedClasses(Set<String> packageNames, boolean includeSubpackage, Class<? extends Annotation>... annotation)
+	public Set<Class<?>> findAnnotatedClasses (Set<String> packageNames, Class<? extends Annotation>... annotation)
 	{
-		Set<Class<?>> classes = findClasses(packageNames, includeSubpackage);
-		Set<Class<?>> output = new LinkedHashSet<Class<?>>();
+		Set<Class<?>> classes = this.findClasses(packageNames);
+		Set<Class<?>> annotatedClasses = new LinkedHashSet<Class<?>>();
 
 		if(classes == null || classes.isEmpty() || (annotation == null || annotation.length == 0))
 		{
-			return output;
+			return annotatedClasses;
 		}
 
 		for(Class<?> c : classes)
 		{
-			for(Class<? extends Annotation> ac : annotation)
+			for (Annotation a : c.getAnnotations())
 			{
-
-				if(c.getAnnotationsByType(ac).length > 0)
+				for (Class<? extends Annotation> ac : annotation)
 				{
-					output.add(c);
-					break;
-				}
-			}
-		}
-		return output;
-	}
-
-	/**
-	 * Find all classes in package. If parameter {@code includeSubpackage} is true method find in subpackages too.
-	 *
-	 * @return {@link Set}&lt;{@link Class}&lt;?&gt;&gt; in package.
-	 */
-	public Set<Class<?>> findClasses(Set<String> packageNames, boolean includeSubpackage)
-	{
-		Set<Class<?>> output = new LinkedHashSet<Class<?>>();
-
-		for (String packageName : packageNames)
-		{
-			String sourceName = this.changePackageNameToPath(packageName);
-			Set<String> classNameSet = new LinkedHashSet<String>();
-
-			Enumeration<URL> resources = null;
-			try
-			{
-				resources = this.classLoader.getResources(sourceName);
-			}
-			catch (IOException e)
-			{
-				return new LinkedHashSet<>();
-			}
-
-			while (resources.hasMoreElements())
-			{
-				URL resUrl = resources.nextElement();
-				if (ClassFinder.FILE_PROTOCOL.equals(resUrl.getProtocol()))
-				{
-					File file = new File(resUrl.getFile());
-					classNameSet.addAll(this.findClassFileNames(file));
-				}
-				else if (ClassFinder.JAR_PROTOCOL.equals(resUrl.getProtocol()))
-				{
-					File file = new File(resUrl.getFile());
-					classNameSet.addAll(this.findClassFileNames(file));
-				}
-			}
-
-			String packageSearchPattern = packageName.replace(ClassFinder.DOT, File.separator);
-			int maxDots = Utils.countCharInString(packageName, '.') + 1;
-
-			for (String classFileName : classNameSet)
-			{
-				int startIndex = classFileName.lastIndexOf(packageSearchPattern);
-
-				if (startIndex >= 0)
-				{
-					final int endIndex = classFileName.length() - ClassFinder.CLASS_SUFFIX.length();
-					String className = classFileName.substring(startIndex, endIndex).replace(File.separator, ClassFinder.DOT);
-
-					if (includeSubpackage || maxDots >= Utils.countCharInString(className, '.'))
+					if (ac.equals(a.annotationType()))
 					{
-						Class<?> cls;
-						try
-						{
-							cls = this.classLoader.loadClass(className);
-							output.add(cls);
-						}
-						catch (ClassNotFoundException ex)
-						{
-						}
+						annotatedClasses.add(c);
+						break;
 					}
 				}
 			}
 		}
-		return output;
 
+		return annotatedClasses;
 	}
 
 	/**
-	 * Method get all class paths from file. If file is directory, method find in subdirectories too.
+	 * Find all classes in package and subpackages.
 	 *
-	 * @return {@link Set}&lt;{@link String}&gt; with class paths.
+	 * @return {@link Set}&lt;{@link Class}&lt;?&gt;&gt; found classes.
 	 */
-	private Set<String> findClassFileNames (File file)
+	public Set<Class<?>> findClasses (Set<String> packageNames)
 	{
-		Set<String> output = new LinkedHashSet<String>();
+		Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
 
-		if (file == null)
+		try
 		{
-			return output;
-		}
-
-		if (file.isDirectory())
-		{
-			for (File f : file.listFiles())
+			for (String packageName : packageNames)
 			{
-				output.addAll(this.findClassFileNames(f));
+				Set<ClassPath.ClassInfo> classesInPackage = ClassPath.from(this.classLoader).getTopLevelClassesRecursive(packageName);
+				for (ClassPath.ClassInfo ci : classesInPackage)
+				{
+					classes.add(ci.load());
+				}
 			}
 		}
-		else
+		catch (IOException e)
 		{
-			if (file.getName().endsWith(ClassFinder.CLASS_SUFFIX))
-			{
-				output.add(file.getPath());
-			}
+			e.printStackTrace();
 		}
 
-		return output;
-	}
-
-	/**
-	 * Method convert package name to real system path. Use {@link File#separator}.<br />
-	 * Example for Linux:<br />
-	 * <em>Input:</em> <code>net.adamjak.thomas</code><br />
-	 * <em>Output:</em> <code>net/adamjak/thomas</code>
-	 * @param value package name
-	 * @return Real system path from package name or if value is {@code null} return {@code null}.
-	 */
-	private String changePackageNameToPath(String value)
-	{
-		if (value == null)
-		{
-			return null;
-		}
-
-		return value.replace(ClassFinder.DOT, File.separator);
+		return classes;
 	}
 }
