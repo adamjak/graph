@@ -33,4 +33,9 @@ public abstract class GraphTest<T extends Comparable> extends RecursiveTask<Grap
 	{
 		return super.get();
 	}
+
+	public Graph<T> getGraph ()
+	{
+		return this.graph;
+	}
 }

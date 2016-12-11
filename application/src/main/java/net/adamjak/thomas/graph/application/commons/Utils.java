@@ -1,7 +1,13 @@
 package net.adamjak.thomas.graph.application.commons;
 
+import net.adamjak.thomas.graph.library.interfaces.anot.Benchmarked;
+import net.adamjak.thomas.graph.library.tests.GraphTest;
+import net.adamjak.thomas.graph.library.utils.ClassFinder;
+
 import javax.swing.JTable;
 import javax.validation.constraints.NotNull;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Created by Tomas Adamjak on 24.11.2016.
@@ -46,5 +52,16 @@ public class Utils
 		}
 
 		return data;
+	}
+
+	/**
+	 * @return Return {@link Set} of {@link Class}es whitch extends from {@link GraphTest} and has {@link Benchmarked} annotation.
+	 */
+	public static Set<Class<?>> getAllTestClasses ()
+	{
+		ClassFinder classFinder = new ClassFinder();
+		Set<String> packageNames = new LinkedHashSet<String>();
+		packageNames.add(Settings.getInstance().getSetting("packageName"));
+		return classFinder.findClassesWhitchExtends(classFinder.findAnnotatedClasses(packageNames, Benchmarked.class), GraphTest.class);
 	}
 }

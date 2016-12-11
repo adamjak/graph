@@ -150,20 +150,8 @@ public class ResultsWidnow extends JFrame
 
 		jmFile.add(jmiFileSaveResults);
 
-		jmFile.addSeparator();
+		//jmFile.addSeparator();
 
-		JMenuItem jmiFileClose = new JMenuItem("Close");
-		jmiFileClose.setAccelerator(GuiAccelerators.CTRL_Q);
-		jmiFileClose.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed (ActionEvent e)
-			{
-				LOGGER.info("The application will now be halted.");
-				System.exit(0);
-			}
-		});
-		jmFile.add(jmiFileClose);
 
 		this.jMenuBar.add(jmFile);
 

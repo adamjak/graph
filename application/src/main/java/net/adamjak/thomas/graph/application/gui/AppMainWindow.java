@@ -13,7 +13,9 @@ import org.apache.log4j.Logger;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -30,6 +32,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -316,6 +319,53 @@ public class AppMainWindow extends JFrame
 		t.start();
 	}
 
+	private void doSnarkOneAlgorithm ()
+	{
+		if (jTable.getSelectedRowCount() == 0)
+		{
+			JOptionPane.showMessageDialog(appMainWindow, "Please select at least one graph.", "Error!", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		int times = 0;
+		while (times < 1)
+		{
+			JFormattedTextField countOfRuns = new JFormattedTextField(NumberFormat.getInstance());
+			JComboBox<Class<?>> algorithms = new JComboBox(Utils.getAllTestClasses().toArray());
+
+			Object[] objects = {
+					"How many times do you want to run?",
+					countOfRuns,
+					"Select algorithm class:",
+					algorithms
+			};
+
+			int result = JOptionPane.showConfirmDialog(appMainWindow, objects, "Settings", JOptionPane.OK_CANCEL_OPTION);
+
+			if (result == JOptionPane.OK_OPTION)
+			{
+				try
+				{
+					times = Integer.valueOf(countOfRuns.getText());
+				}
+				catch (NumberFormatException e)
+				{
+					JOptionPane.showMessageDialog(appMainWindow, "You must enter an integer greater than 0!", "Error.", JOptionPane.ERROR_MESSAGE);
+					break;
+				}
+
+				Thread t = new Thread(new DoSnarkAlgorithm(times, (Class<?>) algorithms.getSelectedItem()));
+				t.start();
+			}
+			else
+			{
+				return;
+			}
+		}
+
+
+	}
+
 	// ---------------------------------------------------
 	// Listeners
 	// ---------------------------------------------------
@@ -443,6 +493,9 @@ public class AppMainWindow extends JFrame
 				case ALL_ALGORITHMS:
 					doSnarkAllAlgorithms();
 					break;
+				case ONE_ALGORITHM:
+					doSnarkOneAlgorithm();
+					break;
 			}
 		}
 	}
@@ -537,7 +590,7 @@ public class AppMainWindow extends JFrame
 			Set<String> packageNames = new LinkedHashSet<String>();
 			packageNames.add(Settings.getInstance().getSetting("packageName"));
 			LOGGER.debug(Settings.getInstance().getSetting("packageName"));
-			Set<Class<?>> classes = classFinder.findClassesWhitchExtends(classFinder.findAnnotatedClasses(packageNames, true, Benchmarked.class), GraphTest.class);
+			Set<Class<?>> classes = classFinder.findClassesWhitchExtends(classFinder.findAnnotatedClasses(packageNames, Benchmarked.class), GraphTest.class);
 
 			List<Graph<Integer>> graphsForTest = new LinkedList<Graph<Integer>>();
 			for (int i : jTable.getSelectedRows())
@@ -642,14 +695,11 @@ public class AppMainWindow extends JFrame
 		public void run ()
 		{
 
-			LOGGER.info("Start snark algorithm comparation.");
+			LOGGER.info("Start snark all algorithms.");
 			jProgressBar.setValue(0);
 
-			ClassFinder classFinder = new ClassFinder();
-			Set<String> packageNames = new LinkedHashSet<String>();
-			packageNames.add(Settings.getInstance().getSetting("packageName"));
 			LOGGER.debug(Settings.getInstance().getSetting("packageName"));
-			List<Class<?>> classes = new ArrayList<>(classFinder.findClassesWhitchExtends(classFinder.findAnnotatedClasses(packageNames, true, Benchmarked.class), GraphTest.class));
+			List<Class<?>> classes = new ArrayList<>(Utils.getAllTestClasses());
 
 			List<Graph<Integer>> graphsForTest = new LinkedList<Graph<Integer>>();
 			for (int i : jTable.getSelectedRows())
@@ -715,6 +765,109 @@ public class AppMainWindow extends JFrame
 
 			Map<String, Object> resultValues = new HashMap<String, Object>();
 			resultValues.put("test", "Snark algorithm comparation");
+			resultValues.put("resultsData", results);
+			resultValues.put("times", times);
+
+			new ResultsWidnow(resultValues);
+		}
+	}
+
+	private class DoSnarkAlgorithm implements Runnable
+	{
+		private int times;
+		private Class<?> graphTestClass;
+
+		public DoSnarkAlgorithm (int times, Class<?> graphTestClass)
+		{
+			this.times = times;
+			this.graphTestClass = graphTestClass;
+		}
+
+		@Override
+		public void run ()
+		{
+			LOGGER.info("Start snark one algorithm test");
+			jProgressBar.setValue(0);
+
+			GraphTestResult[][] results = new GraphTestResult[times][jTable.getSelectedRows().length];
+
+			for (int i = 0; i < this.times; i++)
+			{
+				List<GraphTest> graphTests = new LinkedList<GraphTest>();
+				for (int row : jTable.getSelectedRows())
+				{
+					try
+					{
+						GraphTest graphTest = (GraphTest) this.graphTestClass.newInstance();
+						graphTest.init(graphList.get(row));
+						graphTests.add(graphTest);
+					}
+					catch (InstantiationException e)
+					{
+						e.printStackTrace();
+					}
+					catch (IllegalAccessException e)
+					{
+						e.printStackTrace();
+					}
+				}
+
+				ForkJoinPool forkJoinPool = new ForkJoinPool(ForkJoinPool.getCommonPoolParallelism());
+
+				for (int j = 0; j < graphTests.size(); j++)
+				{
+					forkJoinPool.execute(graphTests.get(j));
+				}
+
+				boolean running = true;
+
+				while (running)
+				{
+					running = false;
+
+					for (int j = 0; j < graphTests.size(); j++)
+					{
+						GraphTest graphTest = graphTests.get(j);
+						if (graphTest.isDone())
+						{
+							if (results[i][j] == null)
+							{
+								try
+								{
+									GraphTestResult graphTestResult = graphTest.getResult();
+									results[i][j] = graphTestResult;
+
+									int graphId = graphList.indexOf(graphTest.getGraph());
+
+									jTable.setValueAt(graphTestResult.getValue("timeInSeconds"), graphId, 2);
+									jTable.setValueAt((i + 1) + "/" + times, graphId, 3);
+
+									LOGGER.debug("graph id " + graphId + " in " + (i + 1) + " run is done.");
+								}
+								catch (ExecutionException e)
+								{
+									e.printStackTrace();
+								}
+								catch (InterruptedException e)
+								{
+									e.printStackTrace();
+								}
+							}
+						}
+						else
+						{
+							running = true;
+						}
+					}
+				}
+				forkJoinPool.shutdown();
+				jProgressBar.setValue(100 / this.times * (i + 1));
+			}
+
+			jProgressBar.setValue(100);
+
+			Map<String, Object> resultValues = new HashMap<String, Object>();
+			resultValues.put("test", "Snark one algorithm test - " + this.graphTestClass.getSimpleName());
 			resultValues.put("resultsData", results);
 			resultValues.put("times", times);
 

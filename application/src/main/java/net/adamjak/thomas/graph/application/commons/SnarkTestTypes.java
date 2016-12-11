@@ -8,7 +8,8 @@ package net.adamjak.thomas.graph.application.commons;
 public enum SnarkTestTypes
 {
 	ALGORITHM_COMPARATION("algorithm comparation"),
-	ALL_ALGORITHMS("all algorithms");
+	ALL_ALGORITHMS("all algorithms"),
+	ONE_ALGORITHM("one algorithmn");
 
 	private String value;
 
