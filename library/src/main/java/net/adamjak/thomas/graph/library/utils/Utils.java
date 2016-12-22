@@ -83,4 +83,54 @@ public class Utils
 
 		return files;
 	}
+
+	public static class Pair<T>
+	{
+		private final T first;
+		private final T second;
+		private final Class<?> type;
+
+		public Pair (T first, T second)
+		{
+			this.first = first;
+			this.second = second;
+			this.type = first.getClass();
+		}
+
+		public T getFirst ()
+		{
+			return first;
+		}
+
+		public T getSecond ()
+		{
+			return second;
+		}
+
+		@Override
+		public boolean equals (Object obj)
+		{
+			if (obj == null) return false;
+			if (obj instanceof Pair == false) return false;
+
+			Pair<T> other = (Pair<T>) obj;
+
+			if (this.getFirst().equals(other.getFirst()) && this.getSecond().equals(other.getSecond())) return true;
+			if (this.getFirst().equals(other.getSecond()) && this.getSecond().equals(other.getFirst())) return true;
+
+			return false;
+		}
+
+		@Override
+		public int hashCode ()
+		{
+			return this.first.hashCode() + this.second.hashCode() + 97;
+		}
+
+		@Override
+		public String toString ()
+		{
+			return "Pair of " + this.type.getSimpleName() + " first: " + this.first + " second: " + this.second;
+		}
+	}
 }
