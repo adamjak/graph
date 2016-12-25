@@ -106,4 +106,16 @@ public class GraphUtilsTest
 		assertFalse(GraphUtils.checkIsomorphism(g2, g3));
 	}
 
+	@Test
+	public void createAllDotProductsTest () throws Exception
+	{
+		Graph<Integer> g1 = InterestingGraphs.getPetersenGraph();
+		Graph<Integer> g2 = InterestingGraphs.getPetersenGraph();
+
+		int countOfDotProducts = ((g1.getListOfEdges().size() * (g1.getListOfEdges().size() - 1)) / 2) * g2.getListOfEdges().size();
+
+		Set<Graph<Integer>> graphs = GraphUtils.createAllDotProducts(g1, g2);
+		assertTrue(graphs.size() == countOfDotProducts);
+	}
+
 }
