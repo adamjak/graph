@@ -34,4 +34,20 @@ public class UtilsTest
 		assertFalse(p2.equals(p3));
 	}
 
+	@Test
+	public void isInPairTest () throws Exception
+	{
+		Utils.Pair<Integer> p1 = new Utils.Pair<>(1, 2);
+
+		assertTrue(p1.isInPair(1));
+		assertFalse(p1.isInPair(3));
+	}
+
+	@Test (expected = IllegalArgumentException.class)
+	public void isInPairTestException () throws Exception
+	{
+		Utils.Pair<Integer> p1 = new Utils.Pair<>(1, 2);
+		p1.isInPair(null);
+	}
+
 }

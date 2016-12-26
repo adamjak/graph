@@ -107,6 +107,27 @@ public class Utils
 			return second;
 		}
 
+		/**
+		 * Check if inserted element is in pair.
+		 *
+		 * @param element for check
+		 * @return Return {@code true} if one of pair elements equal with inserted element else return {@code false}.
+		 * @throws IllegalArgumentException if inserted element is {@code null}
+		 */
+		public boolean isInPair (T element) throws IllegalArgumentException
+		{
+			if (element == null) throw new IllegalArgumentException("Element param can not be null");
+
+			if (this.first.equals(element) || this.second.equals(element))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		@Override
 		public boolean equals (Object obj)
 		{

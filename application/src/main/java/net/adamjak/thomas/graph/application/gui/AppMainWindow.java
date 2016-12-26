@@ -6,9 +6,13 @@ import net.adamjak.thomas.graph.application.commons.Utils;
 import net.adamjak.thomas.graph.library.api.Graph;
 import net.adamjak.thomas.graph.library.interfaces.anot.Benchmarked;
 import net.adamjak.thomas.graph.library.io.GraphFactory;
+import net.adamjak.thomas.graph.library.io.GraphInputOutputException;
+import net.adamjak.thomas.graph.library.io.GraphSaver;
+import net.adamjak.thomas.graph.library.io.SupportedFormats;
 import net.adamjak.thomas.graph.library.tests.GraphTest;
 import net.adamjak.thomas.graph.library.tests.GraphTestResult;
 import net.adamjak.thomas.graph.library.utils.ClassFinder;
+import net.adamjak.thomas.graph.library.utils.GraphUtils;
 import org.apache.log4j.Logger;
 
 import javax.swing.Icon;
@@ -226,11 +230,12 @@ public class AppMainWindow extends JFrame
 		// Menu Actions Products items
 		JMenuItem jmiActionsProductsDot = new JMenuItem("Dot product");
 		jmiActionsProductsDot.setAccelerator(GuiAccelerators.ALT_D);
+		jmiActionsProductsDot.addActionListener(new AlJmiActionsProductsDot());
 		jmActionsProducts.add(jmiActionsProductsDot);
 		JMenuItem jmiActionsProductsStar = new JMenuItem("Star product");
 		jmiActionsProductsStar.setAccelerator(GuiAccelerators.ALT_S);
+		jmiActionsProductsStar.setEnabled(false);
 		jmActionsProducts.add(jmiActionsProductsStar);
-		jmActionsProducts.setEnabled(false);
 		jmActions.add(jmActionsProducts);
 
 		this.jMenuBar.add(jmActions);
@@ -366,6 +371,35 @@ public class AppMainWindow extends JFrame
 
 	}
 
+	private void doDotProduct ()
+	{
+		if (jTable.getSelectedRowCount() != 2)
+		{
+			JOptionPane.showMessageDialog(appMainWindow, "Please select two graphs.", "Error!", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		JComboBox<SupportedFormats> jcbSupportedFormats = new JComboBox<SupportedFormats>(SupportedFormats.values());
+
+		Object[] objects = {"Select format to save dot-products:", jcbSupportedFormats};
+
+		if (JOptionPane.showConfirmDialog(appMainWindow, objects, "Select format", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
+		{
+			JFileChooser jfc = new JFileChooser();
+			jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+			if (jfc.showOpenDialog(appMainWindow) == JFileChooser.APPROVE_OPTION)
+			{
+				Graph g1 = graphList.get(jTable.getSelectedRows()[0]);
+				Graph g2 = graphList.get(jTable.getSelectedRows()[1]);
+
+
+				Thread t = new Thread(new DoDotProducts(g1, g2, (SupportedFormats) jcbSupportedFormats.getSelectedItem(), jfc.getSelectedFile()));
+				t.start();
+			}
+		}
+	}
+
 	// ---------------------------------------------------
 	// Listeners
 	// ---------------------------------------------------
@@ -497,6 +531,19 @@ public class AppMainWindow extends JFrame
 					doSnarkOneAlgorithm();
 					break;
 			}
+		}
+	}
+
+	// ---------------------------------------------------
+	// Products menu listeners
+	// ---------------------------------------------------
+
+	private class AlJmiActionsProductsDot implements ActionListener
+	{
+		@Override
+		public void actionPerformed (ActionEvent e)
+		{
+			doDotProduct();
 		}
 	}
 
@@ -872,6 +919,56 @@ public class AppMainWindow extends JFrame
 			resultValues.put("times", times);
 
 			new ResultsWidnow(resultValues);
+		}
+	}
+
+	private class DoDotProducts implements Runnable
+	{
+		private Graph g1;
+		private Graph g2;
+		private SupportedFormats format;
+		private File file;
+
+		public DoDotProducts (Graph g1, Graph g2, SupportedFormats format, File file)
+		{
+			this.g1 = g1;
+			this.g2 = g2;
+			this.format = format;
+			this.file = file;
+		}
+
+		@Override
+		public void run ()
+		{
+			List<Graph<Integer>> dotProducts = GraphUtils.createAllDotProducts(this.g1, this.g2);
+
+			try
+			{
+				switch (this.format)
+				{
+					case GRAPH6:
+						GraphSaver.graphsToGraph6Format(dotProducts, this.file);
+						break;
+					case GRAPHML:
+						int i = 1;
+						for (Graph<Integer> g : dotProducts)
+						{
+							File fileToSave = new File(this.file.getAbsolutePath() + "" + (i++));
+							GraphSaver.graphToGraphMl(g, this.file);
+						}
+						break;
+					case BRATISLAVA_TEXT_CATALOG:
+					default:
+						GraphSaver.graphsToTextCatalog(dotProducts, this.file);
+						break;
+				}
+			}
+			catch (GraphInputOutputException e)
+			{
+				JOptionPane.showMessageDialog(appMainWindow, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+			}
+
+			JOptionPane.showMessageDialog(appMainWindow, "Everything is OK. Dot-products were saved.", "Success", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 

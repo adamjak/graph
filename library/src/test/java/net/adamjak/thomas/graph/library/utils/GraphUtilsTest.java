@@ -9,6 +9,7 @@ import net.adamjak.thomas.graph.library.classes.VertexImpl;
 import org.junit.Test;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertFalse;
@@ -114,7 +115,7 @@ public class GraphUtilsTest
 
 		int countOfDotProducts = ((g1.getListOfEdges().size() * (g1.getListOfEdges().size() - 1)) / 2) * g2.getListOfEdges().size();
 
-		Set<Graph<Integer>> graphs = GraphUtils.createAllDotProducts(g1, g2);
+		List<Graph<Integer>> graphs = GraphUtils.createAllDotProducts(g1, g2);
 		assertTrue(graphs.size() == countOfDotProducts);
 	}
 
