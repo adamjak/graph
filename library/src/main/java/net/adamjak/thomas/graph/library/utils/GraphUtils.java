@@ -8,7 +8,6 @@ import net.adamjak.thomas.graph.library.classes.GraphImpl;
 import net.adamjak.thomas.graph.library.classes.VertexImpl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -43,43 +42,6 @@ public class GraphUtils
 		}
 
 		return pairList;
-	}
-
-	/**
-	 * Check if 2 graphs are isomorphous.
-	 *
-	 * @param g1  first graph
-	 * @param g2  second graph
-	 * @param <T> type of graphs
-	 * @return <code>true</code> - if graphs are icomorphous<br /><code>false</code> - anytime else
-	 * @see GraphUtils#removeIsomorphicGraphs(Collection)
-	 */
-	public static <T extends Comparable> boolean checkIsomorphism (Graph<T> g1, Graph<T> g2)
-	{
-		if (g1 == null || g2 == null) throw new IllegalArgumentException("Params g1 or g2 can not be null.");
-
-		if (g1.getCountOfVertexes() != g2.getCountOfVertexes()) return false;
-		if (g1.getListOfEdges().size() != g2.getListOfEdges().size()) return false;
-
-		for (Vertex<T> v1 : g1.getListOfVertexes())
-		{
-			boolean haveTwin = false;
-
-			for (Vertex<T> v2 : g2.getListOfVertexes())
-			{
-				if (g1.getNeighborVertexes(v1).equals(g2.getNeighborVertexes(v2)))
-				{
-					haveTwin = true;
-				}
-			}
-
-			if (haveTwin == false)
-			{
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	/**
@@ -200,42 +162,5 @@ public class GraphUtils
 		}
 
 		return newGraph;
-	}
-
-	/**
-	 * Create new {@link Collection} with non isomorphic graphs from inserted collection.
-	 *
-	 * @param graphs collection with isomorphic graphs
-	 * @return Return <code>{@link Collection}&lt;{@link Graph}&lt;{@link T}&gt;&gt;</code> with non isomorphic graphs.
-	 * @throws IllegalArgumentException if param {@code graphs} is {@code null}.
-	 * @see GraphUtils#createAllDotProducts(Graph, Graph)
-	 * @see GraphUtils#checkIsomorphism(Graph, Graph)
-	 */
-	public static <T extends Comparable> Collection<Graph<T>> removeIsomorphicGraphs (Collection<Graph<T>> graphs) throws IllegalArgumentException
-	{
-		if (graphs == null) throw new IllegalArgumentException("Param 'graphs' can not be null!");
-
-		Collection<Graph<T>> collectionWithoutIsomorphicGraphs = new LinkedList<Graph<T>>();
-
-		for (Graph<T> g1 : graphs)
-		{
-			boolean isInCollection = false;
-
-			for (Graph<T> g2 : collectionWithoutIsomorphicGraphs)
-			{
-				if (GraphUtils.checkIsomorphism(g1, g2))
-				{
-					isInCollection = true;
-					break;
-				}
-			}
-
-			if (isInCollection == false)
-			{
-				collectionWithoutIsomorphicGraphs.add(g1);
-			}
-		}
-
-		return collectionWithoutIsomorphicGraphs;
 	}
 }

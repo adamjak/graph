@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
@@ -381,9 +382,11 @@ public class AppMainWindow extends JFrame
 
 		JComboBox<SupportedFormats> jcbSupportedFormats = new JComboBox<SupportedFormats>(SupportedFormats.values());
 
-		Object[] objects = {"Select format to save dot-products:", jcbSupportedFormats};
+		Object[] objects = {
+				"Select format to save dot-products:", jcbSupportedFormats
+		};
 
-		if (JOptionPane.showConfirmDialog(appMainWindow, objects, "Select format", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
+		if (JOptionPane.showConfirmDialog(appMainWindow, objects, "Options", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
 		{
 			JFileChooser jfc = new JFileChooser();
 			jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -940,8 +943,9 @@ public class AppMainWindow extends JFrame
 		@Override
 		public void run ()
 		{
+			jProgressBar.setValue(10);
 			List<Graph<Integer>> dotProducts = GraphUtils.createAllDotProducts(this.g1, this.g2);
-
+			jProgressBar.setValue(80);
 			try
 			{
 				switch (this.format)
@@ -968,6 +972,7 @@ public class AppMainWindow extends JFrame
 				JOptionPane.showMessageDialog(appMainWindow, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 			}
 
+			jProgressBar.setValue(100);
 			JOptionPane.showMessageDialog(appMainWindow, "Everything is OK. Dot-products were saved.", "Success", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
