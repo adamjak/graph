@@ -1,0 +1,7 @@
+net/adamjak/thomas/graph/library/utils/GraphUtilsTest.class
+net/adamjak/thomas/graph/library/utils/TestAnnotation.class
+net/adamjak/thomas/graph/library/utils/UtilsTest.class
+net/adamjak/thomas/graph/library/utils/AnnotatedClassFroTest.class
+net/adamjak/thomas/graph/library/utils/ClassFinderTest.class
+net/adamjak/thomas/graph/library/tests/SnarkTestResultTest.class
+net/adamjak/thomas/graph/library/classes/CycleTest.class
