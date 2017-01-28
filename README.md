@@ -7,7 +7,7 @@ Web: <http://thomas.adamjak.net>
 
 Documentation
 -------------
-Javadoc: <https://adamjak.github.io/graph>
+Javadoc: [adamjak.github.io/graph](https://adamjak.github.io/graph" target="_blank)
 
 License
 ----------
