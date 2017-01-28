@@ -3,11 +3,11 @@ Graph
 
 Author: Tomáš Adamják
 
-Web: <http://thomas.adamjak.net>
+Web: [thomas.adamjak.net](https://thomas.adamjak.net)
 
 Documentation
 -------------
-Javadoc: [adamjak.github.io/graph](https://adamjak.github.io/graph" target="_blank)
+Javadoc: [adamjak.github.io/graph](https://adamjak.github.io/graph)
 
 License
 ----------
