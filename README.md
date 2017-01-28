@@ -5,6 +5,10 @@ Author: Tomáš Adamják
 
 Web: <http://thomas.adamjak.net>
 
+Documentation
+-------------
+Javadoc: <https://adamjak.github.io/graph>
+
 License
 ----------
 
