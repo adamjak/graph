@@ -22,6 +22,7 @@ public interface Graph<T extends Comparable>
 	void addVertex (Vertex<T> vertex);
 
 	/**
+	 * @param content content of vertex
 	 * @return Return {@link Vertex} by inserted content.
 	 */
 	Vertex<T> getVertexByContent (T content);
@@ -57,6 +58,7 @@ public interface Graph<T extends Comparable>
 	ConcurrentSkipListSet<Cycle<T>> getListOfAllCyrcles();
 
 	/**
+	 * @param vertex Vertex by to be searched
 	 * @return List of edges whitch start or end with inserted vertex.
 	 */
 	List<Edge<T>> getEdgesContainsVertex (Vertex<T> vertex);

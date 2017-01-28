@@ -8,14 +8,14 @@ package net.adamjak.thomas.graph.library.io;
 public enum SupportedFormats
 {
 	/**
-	 * Graph6 format
-	 * @see <code><a href="http://pallini.di.uniroma1.it/">pallini.di.uniroma1.it</a></code> - graph6 doc
+	 * Graph6 format.<br>
+	 * Documentation: <code><a href="http://pallini.di.uniroma1.it/">pallini.di.uniroma1.it</a></code>
 	 */
 	GRAPH6,
 
 	/**
-	 * GraphML is an XML-based file format for graphs.
-	 * @see <code><a href="http://graphml.graphdrawing.org/">graphml.graphdrawing.org</a></code>
+	 * GraphML is an XML-based file format for graphs.<br>
+	 * Documentation: <code><a href="http://graphml.graphdrawing.org/">graphml.graphdrawing.org</a></code>
 	 */
 	GRAPHML,
 

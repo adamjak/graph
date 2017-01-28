@@ -22,7 +22,7 @@ import java.util.List;
  * Created by Tomas Adamjak on 20.12.2015.
  * Copyright 2015, Tomas Adamjak
  * License: The BSD 3-Clause License
- * <br /><br />
+ * <br><br>
  * Final class whitch create {@link Graph} from various formats.
  *
  * @see GraphSaver
@@ -172,11 +172,12 @@ public final class GraphFactory
 	 *******************************************************/
 
 	/**
-	 * create new instance of Graph from graph6 format.
+	 * <p>Create new instance of Graph from graph6 format.</p>
+	 * <p>Graph6 format documentation - <code><a href="http://pallini.di.uniroma1.it/">pallini.di.uniroma1.it</a></code></p>
 	 *
 	 * @param file File in Graph6 format
 	 * @return new Graph
-	 * @see <code><a href="http://pallini.di.uniroma1.it/">pallini.di.uniroma1.it</a></code> - graph6 doc
+	 * @throws IOException If an I/O error occurs - from {@link BufferedReader#readLine()}
 	 */
 	public static List<Graph<Integer>> createGraphFromGraph6 (File file) throws IOException
 	{
@@ -290,6 +291,7 @@ public final class GraphFactory
 	 *
 	 * @param txt (File)
 	 * @return List of graphs from text file
+	 * @throws IOException If an I/O error occurs. Extends from {@link BufferedReader#readLine()}
 	 */
 	public static List<Graph<Integer>> createGraphFromTextCatalog (File txt) throws IOException
 	{
@@ -384,6 +386,7 @@ public final class GraphFactory
 	 * Create clone from inserted graph.
 	 *
 	 * @param graph Instance of graph
+	 * @param <U> type of graph
 	 * @return new Instance os graph
 	 */
 	public static <U extends Comparable> Graph<U> cloneGraph (Graph<U> graph)

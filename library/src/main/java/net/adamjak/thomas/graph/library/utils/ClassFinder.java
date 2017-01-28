@@ -23,7 +23,7 @@ public class ClassFinder
 
 	/**
 	 * @param classes {@link Set} of classes for search
-	 * @param extendedClass
+	 * @param extendedClass Class whitch found class must extends
 	 * @return Return only classes whitch extends class from param {@code extendedClass}.
 	 */
 	public Set<Class<?>> findClassesWhitchExtends (Set<Class<?>> classes, Class<?> extendedClass)
@@ -81,6 +81,7 @@ public class ClassFinder
 	/**
 	 * Find all classes in package and subpackages.
 	 *
+	 * @param packageNames {@link Set} of package name with annoted classes
 	 * @return {@link Set}&lt;{@link Class}&lt;?&gt;&gt; found classes.
 	 */
 	public Set<Class<?>> findClasses (Set<String> packageNames)

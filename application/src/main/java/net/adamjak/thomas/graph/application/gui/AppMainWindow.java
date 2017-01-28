@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
@@ -972,7 +971,7 @@ public class AppMainWindow extends JFrame
 				JOptionPane.showMessageDialog(appMainWindow, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 			}
 
-			jProgressBar.setValue(100);
+			jProgressBar.setValue(1);
 			JOptionPane.showMessageDialog(appMainWindow, "Everything is OK. Dot-products were saved.", "Success", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}

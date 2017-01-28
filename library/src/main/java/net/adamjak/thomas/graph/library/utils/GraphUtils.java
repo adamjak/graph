@@ -23,6 +23,8 @@ import java.util.Set;
 public class GraphUtils
 {
 	/**
+	 * @param graph Graph in whitch we search pairs
+	 * @param <T> type of graph
 	 * @return Return all double combinations of edges from inserted graph.
 	 */
 	public static <T extends Comparable> Set<Utils.Pair<Edge<T>>> getAllEdgePairs (Graph<T> graph)
@@ -47,6 +49,9 @@ public class GraphUtils
 	/**
 	 * Create all dot-products from 2 inserted graphs.
 	 *
+	 * @param g1 First graph for dot-product
+	 * @param g2 Second graph for dot-product
+	 * @param <T> type of graphs
 	 * @return Return <code>{@link List}&lt;{@link Graph}&lt;{@link Integer}&gt;&gt;</code> with new instance of dot-products graphs.
 	 */
 	public static <T extends Comparable> List<Graph<Integer>> createAllDotProducts (Graph<T> g1, Graph<T> g2)
@@ -134,6 +139,7 @@ public class GraphUtils
 	 * Create new {@link Graph} with {@link Integer} type. Vertexes and Edges will be numbered from 0.
 	 *
 	 * @param g graph whitch we want clone to new graph of integer type
+	 * @param <T> type of graph
 	 * @return Return new instance of <code>{@link Graph}&lt;{@link Integer}&gt;</code> with same structure like inserted graph.
 	 * @throws IllegalArgumentException if param {@code g} is {@code null}.
 	 */

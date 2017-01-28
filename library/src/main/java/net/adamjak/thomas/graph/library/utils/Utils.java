@@ -14,6 +14,8 @@ public class Utils
 	/**
 	 * Determine the number of specific characters in the string.
 	 *
+	 * @param string Text in which we want to calculate count of inserted characters
+	 * @param character Character whitch we search in text
 	 * @return Number of specific characters in the string.
 	 * @throws IllegalArgumentException if second param {@code character} is {@code null}.
 	 */
@@ -41,7 +43,7 @@ public class Utils
 	/**
 	 * @param clazz tested class
 	 * @param findInterface Interface whitch find
-	 * @return {@code true} - if clazz implements findInterface, <br />{@code false} - anythink else
+	 * @return {@code true} - if clazz implements findInterface, <br>{@code false} - anythink else
 	 * @throws IllegalArgumentException if params are {@code null} or param {@code findInterface} is not an interface.
 	 */
 	public static boolean implementsInterface (Class<?> clazz, Class<?> findInterface) throws IllegalArgumentException

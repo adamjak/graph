@@ -21,7 +21,7 @@ import java.util.List;
  * Created by Tomas Adamjak on 13.11.2016.
  * Copyright 2016, Tomas Adamjak
  * License: The BSD 3-Clause License
- * <br /><br />
+ * <br><br>
  * Final class whitch save {@link Graph} into various formats.
  *
  * @see GraphFactory
@@ -177,14 +177,14 @@ public final class GraphSaver
 	}
 
 	/**
-	 * Save {@link List}&lt;{@link Graph}&lt;T&gt;&gt; into graph6 format.
+	 * <p>Save {@link List}&lt;{@link Graph}&lt;T&gt;&gt; into graph6 format.</p>
+	 * <p>Graph6 format documentation - <code><a href="http://pallini.di.uniroma1.it/">pallini.di.uniroma1.it</a></code>	</p>
 	 *
 	 * @param graphsToSave graph whitch you want save
 	 * @param fileToSave   file to which the program will save the graph
 	 * @param <T>          Must implements {@link Comparable}
 	 * @throws GraphInputOutputException when creating file error occurred
 	 * @throws IllegalArgumentException  if some param is {@code null}
-	 * @see <code><a href="http://pallini.di.uniroma1.it/">pallini.di.uniroma1.it</a></code> - graph6 doc
 	 */
 	public static <T extends Comparable> void graphsToGraph6Format (@NotNull List<Graph<T>> graphsToSave, @NotNull File fileToSave) throws GraphInputOutputException, IllegalArgumentException
 	{

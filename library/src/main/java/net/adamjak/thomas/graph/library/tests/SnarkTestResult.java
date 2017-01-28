@@ -50,7 +50,7 @@ public class SnarkTestResult implements GraphTestResult
 	/**
 	 * Verify that the value of a given identifier specified.
 	 *
-	 * @param identifier
+	 * @param identifier identifier of value
 	 * @return Return <b><code>true</code></b> if value os given identifier is specified else return <b><code>false</code></b>.
 	 */
 	@Override
