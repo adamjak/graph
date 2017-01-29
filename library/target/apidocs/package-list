@@ -1,8 +1,0 @@
-net.adamjak.thomas.graph.library.api
-net.adamjak.thomas.graph.library.classes
-net.adamjak.thomas.graph.library.interfaces
-net.adamjak.thomas.graph.library.interfaces.anot
-net.adamjak.thomas.graph.library.io
-net.adamjak.thomas.graph.library.tests
-net.adamjak.thomas.graph.library.tests.snarks
-net.adamjak.thomas.graph.library.utils
