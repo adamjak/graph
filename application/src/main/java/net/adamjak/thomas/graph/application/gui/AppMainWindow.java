@@ -562,32 +562,7 @@ public class AppMainWindow extends JFrame
 
 			Icon icon = new ImageIcon(getClass().getClassLoader().getResource("logo-image/logo_64.jpeg"));
 
-			String message = "<html>" +
-					"<h2>Copyright (c) 2016, Tomáš Adamják</h2>" +
-					"<p><strong>All rights reserved.</strong></p>" +
-					"<p>Redistribution and use in source and binary forms, with or without modification,<br />" +
-					"are permitted provided that the following conditions are met:</p>" +
-					"<ul>" +
-					"<li>Redistributions of source code must retain the above copyright notice,<br />" +
-					"this list of conditions and the following disclaimer.</li>" +
-					"<li>Redistributions in binary form must reproduce the above copyright notice,<br />" +
-					"this list of conditions and the following disclaimer in the documentation<br />" +
-					"and/or other materials provided with the distribution.</li>" +
-					"<li>Neither the name of the <organization> nor the names of its contributors may be<br />" +
-					"used to endorse or promote products derived from this software without specific prior written permission.</li>" +
-					"</ul>" +
-					"<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND<br />" +
-					"ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED<br />" +
-					"WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE<br />" +
-					"DISCLAIMED. IN NO EVENT SHALL Tomáš Adamják BE LIABLE FOR ANY<br />" +
-					"DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES<br />" +
-					"(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;<br />" +
-					"LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND<br />" +
-					"ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT<br />" +
-					"(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS<br />" +
-					"SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>";
-
-			JLabel formatedLabel = new JLabel(message);
+			JLabel formatedLabel = new JLabel(Utils.getLicenseInfo(true));
 			formatedLabel.setFont(new Font("sans-serif", Font.PLAIN, 14));
 
 			JOptionPane.showMessageDialog(appMainWindow, formatedLabel, "The BSD 3-Clause License", JOptionPane.INFORMATION_MESSAGE, icon);
@@ -603,13 +578,7 @@ public class AppMainWindow extends JFrame
 
 			Icon icon = new ImageIcon(getClass().getClassLoader().getResource("logo-image/logo_64.jpeg"));
 
-			String message = "<html>" +
-					"<h2>Tomáš Adamják</h2>" +
-					"<p><strong>E-mail:</strong> <code>thomas@adamjak.net</code></p>" +
-					"<p><strong>Web:</strong> <code>http://thomas.adamjak.net</code></p>" +
-					"<html>";
-
-			JLabel formatedLabel = new JLabel(message);
+			JLabel formatedLabel = new JLabel(Utils.getAuthorInfo(true));
 			formatedLabel.setFont(new Font("sans-serif", Font.PLAIN, 14));
 			JOptionPane.showMessageDialog(appMainWindow, formatedLabel, "Author", JOptionPane.INFORMATION_MESSAGE, icon);
 		}

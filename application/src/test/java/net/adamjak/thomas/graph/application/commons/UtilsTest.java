@@ -3,6 +3,8 @@ package net.adamjak.thomas.graph.application.commons;
 import org.junit.Test;
 
 import javax.swing.JTable;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -69,5 +71,51 @@ public class UtilsTest
 	public void getDataFromJTableTestIllegalArgumentException() throws Exception
 	{
 		Utils.getDataFromJTable(null);
+	}
+
+	@Test
+	public void arrayToLineStringTest () throws Exception
+	{
+		String[] arr1 = {"a", "b", "c"};
+		String arr1ExpRes = "a,b,c";
+		String arr1Res = Utils.arrayToLineString(arr1, ",");
+
+		Integer[] arr2 = {1, 2, 3};
+		String arr2ExpRes = "1:2:3";
+		String arr2Res = Utils.arrayToLineString(arr2, ":");
+
+		assertEquals(arr1ExpRes, arr1Res);
+		assertEquals(arr2ExpRes, arr2Res);
+	}
+
+	@Test (expected = IllegalArgumentException.class)
+	public void arrayToLineStringTestIllegalArgumentException () throws Exception
+	{
+		Utils.arrayToLineString(null, null);
+	}
+
+	@Test
+	public void getSimpleNamesOfClassesFromCollectionTest () throws Exception
+	{
+		List<Class<?>> classes = new ArrayList<Class<?>>(3);
+		classes.add(String.class);
+		classes.add(Integer.class);
+		classes.add(Long.class);
+
+		String[] result = Utils.getSimpleNamesOfClassesFromCollection(classes);
+		String[] excepted = {"String", "Integer", "Long"};
+
+		assertEquals(excepted.length, result.length);
+
+		for (int i = 0; i < excepted.length; i++)
+		{
+			assertEquals(excepted[i], result[i]);
+		}
+	}
+
+	@Test (expected = IllegalArgumentException.class)
+	public void getSimpleNamesOfClassesFromCollectionTestIllegalArgumentException () throws Exception
+	{
+		Utils.getSimpleNamesOfClassesFromCollection(null);
 	}
 }

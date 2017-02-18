@@ -27,4 +27,37 @@ public enum SnarkTestTypes
 	{
 		this.value = value;
 	}
+
+	/**
+	 * @return String array with names of {@link SnarkTestTypes}
+	 */
+	public static String[] getTestNames ()
+	{
+		String[] names = new String[SnarkTestTypes.values().length];
+		SnarkTestTypes[] types = SnarkTestTypes.values();
+		for (int i = 0; i < types.length; i++)
+		{
+			names[i] = types[i].name();
+		}
+		return names;
+	}
+
+	/**
+	 * @param name name of snark test type
+	 * @return {@link SnarkTestTypes} if name contains with some type name else return {@code null}
+	 * @throws IllegalArgumentException if param name is null
+	 */
+	public static SnarkTestTypes getSnarkTestTypeByName (String name) throws IllegalArgumentException
+	{
+		if (name == null) throw new IllegalArgumentException("Param name can not be null!");
+		for (SnarkTestTypes type : SnarkTestTypes.values())
+		{
+			if (type.name().equals(name))
+			{
+				return type;
+			}
+		}
+
+		return null;
+	}
 }

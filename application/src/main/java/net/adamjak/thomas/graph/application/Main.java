@@ -1,14 +1,14 @@
 package net.adamjak.thomas.graph.application;
 
-import net.adamjak.thomas.graph.application.gui.AppMainWindow;
+import net.adamjak.thomas.graph.application.cli.CliManager;
 
 public class Main
 {
 	public static void main (String args[])
 	{
-		AppMainWindow appMainWindow = new AppMainWindow();
-		appMainWindow.setVisible(true);
 
+
+		CliManager.manage(args);
 
 //		Map<String, Object> resultValues = new HashMap<String, Object>();
 //		resultValues.put("test", "Snark algorithm comparation");
