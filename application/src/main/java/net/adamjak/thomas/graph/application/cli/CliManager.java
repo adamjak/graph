@@ -3,6 +3,8 @@ package net.adamjak.thomas.graph.application.cli;
 import net.adamjak.thomas.graph.application.commons.SnarkTestTypes;
 import net.adamjak.thomas.graph.application.commons.Utils;
 import net.adamjak.thomas.graph.application.gui.AppMainWindow;
+import net.adamjak.thomas.graph.application.run.RunnerBuilder;
+import net.adamjak.thomas.graph.application.run.RunnerException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -57,51 +59,25 @@ public class CliManager
 		}
 		else if (cmd.hasOption("i") && cmd.hasOption("t"))
 		{
-			File inputFile = new File(cmd.getOptionValue("i"));
-			File outputFile;
-			int loops = 1;
-			Class<?> testClass;
-			SnarkTestTypes testType = SnarkTestTypes.getSnarkTestTypeByName(cmd.getOptionValue("t"));
+			RunnerBuilder builder = new RunnerBuilder();
+			builder.setInputFile(new File(cmd.getOptionValue("i")));
+			builder.setTestType(SnarkTestTypes.getSnarkTestTypeByName(cmd.getOptionValue("t")));
 
-			if (testType == null)
+			if (cmd.hasOption("a"))
 			{
-				CliManager.printError("Invalid test type.");
-				System.exit(-1);
-			}
-
-			if (testType == SnarkTestTypes.ONE_ALGORITHM)
-			{
-				if (cmd.hasOption("a"))
-				{
-					testClass = Utils.getTestClassByName(cmd.getOptionValue("a"));
-
-					if (testClass == null)
-					{
-						CliManager.printError("Invalid algorithm class.");
-						System.exit(-1);
-					}
-				}
-				else
-				{
-					CliManager.printError("For " + testType.name() + " test type you have to choice algorithm!");
-					System.exit(-1);
-				}
+				builder.setAlgorithmTest(Utils.getTestClassByName(cmd.getOptionValue("a")));
 			}
 
 			if (cmd.hasOption("o"))
 			{
-				outputFile = new File(cmd.getOptionValue("o"));
-			}
-			else
-			{
-				outputFile = new File("output.txt");
+				builder.setOutputFile(new File(cmd.getOptionValue("o")));
 			}
 
 			if (cmd.hasOption("l"))
 			{
 				try
 				{
-					loops = Integer.valueOf(cmd.getOptionValue("l"));
+					builder.setLoops(Integer.valueOf(cmd.getOptionValue("l")));
 				}
 				catch (NumberFormatException e)
 				{
@@ -110,7 +86,15 @@ public class CliManager
 				}
 			}
 
-			// TODO: 18.2.2017 -- dorobit spustenie 
+			try
+			{
+				builder.build().run();
+			}
+			catch (RunnerException e)
+			{
+				CliManager.printError(e.getMessage());
+				System.exit(-1);
+			}
 
 		}
 		else
