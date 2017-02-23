@@ -98,7 +98,7 @@ public class RunnerBuilder
 		}
 		else
 		{
-			return new AlgorithmComparationtestRunner(this.inputFile, this.outputFile, this.loops);
+			return new AlgorithmComparationTestRunner(this.inputFile, this.outputFile, this.loops);
 		}
 	}
 }

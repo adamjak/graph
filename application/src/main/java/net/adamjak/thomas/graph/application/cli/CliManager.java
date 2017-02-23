@@ -88,7 +88,7 @@ public class CliManager
 
 			try
 			{
-				builder.build().run();
+				builder.build().runAndSaveResults();
 			}
 			catch (RunnerException e)
 			{
