@@ -68,22 +68,32 @@ public abstract class TestRunner
 
 	public void runAndSaveResults ()
 	{
-		this.save(this.run());
+		this.save(this.run(), false);
 	}
 
-	private void save (Map<String, Object> results)
+	public void runAndSaveResultsWithRawData ()
 	{
+		this.save(this.run(), true);
+	}
+
+	private void save (Map<String, Object> results, boolean rawData)
+	{
+		// TODO: 23.2.2017 -- save raw data
+
 		SnarkTestTypes testType = (SnarkTestTypes) results.get("testType");
 
 		if (this.outputFile.getName().split("\\.")[this.outputFile.getName().split("\\.").length - 1].toLowerCase().equals("ods"))
 		{
 
+			String[] columnNames;
+			Object[][] data;
+
 			if (testType == SnarkTestTypes.ALL_ALGORITHMS)
 			{
 				GraphTestResult[][][] graphTestResult = (GraphTestResult[][][]) results.get("resultsData");
 
-				String[] columnNames = {"Algorithm", "Graph ID", "Avarage time", "Standard deviation", "Minimum", "Maximum"};
-				Object[][] data = new Object[graphTestResult[0].length][6];
+				columnNames = String.valueOf("Algorithm,Graph ID,Avarage time,Standard deviation,Minimum,Maximum").split(",");
+				data = new Object[graphTestResult[0].length][6];
 
 				for (int cls = 0; cls < graphTestResult[0][0].length; cls++)
 				{
@@ -106,22 +116,13 @@ public abstract class TestRunner
 						data[graph][5] = summaryStatistics.getMax();
 					}
 				}
-
-				try
-				{
-					SpreadSheet.createEmpty(new JTable(data, columnNames).getModel()).saveAs(outputFile);
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
 			}
 			else
 			{
 				GraphTestResult[][] graphTestResult = (GraphTestResult[][]) results.get("resultsData");
 
-				String[] columnNames = {"Graph ID", "Avarage time", "Standard deviation", "Minimum", "Maximum"};
-				Object[][] data = new Object[graphTestResult[0].length][5];
+				columnNames = String.valueOf("Graph ID,Avarage time,Standard deviation,Minimum,Maximum").split(",");
+				data = new Object[graphTestResult[0].length][5];
 
 				for (int graph = 0; graph < graphTestResult[0].length; graph++)
 				{
@@ -138,6 +139,61 @@ public abstract class TestRunner
 					data[graph][3] = summaryStatistics.getMin();
 					data[graph][4] = summaryStatistics.getMax();
 				}
+			}
+
+			try
+			{
+				SpreadSheet.createEmpty(new JTable(data, columnNames).getModel()).saveAs(outputFile);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+
+			if (rawData == true)
+			{
+				if (testType == SnarkTestTypes.ALL_ALGORITHMS)
+				{
+					GraphTestResult[][][] graphTestResult = (GraphTestResult[][][]) results.get("resultsData");
+
+					columnNames = String.valueOf("Class,Run,Graph,Time").split(",");
+					data = new Object[graphTestResult.length * graphTestResult[0].length * graphTestResult[0][0].length][4];
+
+					int row = 0;
+					for (int i = 0; i < graphTestResult.length; i++)
+					{
+						for (int j = 0; j < graphTestResult[i].length; j++)
+						{
+							for (int k = 0; k < graphTestResult[i][j].length; k++)
+							{
+								data[row][0] = graphTestResult[i][j][k].getValue("algorithmClass");
+								data[row][1] = i;
+								data[row][2] = j;
+								data[row][3] = graphTestResult[i][j][k].getValue("time");
+								row++;
+							}
+						}
+					}
+				}
+				else
+				{
+					GraphTestResult[][] graphTestResult = (GraphTestResult[][]) results.get("resultsData");
+
+					columnNames = String.valueOf("Run,Graph,Time").split(",");
+					data = new Object[graphTestResult.length * graphTestResult[0].length][3];
+
+					int row = 0;
+					for (int i = 0; i < graphTestResult.length; i++)
+					{
+						for (int j = 0; j < graphTestResult[i].length; j++)
+						{
+							data[row][0] = i;
+							data[row][1] = j;
+							data[row][2] = graphTestResult[i][j].getValue("time");
+							row++;
+						}
+					}
+				}
 
 				try
 				{
@@ -148,18 +204,16 @@ public abstract class TestRunner
 					e.printStackTrace();
 				}
 			}
-
-
 		}
 		else
 		{
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sbData = new StringBuilder();
 
 			if (testType == SnarkTestTypes.ALL_ALGORITHMS)
 			{
 				GraphTestResult[][][] graphTestResult = (GraphTestResult[][][]) results.get("resultsData");
 
-				sb.append("Algorithm,Graph ID,Avarage time,Standard deviation,Minimum,Maximum\n");
+				sbData.append("Algorithm,Graph ID,Avarage time,Standard deviation,Minimum,Maximum\n");
 
 				for (int cls = 0; cls < graphTestResult[0][0].length; cls++)
 				{
@@ -174,18 +228,18 @@ public abstract class TestRunner
 							summaryStatistics.addValue((double) graphTestResult[run][graph][cls].getValue("timeInSeconds"));
 						}
 
-						sb.append(c.getSimpleName());
-						sb.append(",");
-						sb.append(graph);
-						sb.append(",");
-						sb.append(summaryStatistics.getMean());
-						sb.append(",");
-						sb.append(summaryStatistics.getStandardDeviation());
-						sb.append(",");
-						sb.append(summaryStatistics.getMin());
-						sb.append(",");
-						sb.append(summaryStatistics.getMax());
-						sb.append("\n");
+						sbData.append(c.getSimpleName());
+						sbData.append(",");
+						sbData.append(graph);
+						sbData.append(",");
+						sbData.append(summaryStatistics.getMean());
+						sbData.append(",");
+						sbData.append(summaryStatistics.getStandardDeviation());
+						sbData.append(",");
+						sbData.append(summaryStatistics.getMin());
+						sbData.append(",");
+						sbData.append(summaryStatistics.getMax());
+						sbData.append("\n");
 					}
 				}
 			}
@@ -194,7 +248,7 @@ public abstract class TestRunner
 
 				GraphTestResult[][] graphTestResult = (GraphTestResult[][]) results.get("resultsData");
 
-				sb.append("Graph ID,Avarage time,Standard deviation,Minimum,Maximum\n");
+				sbData.append("Graph ID,Avarage time,Standard deviation,Minimum,Maximum\n");
 
 				for (int graph = 0; graph < graphTestResult[0].length; graph++)
 				{
@@ -205,16 +259,16 @@ public abstract class TestRunner
 						summaryStatistics.addValue((double) graphTestResult[run][graph].getValue("timeInSeconds"));
 					}
 
-					sb.append(graph);
-					sb.append(",");
-					sb.append(summaryStatistics.getMean());
-					sb.append(",");
-					sb.append(summaryStatistics.getStandardDeviation());
-					sb.append(",");
-					sb.append(summaryStatistics.getMin());
-					sb.append(",");
-					sb.append(summaryStatistics.getMax());
-					sb.append("\n");
+					sbData.append(graph);
+					sbData.append(",");
+					sbData.append(summaryStatistics.getMean());
+					sbData.append(",");
+					sbData.append(summaryStatistics.getStandardDeviation());
+					sbData.append(",");
+					sbData.append(summaryStatistics.getMin());
+					sbData.append(",");
+					sbData.append(summaryStatistics.getMax());
+					sbData.append("\n");
 				}
 
 			}
@@ -226,7 +280,7 @@ public abstract class TestRunner
 			{
 				fw = new FileWriter(this.outputFile);
 				bw = new BufferedWriter(fw);
-				bw.write(sb.toString());
+				bw.write(sbData.toString());
 			}
 			catch (IOException e)
 			{
@@ -242,6 +296,81 @@ public abstract class TestRunner
 				catch (IOException ex)
 				{
 					ex.printStackTrace();
+				}
+			}
+
+			if (rawData == true)
+			{
+				StringBuilder sbRawData = new StringBuilder();
+
+				if (testType == SnarkTestTypes.ALL_ALGORITHMS)
+				{
+					GraphTestResult[][][] graphTestResult = (GraphTestResult[][][]) results.get("resultsData");
+
+					sbRawData.append("Class,Run,Graph,Time\n");
+
+					for (int i = 0; i < graphTestResult.length; i++)
+					{
+						for (int j = 0; j < graphTestResult[i].length; j++)
+						{
+							for (int k = 0; k < graphTestResult[i][j].length; k++)
+							{
+								sbRawData.append(graphTestResult[i][j][k].getValue("algorithmClass"));
+								sbRawData.append(",");
+								sbRawData.append(i);
+								sbRawData.append(",");
+								sbRawData.append(j);
+								sbRawData.append(",");
+								sbRawData.append(graphTestResult[i][j][k].getValue("time"));
+								sbRawData.append("\n");
+							}
+						}
+					}
+				}
+				else
+				{
+					GraphTestResult[][] graphTestResult = (GraphTestResult[][]) results.get("resultsData");
+
+					sbRawData.append("Run,Graph,Time\n");
+
+					for (int i = 0; i < graphTestResult.length; i++)
+					{
+						for (int j = 0; j < graphTestResult[i].length; j++)
+						{
+							sbRawData.append(i);
+							sbRawData.append(",");
+							sbRawData.append(j);
+							sbRawData.append(",");
+							sbRawData.append(graphTestResult[i][j].getValue("time"));
+							sbRawData.append("\n");
+						}
+					}
+				}
+
+				BufferedWriter bwRaw = null;
+				FileWriter fwRaw = null;
+
+				try
+				{
+					fwRaw = new FileWriter(new File(this.outputFile.getParent(), "raw_" + this.outputFile.getName()));
+					bwRaw = new BufferedWriter(fwRaw);
+					bwRaw.write(sbData.toString());
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+				finally
+				{
+					try
+					{
+						if (bwRaw != null) bwRaw.close();
+						if (fwRaw != null) fwRaw.close();
+					}
+					catch (IOException ex)
+					{
+						ex.printStackTrace();
+					}
 				}
 			}
 		}
