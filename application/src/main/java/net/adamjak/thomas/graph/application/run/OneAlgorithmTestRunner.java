@@ -28,6 +28,12 @@ class OneAlgorithmTestRunner extends TestRunner
 		this.algorithm = algorithm;
 	}
 
+	public OneAlgorithmTestRunner (List<Graph<Integer>> graphs, File outputFile, int loops, Class<?> algorithm)
+	{
+		super(graphs, outputFile, loops);
+		this.algorithm = algorithm;
+	}
+
 	@Override
 	public Map<String, Object> run ()
 	{

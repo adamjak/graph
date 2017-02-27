@@ -1,17 +1,14 @@
 package net.adamjak.thomas.graph.application.gui;
 
-import net.adamjak.thomas.graph.application.commons.Settings;
 import net.adamjak.thomas.graph.application.commons.SnarkTestTypes;
 import net.adamjak.thomas.graph.application.commons.Utils;
+import net.adamjak.thomas.graph.application.run.RunnerBuilder;
+import net.adamjak.thomas.graph.application.run.RunnerException;
 import net.adamjak.thomas.graph.library.api.Graph;
-import net.adamjak.thomas.graph.library.interfaces.anot.Benchmarked;
 import net.adamjak.thomas.graph.library.io.GraphFactory;
 import net.adamjak.thomas.graph.library.io.GraphInputOutputException;
 import net.adamjak.thomas.graph.library.io.GraphSaver;
 import net.adamjak.thomas.graph.library.io.SupportedFormats;
-import net.adamjak.thomas.graph.library.tests.GraphTest;
-import net.adamjak.thomas.graph.library.tests.GraphTestResult;
-import net.adamjak.thomas.graph.library.utils.ClassFinder;
 import net.adamjak.thomas.graph.library.utils.GraphUtils;
 import org.apache.log4j.Logger;
 
@@ -30,24 +27,18 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 
 /**
  * Created by Tomas Adamjak on 22.11.2016.
@@ -68,8 +59,10 @@ public class AppMainWindow extends JFrame
 	private JPanel rootPanel;
 	private JScrollPane jScrollPane;
 	private JTable jTable;
+	private JLabel jlbProces;
 	private JProgressBar jProgressBar;
 	private JMenuBar jMenuBar;
+
 
 	// --------------------------------------------------
 	// Other
@@ -95,6 +88,10 @@ public class AppMainWindow extends JFrame
 	private void createUIComponents ()
 	{
 		this.jTable = this.createTable();
+		URL url = this.getClass().getClassLoader().getResource("loader.gif");
+		Icon loader = new ImageIcon(url);
+		this.jlbProces = new JLabel("Processing", loader, SwingConstants.CENTER);
+		this.jlbProces.setVisible(false);
 	}
 
 	private JTable createTable ()
@@ -600,101 +597,31 @@ public class AppMainWindow extends JFrame
 		@Override
 		public void run ()
 		{
-
-			LOGGER.info("Start snark algorithm comparation.");
-			jProgressBar.setValue(0);
-
-			ClassFinder classFinder = new ClassFinder();
-			Set<String> packageNames = new LinkedHashSet<String>();
-			packageNames.add(Settings.getInstance().getSetting("packageName"));
-			LOGGER.debug(Settings.getInstance().getSetting("packageName"));
-			Set<Class<?>> classes = classFinder.findClassesWhitchExtends(classFinder.findAnnotatedClasses(packageNames, Benchmarked.class), GraphTest.class);
-
 			List<Graph<Integer>> graphsForTest = new LinkedList<Graph<Integer>>();
 			for (int i : jTable.getSelectedRows())
 			{
 				graphsForTest.add(graphList.get(i));
 			}
 
-			GraphTestResult[][] results = new GraphTestResult[times][graphsForTest.size()];
+			jlbProces.setVisible(true);
 
-			for (int run = 0; run < times; run++)
+			LOGGER.info("Create builder");
+			RunnerBuilder builder = new RunnerBuilder();
+			builder.setLoops(times);
+			builder.setTestType(SnarkTestTypes.ALGORITHM_COMPARATION);
+			builder.setGraphs(graphsForTest);
+
+			Map<String, Object> resultValues = null;
+			try
 			{
-				for (int i = 0; i < graphsForTest.size(); i++)
-				{
-					Graph<Integer> g = graphsForTest.get(i);
-					LOGGER.debug("Classes size:" + classes.size());
-					ForkJoinPool forkJoinPool = new ForkJoinPool(classes.size());
-					Set<GraphTest> snarkTests = new LinkedHashSet<GraphTest>();
-
-					for (Class<?> c : classes)
-					{
-						GraphTest snarkTest = null;
-						try
-						{
-							snarkTest = (GraphTest) c.newInstance();
-							snarkTest.init(g);
-							snarkTests.add(snarkTest);
-						}
-						catch (InstantiationException e)
-						{
-							e.printStackTrace();
-						}
-						catch (IllegalAccessException e)
-						{
-							e.printStackTrace();
-						}
-					}
-
-					for (GraphTest st : snarkTests)
-					{
-						forkJoinPool.execute(st);
-					}
-
-					GraphTestResult graphTestResult = null;
-
-					while (graphTestResult == null)
-					{
-						for (GraphTest st : snarkTests)
-						{
-							if (st.isDone())
-							{
-								try
-								{
-									graphTestResult = st.getResult();
-								}
-								catch (InterruptedException e)
-								{
-									e.printStackTrace();
-								}
-								catch (ExecutionException e)
-								{
-									e.printStackTrace();
-								}
-							}
-						}
-					}
-
-					int graphId = graphList.indexOf(g);
-
-					String sout = "Testing run: " + (run + 1) + ", Graph id: " + graphId + ", Result: " + graphTestResult;
-					LOGGER.info(sout);
-
-					jTable.setValueAt(graphTestResult.getValue("timeInSeconds"), graphId, 2);
-					jTable.setValueAt(run + "/" + times, graphId, 3);
-
-					results[run][i] = graphTestResult;
-				}
-
-				jProgressBar.setValue(100 / times * (run + 1));
+				resultValues = builder.build().run();
+			}
+			catch (RunnerException e)
+			{
+				e.printStackTrace();
 			}
 
-			jProgressBar.setValue(100);
-
-			Map<String, Object> resultValues = new HashMap<String, Object>();
-			resultValues.put("test", "Snark algorithm comparation");
-			resultValues.put("resultsData", results);
-			resultValues.put("times", times);
+			jlbProces.setVisible(false);
 
 			new ResultsWidnow(resultValues);
 		}
@@ -713,11 +640,80 @@ public class AppMainWindow extends JFrame
 		public void run ()
 		{
 
-			LOGGER.info("Start snark all algorithms.");
-			jProgressBar.setValue(0);
-
-			LOGGER.debug(Settings.getInstance().getSetting("packageName"));
-			List<Class<?>> classes = new ArrayList<>(Utils.getAllTestClasses());
+//			LOGGER.info("Start snark all algorithms.");
+//			jProgressBar.setValue(0);
+//
+//			LOGGER.debug(Settings.getInstance().getSetting("packageName"));
+//			List<Class<?>> classes = new ArrayList<>(Utils.getAllTestClasses());
+//
+//			List<Graph<Integer>> graphsForTest = new LinkedList<Graph<Integer>>();
+//			for (int i : jTable.getSelectedRows())
+//			{
+//				graphsForTest.add(graphList.get(i));
+//			}
+//
+//			GraphTestResult[][][] results = new GraphTestResult[times][graphsForTest.size()][classes.size()];
+//
+//			for (int run = 0; run < times; run++)
+//			{
+//				for (int i = 0; i < graphsForTest.size(); i++)
+//				{
+//					Graph<Integer> g = graphsForTest.get(i);
+//
+//					for (int j = 0; j < classes.size(); j++)
+//					{
+//						try
+//						{
+//							GraphTest graphTest = (GraphTest) classes.get(j).newInstance();
+//							graphTest.init(g);
+//							// TODO: 9.12.2016 -- doriesit co s dlho trvajucim vypoctom
+//							LOGGER.debug("Start executor service");
+//							ExecutorService executorService = Executors.newFixedThreadPool(1);
+//							LOGGER.debug("submit into executor service");
+//							GraphTestResult graphTestResult = (GraphTestResult) executorService.submit(graphTest).get();
+//							LOGGER.debug("Shutdown executor service");
+//							executorService.shutdown();
+//
+//							int graphId = graphList.indexOf(g);
+//
+//							String sout = "Testing run: " + (run + 1) + ", Graph id: " + graphId + ", Result: " + graphTestResult;
+//							LOGGER.info(sout);
+//
+//							jTable.setValueAt(graphTestResult.getValue("timeInSeconds"), graphId, 2);
+//							jTable.setValueAt(run + "/" + times, graphId, 3);
+//
+//							results[run][i][j] = graphTestResult;
+//						}
+//						catch (InstantiationException e)
+//						{
+//							e.printStackTrace();
+//						}
+//						catch (IllegalAccessException e)
+//						{
+//							e.printStackTrace();
+//						}
+//						catch (InterruptedException e)
+//						{
+//							e.printStackTrace();
+//						}
+//						catch (ExecutionException e)
+//						{
+//							e.printStackTrace();
+//						}
+//					}
+//				}
+//
+//				jProgressBar.setValue(100 / times * (run + 1));
+//			}
+//
+//			jProgressBar.setValue(100);
+//
+//			Map<String, Object> resultValues = new HashMap<String, Object>();
+//			resultValues.put("test", "Snark algorithm comparation");
+//			resultValues.put("resultsData", results);
+//			resultValues.put("times", times);
+//
+//			new ResultsWidnow(resultValues);
 
 			List<Graph<Integer>> graphsForTest = new LinkedList<Graph<Integer>>();
 			for (int i : jTable.getSelectedRows())
@@ -725,66 +721,25 @@ public class AppMainWindow extends JFrame
 				graphsForTest.add(graphList.get(i));
 			}
 
-			GraphTestResult[][][] results = new GraphTestResult[times][graphsForTest.size()][classes.size()];
+			jlbProces.setVisible(true);
 
-			for (int run = 0; run < times; run++)
+			LOGGER.info("Create builder");
+			RunnerBuilder builder = new RunnerBuilder();
+			builder.setLoops(times);
+			builder.setTestType(SnarkTestTypes.ALL_ALGORITHMS);
+			builder.setGraphs(graphsForTest);
+
+			Map<String, Object> resultValues = null;
+			try
 			{
-				for (int i = 0; i < graphsForTest.size(); i++)
-				{
-					Graph<Integer> g = graphsForTest.get(i);
-
-					for (int j = 0; j < classes.size(); j++)
-					{
-						try
-						{
-							GraphTest graphTest = (GraphTest) classes.get(j).newInstance();
-							graphTest.init(g);
-							// TODO: 9.12.2016 -- doriesit co s dlho trvajucim vypoctom
-							LOGGER.debug("Start executor service");
-							ExecutorService executorService = Executors.newFixedThreadPool(1);
-							LOGGER.debug("submit into executor service");
-							GraphTestResult graphTestResult = (GraphTestResult) executorService.submit(graphTest).get();
-							LOGGER.debug("Shutdown executor service");
-							executorService.shutdown();
-
-							int graphId = graphList.indexOf(g);
-
-							String sout = "Testing run: " + (run + 1) + ", Graph id: " + graphId + ", Result: " + graphTestResult;
-							LOGGER.info(sout);
-
-							jTable.setValueAt(graphTestResult.getValue("timeInSeconds"), graphId, 2);
-							jTable.setValueAt(run + "/" + times, graphId, 3);
-
-							results[run][i][j] = graphTestResult;
-						}
-						catch (InstantiationException e)
-						{
-							e.printStackTrace();
-						}
-						catch (IllegalAccessException e)
-						{
-							e.printStackTrace();
-						}
-						catch (InterruptedException e)
-						{
-							e.printStackTrace();
-						}
-						catch (ExecutionException e)
-						{
-							e.printStackTrace();
-						}
-					}
-				}
-
-				jProgressBar.setValue(100 / times * (run + 1));
+				resultValues = builder.build().run();
+			}
+			catch (RunnerException e)
+			{
+				e.printStackTrace();
 			}
 
-			jProgressBar.setValue(100);
-
-			Map<String, Object> resultValues = new HashMap<String, Object>();
-			resultValues.put("test", "Snark algorithm comparation");
-			resultValues.put("resultsData", results);
-			resultValues.put("times", times);
+			jlbProces.setVisible(false);
 
 			new ResultsWidnow(resultValues);
 		}
@@ -804,90 +759,119 @@ public class AppMainWindow extends JFrame
 		@Override
 		public void run ()
 		{
-			LOGGER.info("Start snark one algorithm test");
-			jProgressBar.setValue(0);
+//			LOGGER.info("Start snark one algorithm test");
+//			jProgressBar.setValue(0);
+//
+//			GraphTestResult[][] results = new GraphTestResult[times][jTable.getSelectedRows().length];
+//
+//			for (int i = 0; i < this.times; i++)
+//			{
+//				List<GraphTest> graphTests = new LinkedList<GraphTest>();
+//				for (int row : jTable.getSelectedRows())
+//				{
+//					try
+//					{
+//						GraphTest graphTest = (GraphTest) this.graphTestClass.newInstance();
+//						graphTest.init(graphList.get(row));
+//						graphTests.add(graphTest);
+//					}
+//					catch (InstantiationException e)
+//					{
+//						e.printStackTrace();
+//					}
+//					catch (IllegalAccessException e)
+//					{
+//						e.printStackTrace();
+//					}
+//				}
+//
+//				ForkJoinPool forkJoinPool = new ForkJoinPool(ForkJoinPool.getCommonPoolParallelism());
+//
+//				for (int j = 0; j < graphTests.size(); j++)
+//				{
+//					forkJoinPool.execute(graphTests.get(j));
+//				}
+//
+//				boolean running = true;
+//
+//				while (running)
+//				{
+//					running = false;
+//
+//					for (int j = 0; j < graphTests.size(); j++)
+//					{
+//						GraphTest graphTest = graphTests.get(j);
+//						if (graphTest.isDone())
+//						{
+//							if (results[i][j] == null)
+//							{
+//								try
+//								{
+//									GraphTestResult graphTestResult = graphTest.getResult();
+//									results[i][j] = graphTestResult;
+//
+//									int graphId = graphList.indexOf(graphTest.getGraph());
+//
+//									jTable.setValueAt(graphTestResult.getValue("timeInSeconds"), graphId, 2);
+//									jTable.setValueAt((i + 1) + "/" + times, graphId, 3);
+//
+//									LOGGER.debug("graph id " + graphId + " in " + (i + 1) + " run is done.");
+//								}
+//								catch (ExecutionException e)
+//								{
+//									e.printStackTrace();
+//								}
+//								catch (InterruptedException e)
+//								{
+//									e.printStackTrace();
+//								}
+//							}
+//						}
+//						else
+//						{
+//							running = true;
+//						}
+//					}
+//				}
+//				forkJoinPool.shutdown();
+//				jProgressBar.setValue(100 / this.times * (i + 1));
+//			}
+//
+//			jProgressBar.setValue(100);
+//
+//			Map<String, Object> resultValues = new HashMap<String, Object>();
+//			resultValues.put("test", "Snark one algorithm test - " + this.graphTestClass.getSimpleName());
+//			resultValues.put("resultsData", results);
+//			resultValues.put("times", times);
+//
+//			new ResultsWidnow(resultValues);
 
-			GraphTestResult[][] results = new GraphTestResult[times][jTable.getSelectedRows().length];
-
-			for (int i = 0; i < this.times; i++)
+			List<Graph<Integer>> graphsForTest = new LinkedList<Graph<Integer>>();
+			for (int i : jTable.getSelectedRows())
 			{
-				List<GraphTest> graphTests = new LinkedList<GraphTest>();
-				for (int row : jTable.getSelectedRows())
-				{
-					try
-					{
-						GraphTest graphTest = (GraphTest) this.graphTestClass.newInstance();
-						graphTest.init(graphList.get(row));
-						graphTests.add(graphTest);
-					}
-					catch (InstantiationException e)
-					{
-						e.printStackTrace();
-					}
-					catch (IllegalAccessException e)
-					{
-						e.printStackTrace();
-					}
-				}
-
-				ForkJoinPool forkJoinPool = new ForkJoinPool(ForkJoinPool.getCommonPoolParallelism());
-
-				for (int j = 0; j < graphTests.size(); j++)
-				{
-					forkJoinPool.execute(graphTests.get(j));
-				}
-
-				boolean running = true;
-
-				while (running)
-				{
-					running = false;
-
-					for (int j = 0; j < graphTests.size(); j++)
-					{
-						GraphTest graphTest = graphTests.get(j);
-						if (graphTest.isDone())
-						{
-							if (results[i][j] == null)
-							{
-								try
-								{
-									GraphTestResult graphTestResult = graphTest.getResult();
-									results[i][j] = graphTestResult;
-
-									int graphId = graphList.indexOf(graphTest.getGraph());
-
-									jTable.setValueAt(graphTestResult.getValue("timeInSeconds"), graphId, 2);
-									jTable.setValueAt((i + 1) + "/" + times, graphId, 3);
-
-									LOGGER.debug("graph id " + graphId + " in " + (i + 1) + " run is done.");
-								}
-								catch (ExecutionException e)
-								{
-									e.printStackTrace();
-								}
-								catch (InterruptedException e)
-								{
-									e.printStackTrace();
-								}
-							}
-						}
-						else
-						{
-							running = true;
-						}
-					}
-				}
-				forkJoinPool.shutdown();
-				jProgressBar.setValue(100 / this.times * (i + 1));
+				graphsForTest.add(graphList.get(i));
 			}
 
-			jProgressBar.setValue(100);
+			jlbProces.setVisible(true);
 
-			Map<String, Object> resultValues = new HashMap<String, Object>();
-			resultValues.put("test", "Snark one algorithm test - " + this.graphTestClass.getSimpleName());
-			resultValues.put("resultsData", results);
-			resultValues.put("times", times);
+			LOGGER.info("Create builder");
+			RunnerBuilder builder = new RunnerBuilder();
+			builder.setLoops(times);
+			builder.setTestType(SnarkTestTypes.ONE_ALGORITHM);
+			builder.setGraphs(graphsForTest);
+			builder.setAlgorithmTest(this.graphTestClass);
+
+			Map<String, Object> resultValues = null;
+			try
+			{
+				resultValues = builder.build().run();
+			}
+			catch (RunnerException e)
+			{
+				e.printStackTrace();
+			}
+
+			jlbProces.setVisible(false);
 
 			new ResultsWidnow(resultValues);
 		}
@@ -944,6 +928,4 @@ public class AppMainWindow extends JFrame
 			JOptionPane.showMessageDialog(appMainWindow, "Everything is OK. Dot-products were saved.", "Success", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
-
-
 }

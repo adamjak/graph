@@ -1,8 +1,10 @@
 package net.adamjak.thomas.graph.application.run;
 
 import net.adamjak.thomas.graph.application.commons.SnarkTestTypes;
+import net.adamjak.thomas.graph.library.api.Graph;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by Tomas Adamjak on 19.2.2017.
@@ -21,6 +23,7 @@ public class RunnerBuilder
 	private File inputFile;
 	private int loops = 1;
 	private Class<?> algorithmTest;
+	private List<Graph<Integer>> graphs;
 
 	public SnarkTestTypes getTestType ()
 	{
@@ -71,6 +74,17 @@ public class RunnerBuilder
 		return algorithmTest;
 	}
 
+	public List<Graph<Integer>> getGraphs ()
+	{
+		return graphs;
+	}
+
+	public RunnerBuilder setGraphs (List<Graph<Integer>> graphs)
+	{
+		this.graphs = graphs;
+		return this;
+	}
+
 	public RunnerBuilder setAlgorithmTest (Class<?> algorithmTest)
 	{
 		this.algorithmTest = algorithmTest;
@@ -83,22 +97,42 @@ public class RunnerBuilder
 	 */
 	public TestRunner build () throws RunnerException
 	{
-		if (this.inputFile == null) throw new RunnerException("Input file can not be null");
+		if (this.inputFile == null && this.graphs == null)
+			throw new RunnerException("Input file or list of graphs have to be set.");
 		if (this.testType == null) throw new RunnerException("Test type can not be null");
 		if (this.testType == SnarkTestTypes.ONE_ALGORITHM && this.algorithmTest == null)
 			throw new RunnerException("Algorithm can not be null if test type is one algorithm test.");
 
-		if (this.testType == SnarkTestTypes.ONE_ALGORITHM)
+		if (this.inputFile != null)
 		{
-			return new OneAlgorithmTestRunner(this.inputFile, this.outputFile, this.loops, this.algorithmTest);
-		}
-		else if (this.testType == SnarkTestTypes.ONE_ALGORITHM)
-		{
-			return new AllAlgorithmTestRunner(this.inputFile, this.outputFile, this.loops);
+			if (this.testType == SnarkTestTypes.ONE_ALGORITHM)
+			{
+				return new OneAlgorithmTestRunner(this.inputFile, this.outputFile, this.loops, this.algorithmTest);
+			}
+			else if (this.testType == SnarkTestTypes.ONE_ALGORITHM)
+			{
+				return new AllAlgorithmTestRunner(this.inputFile, this.outputFile, this.loops);
+			}
+			else
+			{
+				return new AlgorithmComparationTestRunner(this.inputFile, this.outputFile, this.loops);
+			}
 		}
 		else
 		{
-			return new AlgorithmComparationTestRunner(this.inputFile, this.outputFile, this.loops);
+			if (this.testType == SnarkTestTypes.ONE_ALGORITHM)
+			{
+				return new OneAlgorithmTestRunner(this.graphs, this.outputFile, this.loops, this.algorithmTest);
+			}
+			else if (this.testType == SnarkTestTypes.ONE_ALGORITHM)
+			{
+				return new AllAlgorithmTestRunner(this.graphs, this.outputFile, this.loops);
+			}
+			else
+			{
+				return new AlgorithmComparationTestRunner(this.graphs, this.outputFile, this.loops);
+
+			}
 		}
 	}
 }

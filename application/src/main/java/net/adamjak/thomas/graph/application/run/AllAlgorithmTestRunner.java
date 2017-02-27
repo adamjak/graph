@@ -29,6 +29,11 @@ class AllAlgorithmTestRunner extends TestRunner
 		super(inputFile, outputFile, loops);
 	}
 
+	public AllAlgorithmTestRunner (List<Graph<Integer>> graphs, File outputFile, int loops)
+	{
+		super(graphs, outputFile, loops);
+	}
+
 	@Override
 	public Map<String, Object> run ()
 	{

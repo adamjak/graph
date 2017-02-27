@@ -88,7 +88,14 @@ public class CliManager
 
 			try
 			{
-				builder.build().runAndSaveResultsWithRawData();
+				if (cmd.hasOption("r"))
+				{
+					builder.build().runAndSaveResultsWithRawData();
+				}
+				else
+				{
+					builder.build().runAndSaveResults();
+				}
 			}
 			catch (RunnerException e)
 			{
@@ -126,6 +133,7 @@ public class CliManager
 		options.addOption("t", "test", true, "select test, values:\n- " + Utils.arrayToLineString(SnarkTestTypes.getTestNames(), "\n- "));
 		options.addOption("a", "algorithm", true, "select algorithm if in [-test] option is selected one algorithm test, values:\n- " + Utils.arrayToLineString(Utils.getSimpleNamesOfClassesFromCollection(Utils.getAllTestClasses()), "\n- "));
 		options.addOption("h", "help", false, "print this help");
+		options.addOption("r", "raw", false, "save raw data");
 
 		return options;
 	}
@@ -171,5 +179,7 @@ public class CliManager
 		{
 			System.err.print("!");
 		}
+
+		System.out.println("");
 	}
 }

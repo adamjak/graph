@@ -16,13 +16,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 
 /**
  * Created by Tomas Adamjak on 19.2.2017.
  * Copyright 2017, Tomas Adamjak
  * License: The BSD 3-Clause License
  */
-public abstract class TestRunner
+public abstract class TestRunner extends Observable
 {
 	final static Logger LOGGER = Logger.getLogger(TestRunner.class);
 
@@ -40,6 +41,13 @@ public abstract class TestRunner
 		this.loops = loops;
 
 		this.init();
+	}
+
+	public TestRunner (List<Graph<Integer>> graphs, File outputFile, int loops)
+	{
+		this.graphs = graphs;
+		this.outputFile = outputFile;
+		this.loops = loops;
 	}
 
 	private void init ()
@@ -78,8 +86,6 @@ public abstract class TestRunner
 
 	private void save (Map<String, Object> results, boolean rawData)
 	{
-		// TODO: 23.2.2017 -- save raw data
-
 		SnarkTestTypes testType = (SnarkTestTypes) results.get("testType");
 
 		if (this.outputFile.getName().split("\\.")[this.outputFile.getName().split("\\.").length - 1].toLowerCase().equals("ods"))
@@ -172,6 +178,26 @@ public abstract class TestRunner
 								data[row][3] = graphTestResult[i][j][k].getValue("time");
 								row++;
 							}
+						}
+					}
+				}
+				else if (testType == SnarkTestTypes.ALGORITHM_COMPARATION)
+				{
+					GraphTestResult[][] graphTestResult = (GraphTestResult[][]) results.get("resultsData");
+
+					columnNames = String.valueOf("Run,Graph,Time,Class").split(",");
+					data = new Object[graphTestResult.length * graphTestResult[0].length][4];
+
+					int row = 0;
+					for (int i = 0; i < graphTestResult.length; i++)
+					{
+						for (int j = 0; j < graphTestResult[i].length; j++)
+						{
+							data[row][0] = i;
+							data[row][1] = j;
+							data[row][2] = graphTestResult[i][j].getValue("time");
+							data[row][3] = ((Class<?>) graphTestResult[i][j].getValue("snarkTesterClass")).getSimpleName();
+							row++;
 						}
 					}
 				}
@@ -273,31 +299,7 @@ public abstract class TestRunner
 
 			}
 
-			BufferedWriter bw = null;
-			FileWriter fw = null;
-
-			try
-			{
-				fw = new FileWriter(this.outputFile);
-				bw = new BufferedWriter(fw);
-				bw.write(sbData.toString());
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-			finally
-			{
-				try
-				{
-					if (bw != null) bw.close();
-					if (fw != null) fw.close();
-				}
-				catch (IOException ex)
-				{
-					ex.printStackTrace();
-				}
-			}
+			this.saveStringIntoFile(this.outputFile, sbData.toString());
 
 			if (rawData == true)
 			{
@@ -327,6 +329,27 @@ public abstract class TestRunner
 						}
 					}
 				}
+				else if (testType == SnarkTestTypes.ALGORITHM_COMPARATION)
+				{
+					GraphTestResult[][] graphTestResult = (GraphTestResult[][]) results.get("resultsData");
+
+					sbRawData.append("Run,Graph,Time,Class\n");
+
+					for (int i = 0; i < graphTestResult.length; i++)
+					{
+						for (int j = 0; j < graphTestResult[i].length; j++)
+						{
+							sbRawData.append(i);
+							sbRawData.append(",");
+							sbRawData.append(j);
+							sbRawData.append(",");
+							sbRawData.append(graphTestResult[i][j].getValue("time"));
+							sbRawData.append(",");
+							sbRawData.append(((Class<?>) graphTestResult[i][j].getValue("snarkTesterClass")).getSimpleName());
+							sbRawData.append("\n");
+						}
+					}
+				}
 				else
 				{
 					GraphTestResult[][] graphTestResult = (GraphTestResult[][]) results.get("resultsData");
@@ -347,31 +370,40 @@ public abstract class TestRunner
 					}
 				}
 
-				BufferedWriter bwRaw = null;
-				FileWriter fwRaw = null;
+				this.saveStringIntoFile(new File(this.outputFile.getParent(), "raw_" + this.outputFile.getName()), sbRawData.toString());
+			}
+		}
+	}
 
-				try
-				{
-					fwRaw = new FileWriter(new File(this.outputFile.getParent(), "raw_" + this.outputFile.getName()));
-					bwRaw = new BufferedWriter(fwRaw);
-					bwRaw.write(sbData.toString());
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-				finally
-				{
-					try
-					{
-						if (bwRaw != null) bwRaw.close();
-						if (fwRaw != null) fwRaw.close();
-					}
-					catch (IOException ex)
-					{
-						ex.printStackTrace();
-					}
-				}
+	/**
+	 * @param f File whitch will contains inserted string
+	 * @param s String to tave into file
+	 */
+	private void saveStringIntoFile (File f, String s)
+	{
+		BufferedWriter bw = null;
+		FileWriter fw = null;
+
+		try
+		{
+			fw = new FileWriter(f);
+			bw = new BufferedWriter(fw);
+			bw.write(s);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if (bw != null) bw.close();
+				if (fw != null) fw.close();
+			}
+			catch (IOException ex)
+			{
+				ex.printStackTrace();
 			}
 		}
 	}
