@@ -1,0 +1,81 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.adamjak.thomas.graph</groupId>
+        <artifactId>native</artifactId>
+        <version>0.2-SNAPSHOT</version>
+    </parent>
+
+    <groupId>net.adamjak.thomas.graph.native</groupId>
+    <artifactId>nativeWin32</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>Native win32</name>
+    <url>http://maven.apache.org</url>
+
+    <packaging>dll</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.adamjak.thomas.graph</groupId>
+            <artifactId>library</artifactId>
+            <version>0.2-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <!--  trigger javah -->
+                    <javahOS>win32</javahOS>
+
+                    <compilerProvider>generic-classic</compilerProvider>
+                    <compilerExecutable>gcc</compilerExecutable>
+                    <linkerExecutable>gcc</linkerExecutable>
+                    <sources>
+                        <source>
+                            <directory>../src/main/c</directory>
+                            <fileNames>
+                                <fileName>kowaliknative.c</fileName>
+                            </fileNames>
+                        </source>
+                    </sources>
+
+                    <compilerStartOptions>
+                        <compilerStartOption>-std=c11 -fPIC -c</compilerStartOption>
+                    </compilerStartOptions>
+                    <linkerStartOptions>
+                        <linkerStartOption>-shared -Wl,-soname</linkerStartOption>
+                    </linkerStartOptions>
+
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>javah</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <javahProvider>default</javahProvider>
+                            <javahOutputDirectory>${project.build.directory}/custom-javah</javahOutputDirectory>
+                            <workingDirectory>${basedir}</workingDirectory>
+                            <javahOutputFileName>kowaliknative.h</javahOutputFileName>
+                            <javahClassNames>
+                                <javahClassName>net.adamjak.thomas.graph.native.KowalikNative</javahClassName>
+                            </javahClassNames>
+                        </configuration>
+                        <goals>
+                            <goal>javah</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

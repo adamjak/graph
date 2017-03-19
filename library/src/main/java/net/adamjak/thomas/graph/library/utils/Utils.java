@@ -156,4 +156,38 @@ public class Utils
 			return "Pair of " + this.type.getSimpleName() + " first: " + this.first + " second: " + this.second;
 		}
 	}
+
+	/**
+	 * Convert int array into char array;
+	 * <p>Example:<br>
+	 *     <code>
+	 *         int[] {1,2,3} =&gt; char[] {'1','2','3'}<br>
+	 *         int[] {11,22,33} =&gt; char[] {'1','2','3'}
+	 *     </code>
+	 *
+	 * @param array int array to convert
+	 * @return Return new char array with elements from int array
+	 */
+	public static char[] intArrayToCharArray (int[] array)
+	{
+		char[] newArray = new char[array.length];
+
+		for (int i = 0; i < array.length; i++)
+		{
+			newArray[i] = String.valueOf(array[i]).charAt(0);
+		}
+
+		return newArray;
+	}
+
+	/**
+	 * Convert millisecond into nanosecond.
+	 *
+	 * @param ms millisecond value
+	 * @return Return nanosecond from inserted millisecond.
+	 */
+	public static long msToNs (double ms)
+	{
+		return Double.valueOf(ms * 1000000).longValue();
+	}
 }

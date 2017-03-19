@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.adamjak.thomas.graph</groupId>
+        <artifactId>parent</artifactId>
+        <version>0.2-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>native</artifactId>
+
+    <name>native libraries - JNI</name>
+
+    <packaging>pom</packaging>
+
+    <profiles>
+
+        <profile>
+            <id>win32</id>
+            <activation>
+                <property>
+                    <name>platform</name>
+                    <value>win32</value>
+                </property>
+            </activation>
+            <modules>
+                <module>win32</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>hpux</id>
+            <activation>
+                <property>
+                    <name>platform</name>
+                    <value>hpux</value>
+                </property>
+            </activation>
+            <modules>
+                <module>hpux</module>
+            </modules>
+        </profile>
+
+    </profiles>
+
+</project>

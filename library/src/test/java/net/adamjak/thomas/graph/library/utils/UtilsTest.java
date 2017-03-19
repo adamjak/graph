@@ -50,4 +50,30 @@ public class UtilsTest
 		p1.isInPair(null);
 	}
 
+	@Test
+	public void intArrayToCharArrayTest () throws Exception
+	{
+		int[] arr = {1,2,3};
+
+		char[] expectedResult = {'1','2','3'};
+		char[] result = Utils.intArrayToCharArray(arr);
+
+		assertEquals(expectedResult.length, result.length);
+
+		for (int i = 0; i < result.length; i++)
+		{
+			assertEquals(expectedResult[i], result[i]);
+		}
+	}
+
+	@Test
+	public void msToNsTest () throws Exception
+	{
+		double ms = 0.042;
+		long expected = 42000L;
+		long result = Utils.msToNs(ms);
+
+		assertEquals(expected, result);
+	}
+
 }

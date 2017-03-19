@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -67,6 +68,87 @@ public class GraphUtilsTest
 
 		List<Graph<Integer>> graphs = GraphUtils.createAllDotProducts(g1, g2);
 		assertTrue(graphs.size() == countOfDotProducts);
+	}
+
+	@Test
+	public void getSpecialAdjacencyMatrixTest () throws Exception
+	{
+		Vertex<Integer> v1 = new VertexImpl<Integer>(1);
+		Vertex<Integer> v2 = new VertexImpl<Integer>(2);
+		Vertex<Integer> v3 = new VertexImpl<Integer>(3);
+
+		Edge<Integer> e1 = new EdgeImpl<Integer>(1, v1, v2, false);
+		Edge<Integer> e2 = new EdgeImpl<Integer>(2, v2, v3, false);
+
+		Graph<Integer> graph = GraphImpl.createGraph(Integer.class);
+		graph.addVertex(v1);
+		graph.addVertex(v2);
+		graph.addVertex(v3);
+		graph.addEdge(e1);
+		graph.addEdge(e2);
+
+		int[] result = GraphUtils.getSpecialAdjacencyMatrix(graph);
+		int[] expectedResult = {0,1,0,1,0,1,0,1,0};
+
+		assertEquals(expectedResult.length,result.length);
+
+		for (int i = 0; i < result.length; i++)
+		{
+			assertEquals(expectedResult[i],result[i]);
+		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void getSpecialAdjacencyMatrixTestIllegalArgumentException () throws Exception
+	{
+		GraphUtils.getSpecialAdjacencyMatrix(null);
+	}
+
+	@Test
+	public void getIncidenceMatrixTest () throws Exception
+	{
+		Vertex<Integer> v1 = new VertexImpl<Integer>(1);
+		Vertex<Integer> v2 = new VertexImpl<Integer>(2);
+		Vertex<Integer> v3 = new VertexImpl<Integer>(3);
+		Vertex<Integer> v4 = new VertexImpl<Integer>(4);
+
+		Edge<Integer> e1 = new EdgeImpl<Integer>(1, v1, v2, false);
+		Edge<Integer> e2 = new EdgeImpl<Integer>(2, v1, v4, false);
+		Edge<Integer> e3 = new EdgeImpl<Integer>(3, v1, v3, false);
+		Edge<Integer> e4 = new EdgeImpl<Integer>(4, v3, v4, false);
+
+		Graph<Integer> graph = GraphImpl.createGraph(Integer.class);
+		graph.addVertex(v1);
+		graph.addVertex(v2);
+		graph.addVertex(v3);
+		graph.addVertex(v4);
+		graph.addEdge(e1);
+		graph.addEdge(e2);
+		graph.addEdge(e3);
+		graph.addEdge(e4);
+
+		Byte[][] expected = {
+				{1,1,1,0},
+				{1,0,0,0},
+				{0,0,1,1},
+				{0,1,0,1}
+		};
+
+		Byte[][] result = GraphUtils.getIncidenceMatrix(graph);
+
+		for (int i = 0; i < expected.length; i++)
+		{
+			for (int j = 0; j < expected[i].length; j++)
+			{
+				assertEquals(expected[i][j],result[i][j]);
+			}
+		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void getIncidenceMatrixTestIllegalArgumentException () throws Exception
+	{
+		GraphUtils.getIncidenceMatrix(null);
 	}
 
 }

@@ -169,4 +169,100 @@ public class GraphUtils
 
 		return newGraph;
 	}
+
+	/**
+	 * @param g graph
+	 * @param <T> type of graph
+	 * @return Return int array with special adjacency matrix format from inserted graph.
+	 * @throws IllegalArgumentException if param g is null
+	 * @see Graph#getAdjacencyMatrix()
+	 */
+	public static <T extends Comparable> int[] getSpecialAdjacencyMatrix(Graph<T> g) throws IllegalArgumentException
+	{
+		if (g == null) throw new IllegalArgumentException("Param g can not be null.");
+
+		Byte[][] matrix = g.getAdjacencyMatrix();
+
+		int[] specialMatrix = new int[matrix.length * matrix.length];
+
+		int k = 0;
+
+		for (int i = 0; i < matrix.length; i++)
+		{
+			for (int j = 0; j < matrix[i].length; j++)
+			{
+				specialMatrix[k] = matrix[i][j];
+				k++;
+			}
+		}
+
+		return specialMatrix;
+	}
+
+	/**
+	 * Create incidence matrix for inserted graph.
+	 *
+	 * @param g graph
+	 * @param <T> graph type
+	 * @return Incidence matrix in two dimension array
+	 * @throws IllegalArgumentException if param g is null
+	 * @see Graph#getAdjacencyMatrix()
+	 */
+	public static <T extends Comparable> Byte[][] getIncidenceMatrix (Graph<T> g) throws IllegalArgumentException
+	{
+		if (g == null) throw new IllegalArgumentException("Param g can not be null.");
+
+		Byte[][] matrix = new Byte[g.getCountOfVertexes()][g.getListOfEdges().size()];
+
+		for (int i = 0; i < g.getListOfVertexes().size(); i++)
+		{
+			Vertex<T> v = g.getListOfVertexes().get(i);
+
+			for (int j = 0; j < g.getListOfEdges().size(); j++)
+			{
+				Edge<T> e = g.getListOfEdges().get(j);
+
+				if (e.getStart().equals(v) || e.getEnd().equals(v))
+				{
+					matrix[i][j] = 1;
+				}
+				else
+				{
+					matrix[i][j] = 0;
+				}
+			}
+		}
+
+		return matrix;
+	}
+
+	/**
+	 * @param g graph
+	 * @param <T> type of graph
+	 * @return Return int array with special incidence matrix format from inserted graph.
+	 * @throws IllegalArgumentException if param g is null
+	 * @see Graph#getAdjacencyMatrix()
+	 * @see GraphUtils#getIncidenceMatrix(Graph)
+	 */
+	public static <T extends Comparable> int[] getSpecialIncidenceMatrix (Graph<T> g) throws IllegalArgumentException
+	{
+		if (g == null) throw new IllegalArgumentException("Param g can not be null.");
+
+		Byte[][] matrix = GraphUtils.getIncidenceMatrix(g);
+
+		int[] specialMatrix = new int[matrix.length * matrix[0].length];
+
+		int k = 0;
+
+		for (int i = 0; i < matrix.length; i++)
+		{
+			for (int j = 0; j < matrix[i].length; j++)
+			{
+				specialMatrix[k] = matrix[i][j];
+				k++;
+			}
+		}
+
+		return specialMatrix;
+	}
 }

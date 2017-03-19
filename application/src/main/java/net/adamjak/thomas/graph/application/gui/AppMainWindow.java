@@ -6,7 +6,6 @@ import net.adamjak.thomas.graph.application.run.RunnerBuilder;
 import net.adamjak.thomas.graph.application.run.RunnerException;
 import net.adamjak.thomas.graph.library.api.Graph;
 import net.adamjak.thomas.graph.library.io.GraphFactory;
-import net.adamjak.thomas.graph.library.io.GraphInputOutputException;
 import net.adamjak.thomas.graph.library.io.GraphSaver;
 import net.adamjak.thomas.graph.library.io.SupportedFormats;
 import net.adamjak.thomas.graph.library.utils.GraphUtils;
@@ -895,11 +894,12 @@ public class AppMainWindow extends JFrame
 		@Override
 		public void run ()
 		{
-			jProgressBar.setValue(10);
-			List<Graph<Integer>> dotProducts = GraphUtils.createAllDotProducts(this.g1, this.g2);
-			jProgressBar.setValue(80);
+			jlbProces.setVisible(true);
+
 			try
 			{
+				List<Graph<Integer>> dotProducts = GraphUtils.createAllDotProducts(this.g1, this.g2);
+
 				switch (this.format)
 				{
 					case GRAPH6:
@@ -919,12 +919,12 @@ public class AppMainWindow extends JFrame
 						break;
 				}
 			}
-			catch (GraphInputOutputException e)
+			catch (Exception e)
 			{
 				JOptionPane.showMessageDialog(appMainWindow, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 			}
 
-			jProgressBar.setValue(1);
+			jlbProces.setVisible(false);
 			JOptionPane.showMessageDialog(appMainWindow, "Everything is OK. Dot-products were saved.", "Success", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}

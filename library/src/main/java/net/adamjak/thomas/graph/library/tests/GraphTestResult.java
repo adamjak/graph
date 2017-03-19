@@ -7,6 +7,10 @@ package net.adamjak.thomas.graph.library.tests;
  */
 public interface GraphTestResult
 {
+	public static final String TIME_KEY = "time";
+	public static final String SNARK_KEY = "snark";
+	public static final String SNARK_TESTER_CLASS_KEY = "snarkTesterClass";
+
 	/**
 	 * Add value into result. If in result is value with same identifier method modify it.
 	 * @param identifier identifier of value

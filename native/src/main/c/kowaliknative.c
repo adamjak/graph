@@ -1,13 +1,16 @@
 //
 // Created by Michal Povinsky on 04/08/16.
 //
+// JNI integration by Tomas Adamjak at 2017-03-10
 
+#include <jni.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
 
-#include "kowalik.h"
+#include <time.h>
+
 
 struct graph {
     int size;
@@ -98,6 +101,7 @@ static inline void unhide3(struct graph *g, int a, int b, int c)
 
 static inline void nei_add(struct graph *g, int a, int b)
 {
+    printf("Vrchol %d %d\n",a, b);
     assert(g->deg[a] < 3);
     if (g->col)
         g->col[a][g->deg[a]] = 0;
@@ -569,7 +573,7 @@ static int crossing(struct graph *g0m, struct swtch *a, struct swtch *b)
     //fprintf(stderr, "Crosing called with switches %d-%d-%d-%d %d-%d-%d-%d!\n", a->x, a->u, a->v, a->y, b->x, b->u, b->v, b->y);
     if (mget(g0m, a->u, a->v)) { return 0; }
     if (mget(g0m, b->u, b->v)) { return 0; }
-    
+
     int cur = a->x, prev = -1, count = 0, found_y = 0, found_xb = 0, found_yb = 0;
     while (1) {
         if (g0m->deg[cur] != 2) return 0;
@@ -585,7 +589,7 @@ static int crossing(struct graph *g0m, struct swtch *a, struct swtch *b)
             break;
         }
     }
-    
+
     /*struct graph temp = graph_init(g0m->size);
     flip_switch(&temp, a);
     flip_switch(&temp, b);
@@ -657,7 +661,7 @@ static inline int set_switches_(struct graph *g0, struct graph *m, struct graph 
 {
     int cycnum, cyclen, cycnum2, cyclen2;
     count_cycles(g0m, &cycnum, &cyclen);
-    
+
     while (1) {
         if (!cycnum) return 1;
         int brk = 0;
@@ -1099,7 +1103,7 @@ int kowalik_colourise(char *mat, int size)
     struct graph g = graph_init(size);
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < i; j++) {
-            if (mat[i*size+j]) {
+            if (mat[i*size+j] == 1) {
                 add_edge(&g, i, j);
             }
         }
@@ -1122,4 +1126,49 @@ int kowalik_colourise(char *mat, int size)
 
     graph_free(&g);
     return ret;
+}
+
+JNIEXPORT jdoubleArray JNICALL Java_net_adamjak_thomas_graph_library_tests_snarks_Kowalik_kowalikNative (JNIEnv * env, jobject jobj, jintArray array, jint graphSize)
+{
+    int arrSize = (int) (*env)->GetArrayLength(env, array);
+    int * body = (*env)->GetIntArrayElements(env, array,0);
+
+    int size = (int) graphSize;
+    char * matrix = (char *) malloc (arrSize * sizeof(char));
+
+    for (int i = 0; i < arrSize; i++)
+    {
+        if (body[i] == 1)
+        {
+            matrix[i] = '1';
+        }
+        else
+        {
+            matrix[i] = '0';
+        }
+    }
+
+    clock_t ts1;
+    clock_t ts2;
+
+    ts1 = clock();
+
+    int result = kowalik_colourise(matrix, size);
+
+    ts2 = clock();
+
+    double dur = 1000.0*(ts2-ts1)/CLOCKS_PER_SEC;
+
+    free(matrix);
+
+    double rArr[2];
+
+    rArr[0] = (double) result;
+    rArr[1] = dur;
+
+    jdoubleArray resultArr  = (*env)->NewDoubleArray(env,2);
+
+    (*env)->SetDoubleArrayRegion(env,resultArr,0,2,rArr);
+
+    return resultArr;
 }

@@ -1,0 +1,6 @@
+gcc -fPIC -c kowaliknative.c -I"/opt/jdk/jdk1.8.0_102/include" -I"/opt/jdk/jdk1.8.0_102/include/linux" -std=c11
+gcc kowaliknative.o -shared -o libkowaliknative.so -Wl,-soname
+
+export LD_LIBRARY_PATH=c_library/
+
+sudo execstack -c c_library/libkowaliknative.so
