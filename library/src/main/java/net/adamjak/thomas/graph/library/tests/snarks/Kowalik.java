@@ -28,11 +28,11 @@ public class Kowalik<T extends Comparable> extends GraphTest<T>
 	 * <p>Special martix form:<br/>
 	 * <code>0 1 0 1 0 1 0 1 0</code></p>
 	 *
-	 * @param c matrix of neighbor vertexes in one line form
+	 * @param arr matrix of neighbor vertexes in one line form
 	 * @param i count of vertexes
 	 * @return
 	 */
-	native double[] kowalikNative(int[] c, int i);
+	native double[] kowalikNative (int[] arr, int i);
 
 	@Override
 	public void init (Graph<T> graph)

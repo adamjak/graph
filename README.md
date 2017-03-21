@@ -10,7 +10,7 @@ Documentation
 Javadoc: [adamjak.github.io/graph](https://adamjak.github.io/graph)
 
 License
-----------
+-------
 
 Copyright (c) 2015, Tomáš Adamják
 
@@ -41,3 +41,14 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+Usage
+-----
+
+### Debian
+
+1. `git clone [repository]`
+2. `cd graph`
+3. `mvn -P hpux clean package`
+4. `export LD_LIBRARY_PATH=native/hpux/target`
+5. `sudo execstack -c native/hpux/target/libkowaliknative.so`
+6. `java -jar application/target/application-0.2-SNAPSHOT.jar [param]`

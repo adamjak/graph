@@ -10,7 +10,7 @@
     <groupId>net.adamjak.thomas.graph.native</groupId>
     <artifactId>nativeHpux</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Native hp-ux</name>
+    <name>Kowalik native hp-ux</name>
     <url>http://maven.apache.org</url>
 
     <packaging>so</packaging>
@@ -40,13 +40,11 @@
                 <artifactId>native-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <linkerFinalName>libkowaliknative</linkerFinalName>
+
                     <!--  trigger javah -->
                     <javahOS>hp-ux</javahOS>
 
-                    <compilerProvider>generic-classic</compilerProvider>
-                    <compilerExecutable>cc</compilerExecutable>
-
-                    <linkerExecutable>cc</linkerExecutable>
                     <sources>
                         <source>
                             <directory>../src/main/c</directory>
@@ -57,12 +55,16 @@
                     </sources>
 
                     <compilerStartOptions>
-                        <compilerStartOption>-std=c11 -fPIC -c</compilerStartOption>
+                        <compilerStartOption>-fPIC -c</compilerStartOption>
                     </compilerStartOptions>
 
-                    <linkerStartOptions>
-                        <linkerStartOption>-shared -Wl,-soname</linkerStartOption>
-                    </linkerStartOptions>
+                    <compilerEndOptions>
+                        <compilerEndOption>-std=c11</compilerEndOption>
+                    </compilerEndOptions>
+
+                    <linkerEndOptions>
+                        <linkerEndOption>-shared -Wl,-soname</linkerEndOption>
+                    </linkerEndOptions>
 
                 </configuration>
 
