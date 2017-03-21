@@ -51,7 +51,7 @@ public class Kowalik<T extends Comparable> extends GraphTest<T>
 		int[] matrix = GraphUtils.getSpecialAdjacencyMatrix(this.graph);
 		int countOfVertexes = this.graph.getCountOfVertexes();
 
-		GraphTestResult graphTestResult = new SnarkTestResult(this.getClass());
+		SnarkTestResult snarkTestResult = new SnarkTestResult(this.getClass());
 
 		double[] result;
 
@@ -61,12 +61,12 @@ public class Kowalik<T extends Comparable> extends GraphTest<T>
 
 		long endTime = System.nanoTime();
 
-		graphTestResult.addValue(GraphTestResult.SNARK_KEY , result[0] == 1.0 ? true : false);
+		snarkTestResult.setSnark(result[0] == 1.0 ? true : false);
 
-		graphTestResult.addValue(GraphTestResult.TIME_KEY, Utils.msToNs(result[1]));
-		graphTestResult.addValue("timeWithJni", endTime - startTime);
+		snarkTestResult.setTime(Utils.msToNs(result[1]));
+		snarkTestResult.addValue("timeWithJni", endTime - startTime);
 
-		return graphTestResult;
+		return snarkTestResult;
 	}
 
 	/**

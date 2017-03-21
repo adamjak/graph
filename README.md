@@ -12,7 +12,7 @@ Javadoc: [adamjak.github.io/graph](https://adamjak.github.io/graph)
 License
 -------
 
-Copyright (c) 2015, Tomáš Adamják
+Copyright (c) 2015-2017, Tomáš Adamják
 
 All rights reserved.
 
