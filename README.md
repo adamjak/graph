@@ -41,6 +41,14 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+Requirements
+------------
+
+* Java 8
+* Maven 3
+* gcc 4.9+
+
+
 Usage
 -----
 
@@ -48,7 +56,8 @@ Usage
 
 1. `git clone [repository]`
 2. `cd graph`
-3. `mvn -P hpux clean package`
-4. `export LD_LIBRARY_PATH=native/hpux/target`
-5. `sudo execstack -c native/hpux/target/libkowaliknative.so`
-6. `java -jar application/target/application-0.2-SNAPSHOT.jar [param]`
+3. 'sudo ln -s [JDK_HOME]/include/linux/jni_md.h [JDK_HOME]/include/jni_md.h'
+4. `mvn -P hpux clean package`
+5. `export LD_LIBRARY_PATH=native/hpux/target`
+6. `sudo execstack -c native/hpux/target/libkowaliknative.so`
+7. `java -jar application/target/application-0.2-SNAPSHOT.jar [param]`
