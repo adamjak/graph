@@ -4,7 +4,7 @@ import net.adamjak.thomas.graph.library.api.Edge;
 import net.adamjak.thomas.graph.library.api.Graph;
 import net.adamjak.thomas.graph.library.api.Vertex;
 import net.adamjak.thomas.graph.library.classes.EdgeImpl;
-import net.adamjak.thomas.graph.library.classes.GraphImpl;
+import net.adamjak.thomas.graph.library.classes.GraphTreeMapImpl;
 import net.adamjak.thomas.graph.library.classes.VertexImpl;
 
 /**
@@ -47,7 +47,7 @@ public class InterestingGraphs
 		Edge<Integer> e14 = new EdgeImpl<Integer>(14, v7, v9, false);
 		Edge<Integer> e15 = new EdgeImpl<Integer>(15, v9, v6, false);
 
-		Graph<Integer> graph = GraphImpl.createGraph(Integer.class);
+		Graph<Integer> graph = GraphTreeMapImpl.createGraph(Integer.class);
 
 		graph.addVertex(v1);
 		graph.addVertex(v2);

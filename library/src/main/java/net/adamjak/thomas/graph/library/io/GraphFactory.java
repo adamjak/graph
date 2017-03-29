@@ -4,7 +4,7 @@ import net.adamjak.thomas.graph.library.api.Edge;
 import net.adamjak.thomas.graph.library.api.Graph;
 import net.adamjak.thomas.graph.library.api.Vertex;
 import net.adamjak.thomas.graph.library.classes.EdgeImpl;
-import net.adamjak.thomas.graph.library.classes.GraphImpl;
+import net.adamjak.thomas.graph.library.classes.GraphTreeMapImpl;
 import net.adamjak.thomas.graph.library.classes.VertexImpl;
 import net.adamjak.thomas.graph.library.io.xsd.Graphml;
 
@@ -75,7 +75,7 @@ public final class GraphFactory
 
 			boolean canCast = canGraphIdCastToInteger(graphml);
 
-			Graph<Integer> graph = GraphImpl.createGraph(Integer.class);
+			Graph<Integer> graph = GraphTreeMapImpl.createGraph(Integer.class);
 
 			int vertexId = 0;
 
@@ -224,7 +224,7 @@ public final class GraphFactory
 
 			mat = mat.substring(0, (n * (n - 1) / 2));
 
-			Graph<Integer> g = GraphImpl.createGraph(Integer.class);
+			Graph<Integer> g = GraphTreeMapImpl.createGraph(Integer.class);
 
 			for (int i = 0; i < n; i++)
 			{
@@ -326,7 +326,7 @@ public final class GraphFactory
 
 			if (cisloGrafu == i)
 			{
-				Graph<Integer> g = GraphImpl.createGraph(Integer.class);
+				Graph<Integer> g = GraphTreeMapImpl.createGraph(Integer.class);
 
 				do
 				{
@@ -391,7 +391,7 @@ public final class GraphFactory
 	 */
 	public static <U extends Comparable> Graph<U> cloneGraph (Graph<U> graph)
 	{
-		Graph<U> newGraph = GraphImpl.createGraph(graph.getGraphType());
+		Graph<U> newGraph = GraphTreeMapImpl.createGraph(graph.getGraphType());
 		newGraph.setDirected(graph.isDirected());
 
 		for (Vertex<U> v : graph.getStructure().keySet())

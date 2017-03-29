@@ -4,7 +4,7 @@ import net.adamjak.thomas.graph.library.api.Edge;
 import net.adamjak.thomas.graph.library.api.Graph;
 import net.adamjak.thomas.graph.library.api.Vertex;
 import net.adamjak.thomas.graph.library.classes.EdgeImpl;
-import net.adamjak.thomas.graph.library.classes.GraphImpl;
+import net.adamjak.thomas.graph.library.classes.GraphTreeMapImpl;
 import net.adamjak.thomas.graph.library.classes.VertexImpl;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public class GraphUtilsTest
 		Edge<Integer> e3 = new EdgeImpl<Integer>(3, v3, v4, false);
 		Edge<Integer> e4 = new EdgeImpl<Integer>(4, v2, v4, false);
 
-		Graph<Integer> g1 = GraphImpl.createGraph(Integer.class);
+		Graph<Integer> g1 = GraphTreeMapImpl.createGraph(Integer.class);
 		g1.addVertex(v1);
 		g1.addVertex(v2);
 		g1.addVertex(v3);
@@ -80,7 +80,7 @@ public class GraphUtilsTest
 		Edge<Integer> e1 = new EdgeImpl<Integer>(1, v1, v2, false);
 		Edge<Integer> e2 = new EdgeImpl<Integer>(2, v2, v3, false);
 
-		Graph<Integer> graph = GraphImpl.createGraph(Integer.class);
+		Graph<Integer> graph = GraphTreeMapImpl.createGraph(Integer.class);
 		graph.addVertex(v1);
 		graph.addVertex(v2);
 		graph.addVertex(v3);
@@ -117,7 +117,7 @@ public class GraphUtilsTest
 		Edge<Integer> e3 = new EdgeImpl<Integer>(3, v1, v3, false);
 		Edge<Integer> e4 = new EdgeImpl<Integer>(4, v3, v4, false);
 
-		Graph<Integer> graph = GraphImpl.createGraph(Integer.class);
+		Graph<Integer> graph = GraphTreeMapImpl.createGraph(Integer.class);
 		graph.addVertex(v1);
 		graph.addVertex(v2);
 		graph.addVertex(v3);

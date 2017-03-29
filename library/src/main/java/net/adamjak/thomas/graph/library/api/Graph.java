@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * Copyright 2016, Tomas Adamjak
  * License: The BSD 3-Clause License
  */
-public interface Graph<T extends Comparable>
+public interface Graph<T extends Comparable> extends Cloneable
 {
 	/**
 	 * Add new vertex into graph.
@@ -39,10 +39,19 @@ public interface Graph<T extends Comparable>
 
 	void addEdge (Edge<T> edge);
 
+	/**
+	 * @return Return type of graph.
+	 */
 	Class<? extends T> getGraphType ();
 
+	/**
+	 * @return Return graph structure in {@link Map}.
+	 */
 	Map<Vertex<T>, List<Edge<T>>> getStructure ();
 
+	/**
+	 * @return Return spanning tree of graph.
+	 */
 	List<Edge<T>> getSpanningTree ();
 
 	void setDirected (boolean directed);
@@ -69,4 +78,9 @@ public interface Graph<T extends Comparable>
 	Byte[][] getAdjacencyMatrix();
 
 	// TODO: 15.11.2016 -- dorobit javadoc
+
+	/**
+	 * @return Return full clone.
+	 */
+	Graph<T> clone();
 }

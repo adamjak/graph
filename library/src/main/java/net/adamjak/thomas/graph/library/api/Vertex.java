@@ -7,6 +7,9 @@ package net.adamjak.thomas.graph.library.api;
  */
 public interface Vertex<T extends Comparable> extends Comparable<Vertex<T>>
 {
+	/**
+	 * @return Return content of vertex.
+	 */
 	T getContent ();
 
 	@Override

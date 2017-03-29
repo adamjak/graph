@@ -123,6 +123,33 @@ public abstract class TestRunner extends Observable
 					}
 				}
 			}
+			else if (testType == SnarkTestTypes.ONE_ALGORITHM_START_IN_EVERY_VERTEX)
+			{
+				GraphTestResult[][][] graphTestResult = (GraphTestResult[][][]) results.get("resultsData");
+
+				columnNames = String.valueOf("Graph ID,Start vertex,Avarage time,Standard deviation,Minimum,Maximum").split(",");
+				data = new Object[graphTestResult[0].length][6];
+
+				for (int vid = 0; vid < graphTestResult[0][0].length; vid++)
+				{
+					for (int graph = 0; graph < graphTestResult[0].length; graph++)
+					{
+						SummaryStatistics summaryStatistics = new SummaryStatistics();
+
+						for (int run = 0; run < graphTestResult.length; run++)
+						{
+							summaryStatistics.addValue((double) graphTestResult[run][graph][vid].getValue("timeInSeconds"));
+						}
+
+						data[graph][0] = graph;
+						data[graph][1] = vid;
+						data[graph][2] = summaryStatistics.getMean();
+						data[graph][3] = summaryStatistics.getStandardDeviation();
+						data[graph][4] = summaryStatistics.getMin();
+						data[graph][5] = summaryStatistics.getMax();
+					}
+				}
+			}
 			else
 			{
 				GraphTestResult[][] graphTestResult = (GraphTestResult[][]) results.get("resultsData");
@@ -181,6 +208,29 @@ public abstract class TestRunner extends Observable
 						}
 					}
 				}
+				else if (testType == SnarkTestTypes.ONE_ALGORITHM_START_IN_EVERY_VERTEX)
+				{
+					GraphTestResult[][][] graphTestResult = (GraphTestResult[][][]) results.get("resultsData");
+
+					columnNames = String.valueOf("Run,Graph,Vertex,Time").split(",");
+					data = new Object[graphTestResult.length * graphTestResult[0].length * graphTestResult[0][0].length][4];
+
+					int row = 0;
+					for (int i = 0; i < graphTestResult.length; i++)
+					{
+						for (int j = 0; j < graphTestResult[i].length; j++)
+						{
+							for (int k = 0; k < graphTestResult[i][j].length; k++)
+							{
+								data[row][0] = i;
+								data[row][1] = j;
+								data[row][2] = k;
+								data[row][3] = graphTestResult[i][j][k].getValue("time");
+								row++;
+							}
+						}
+					}
+				}
 				else if (testType == SnarkTestTypes.ALGORITHM_COMPARATION)
 				{
 					GraphTestResult[][] graphTestResult = (GraphTestResult[][]) results.get("resultsData");
@@ -196,7 +246,7 @@ public abstract class TestRunner extends Observable
 							data[row][0] = i;
 							data[row][1] = j;
 							data[row][2] = graphTestResult[i][j].getValue("time");
-							data[row][3] = ((Class<?>) graphTestResult[i][j].getValue("snarkTesterClass")).getSimpleName();
+							data[row][3] = ((Class<?>) graphTestResult[i][j].getValue(GraphTestResult.SNARK_TESTER_CLASS_KEY)).getSimpleName();
 							row++;
 						}
 					}
@@ -269,6 +319,38 @@ public abstract class TestRunner extends Observable
 					}
 				}
 			}
+			else if (testType == SnarkTestTypes.ONE_ALGORITHM_START_IN_EVERY_VERTEX)
+			{
+				GraphTestResult[][][] graphTestResult = (GraphTestResult[][][]) results.get("resultsData");
+
+				sbData.append("Graph ID,Start vertex,Avarage time,Standard deviation,Minimum,Maximum\n");
+
+				for (int vid = 0; vid < graphTestResult[0][0].length; vid++)
+				{
+					for (int graph = 0; graph < graphTestResult[0].length; graph++)
+					{
+						SummaryStatistics summaryStatistics = new SummaryStatistics();
+
+						for (int run = 0; run < graphTestResult.length; run++)
+						{
+							summaryStatistics.addValue((double) graphTestResult[run][graph][vid].getValue("timeInSeconds"));
+						}
+
+						sbData.append(graph);
+						sbData.append(",");
+						sbData.append(vid);
+						sbData.append(",");
+						sbData.append(summaryStatistics.getMean());
+						sbData.append(",");
+						sbData.append(summaryStatistics.getStandardDeviation());
+						sbData.append(",");
+						sbData.append(summaryStatistics.getMin());
+						sbData.append(",");
+						sbData.append(summaryStatistics.getMax());
+						sbData.append("\n");
+					}
+				}
+			}
 			else
 			{
 
@@ -329,6 +411,30 @@ public abstract class TestRunner extends Observable
 						}
 					}
 				}
+				else if (testType == SnarkTestTypes.ONE_ALGORITHM_START_IN_EVERY_VERTEX)
+				{
+					GraphTestResult[][][] graphTestResult = (GraphTestResult[][][]) results.get("resultsData");
+
+					sbRawData.append("Run,Graph,Vertex,Time\n");
+
+					for (int i = 0; i < graphTestResult.length; i++)
+					{
+						for (int j = 0; j < graphTestResult[i].length; j++)
+						{
+							for (int k = 0; k < graphTestResult[i][j].length; k++)
+							{
+								sbRawData.append(i);
+								sbRawData.append(",");
+								sbRawData.append(j);
+								sbRawData.append(",");
+								sbRawData.append(k);
+								sbRawData.append(",");
+								sbRawData.append(graphTestResult[i][j][k].getValue("time"));
+								sbRawData.append("\n");
+							}
+						}
+					}
+				}
 				else if (testType == SnarkTestTypes.ALGORITHM_COMPARATION)
 				{
 					GraphTestResult[][] graphTestResult = (GraphTestResult[][]) results.get("resultsData");
@@ -345,7 +451,7 @@ public abstract class TestRunner extends Observable
 							sbRawData.append(",");
 							sbRawData.append(graphTestResult[i][j].getValue("time"));
 							sbRawData.append(",");
-							sbRawData.append(((Class<?>) graphTestResult[i][j].getValue("snarkTesterClass")).getSimpleName());
+							sbRawData.append(((Class<?>) graphTestResult[i][j].getValue(GraphTestResult.SNARK_TESTER_CLASS_KEY)).getSimpleName());
 							sbRawData.append("\n");
 						}
 					}

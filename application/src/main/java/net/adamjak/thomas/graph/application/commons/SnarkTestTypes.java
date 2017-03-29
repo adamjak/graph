@@ -9,7 +9,8 @@ public enum SnarkTestTypes
 {
 	ALGORITHM_COMPARATION("algorithm comparation"),
 	ALL_ALGORITHMS("all algorithms"),
-	ONE_ALGORITHM("one algorithmn");
+	ONE_ALGORITHM("one algorithmn"),
+	ONE_ALGORITHM_START_IN_EVERY_VERTEX("one algorithm start in every vertex");
 
 	private String value;
 

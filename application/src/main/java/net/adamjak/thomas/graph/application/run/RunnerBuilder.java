@@ -113,6 +113,10 @@ public class RunnerBuilder
 			{
 				return new AllAlgorithmTestRunner(this.inputFile, this.outputFile, this.loops);
 			}
+			else if (this.testType == SnarkTestTypes.ONE_ALGORITHM_START_IN_EVERY_VERTEX)
+			{
+				return new OneAlgorithmTestStartInEveryVertexRunner(this.inputFile, this.outputFile, this.loops, this.algorithmTest);
+			}
 			else
 			{
 				return new AlgorithmComparationTestRunner(this.inputFile, this.outputFile, this.loops);
@@ -127,6 +131,10 @@ public class RunnerBuilder
 			else if (this.testType == SnarkTestTypes.ONE_ALGORITHM)
 			{
 				return new AllAlgorithmTestRunner(this.graphs, this.outputFile, this.loops);
+			}
+			else if (this.testType == SnarkTestTypes.ONE_ALGORITHM_START_IN_EVERY_VERTEX)
+			{
+				return new OneAlgorithmTestStartInEveryVertexRunner(this.graphs, this.outputFile, this.loops, this.algorithmTest);
 			}
 			else
 			{

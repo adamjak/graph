@@ -4,7 +4,14 @@ import net.adamjak.thomas.graph.library.api.Edge;
 import net.adamjak.thomas.graph.library.api.Graph;
 import net.adamjak.thomas.graph.library.api.Vertex;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -15,26 +22,26 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * Copyright 2015, Tomas Adamjak
  * License: The BSD 3-Clause License
  */
-public class GraphImpl<T extends Comparable> implements Graph<T>
+public class GraphTreeMapImpl<T extends Comparable> implements Graph<T>
 {
 	private final Class<? extends T> graphType;
 	private boolean directed = false;
 
 	private ConcurrentMap<Vertex<T>, List<Edge<T>>> structure = new ConcurrentSkipListMap<Vertex<T>, List<Edge<T>>>();
 
-	private GraphImpl ()
+	private GraphTreeMapImpl ()
 	{
 		throw new IllegalStateException();
 	}
 
-	private GraphImpl (Class<? extends T> type)
+	private GraphTreeMapImpl (Class<? extends T> type)
 	{
 		this.graphType = type;
 	}
 
-	public static <U extends Comparable> GraphImpl<U> createGraph(Class<? extends U> type)
+	public static <U extends Comparable> GraphTreeMapImpl<U> createGraph (Class<? extends U> type)
 	{
-		return new GraphImpl<U>(type);
+		return new GraphTreeMapImpl<U>(type);
 	}
 
 	@Override
@@ -179,7 +186,7 @@ public class GraphImpl<T extends Comparable> implements Graph<T>
 
 	/**
 	 * @return List with all graph edges without spanning-tree edges.
-	 * @see GraphImpl#getSpanningTree()
+	 * @see GraphTreeMapImpl#getSpanningTree()
 	 */
 	public List<Edge<T>> getGraphMeat()
 	{
@@ -412,5 +419,46 @@ public class GraphImpl<T extends Comparable> implements Graph<T>
 			}
 		}
 		return edgeList;
+	}
+
+	/**
+	 * @return Return full clone.
+	 */
+	@Override
+	public GraphTreeMapImpl<T> clone ()
+	{
+		GraphTreeMapImpl<T> clone = GraphTreeMapImpl.createGraph(this.graphType);
+		clone.setDirected(this.isDirected());
+
+		for (Vertex<T> v : this.getListOfVertexes())
+		{
+			Vertex newVertex = new VertexImpl<T>(v.getContent());
+			clone.addVertex(newVertex);
+		}
+
+		for (Edge<T> e : this.getListOfEdges())
+		{
+			Vertex<T> newStart = e.getStart();
+			Vertex<T> newEnd = e.getEnd();
+
+			for (Vertex<T> v : clone.getListOfVertexes())
+			{
+				if (v.getContent().equals(e.getStart().getContent()))
+				{
+					newStart = v;
+				}
+
+				if (v.getContent().equals(e.getEnd().getContent()))
+				{
+					newEnd = v;
+				}
+			}
+
+			Edge<T> newEdge = new EdgeImpl<T>(e.getContent(), newStart, newEnd, e.isDirected());
+
+			clone.addEdge(newEdge);
+		}
+
+		return clone;
 	}
 }
