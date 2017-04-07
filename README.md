@@ -56,7 +56,7 @@ Usage
 
 1. `git clone [repository]`
 2. `cd graph`
-3. `sudo ln -s [JDK_HOME]/include/linux/jni_md.h [JDK_HOME]/include/jni_md.h`
+3. 'sudo ln -s [JDK_HOME]/include/linux/jni_md.h [JDK_HOME]/include/jni_md.h'
 4. `mvn -P hpux clean package`
 5. `export LD_LIBRARY_PATH=native/hpux/target`
 6. `sudo execstack -c native/hpux/target/libkowaliknative.so`
