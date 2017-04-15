@@ -2,9 +2,9 @@ package net.adamjak.thomas.graph.library.tests.snarks;
 
 import net.adamjak.thomas.graph.library.api.Graph;
 import net.adamjak.thomas.graph.library.classes.Cycle;
+import net.adamjak.thomas.graph.library.interfaces.anot.Benchmarked;
 import net.adamjak.thomas.graph.library.tests.GraphTest;
 import net.adamjak.thomas.graph.library.tests.SnarkTestResult;
-import net.adamjak.thomas.graph.library.interfaces.anot.Benchmarked;
 
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -34,7 +34,7 @@ public class OneFactor<T extends Comparable> extends GraphTest<T>
 
 		long startTime = System.nanoTime();
 
-		result = this.calculate(this.graph.getListOfAllCyrcles());
+		result = this.calculate(this.graph);
 
 		long endTime = System.nanoTime();
 
@@ -56,8 +56,10 @@ public class OneFactor<T extends Comparable> extends GraphTest<T>
 		return this.call();
 	}
 
-	private boolean calculate(ConcurrentSkipListSet<Cycle<T>> cycleConcurrentSkipListSet)
+	private boolean calculate (Graph<T> graph)
 	{
+		ConcurrentSkipListSet<Cycle<T>> cycleConcurrentSkipListSet = graph.getListOfAllCyrcles();
+
 		for (Cycle<T> firstCycle : cycleConcurrentSkipListSet)
 		{
 			for (Cycle<T> secondCycle : cycleConcurrentSkipListSet)
@@ -69,7 +71,6 @@ public class OneFactor<T extends Comparable> extends GraphTest<T>
 				{
 					if (firstCycle.hasCommonVertex(secondCycle) == false)
 					{
-						// TODO: 30.3.2016 -- najst perfektny matching
 						return false;
 					}
 				}
