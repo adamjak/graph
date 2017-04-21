@@ -58,6 +58,15 @@
                     <tagNameFormat>v@{project.version}</tagNameFormat>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -82,4 +91,15 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>adamjak-nexus</id>
+            <url>http://repo.adamjak.net/nexus/content/repositories/adamjak_net_releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>adamjak-nexus</id>
+            <url>http://repo.adamjak.net/nexus/content/repositories/adamjak_net_snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

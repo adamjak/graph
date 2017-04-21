@@ -1,9 +1,11 @@
 package net.adamjak.thomas.graph.application.run;
 
 import net.adamjak.thomas.graph.application.commons.SnarkTestTypes;
+import net.adamjak.thomas.graph.application.commons.StatisticsUtils;
 import net.adamjak.thomas.graph.library.api.Graph;
 import net.adamjak.thomas.graph.library.io.GraphFactory;
 import net.adamjak.thomas.graph.library.tests.GraphTestResult;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.log4j.Logger;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
@@ -289,7 +291,8 @@ public abstract class TestRunner extends Observable
 			{
 				GraphTestResult[][][] graphTestResult = (GraphTestResult[][][]) results.get("resultsData");
 
-				sbData.append("Algorithm,Graph ID,Avarage time,Standard deviation,Minimum,Maximum\n");
+				sbData.append(",,All data,,,,,Data without extremes,,,,,\n");
+				sbData.append("Graph ID,Graph ID,Avarage time,Standard deviation,Minimum,Maximum,Confidence Interval,Avarage time,Standard deviation,Minimum,Maximum,Confidence Interval\n");
 
 				for (int cls = 0; cls < graphTestResult[0][0].length; cls++)
 				{
@@ -297,24 +300,38 @@ public abstract class TestRunner extends Observable
 
 					for (int graph = 0; graph < graphTestResult[0].length; graph++)
 					{
-						SummaryStatistics summaryStatistics = new SummaryStatistics();
+						DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
 
 						for (int run = 0; run < graphTestResult.length; run++)
 						{
-							summaryStatistics.addValue((double) graphTestResult[run][graph][cls].getValue("timeInSeconds"));
+							descriptiveStatistics.addValue((double) graphTestResult[run][graph][cls].getValue("timeInSeconds"));
 						}
+
+						DescriptiveStatistics descriptiveStatisticsWithoutExtremes = StatisticsUtils.statisticsWithoutExtremes(descriptiveStatistics, StatisticsUtils.GrubbsLevel.L005);
 
 						sbData.append(c.getSimpleName());
 						sbData.append(",");
 						sbData.append(graph);
 						sbData.append(",");
-						sbData.append(summaryStatistics.getMean());
+						sbData.append(descriptiveStatistics.getMean());
 						sbData.append(",");
-						sbData.append(summaryStatistics.getStandardDeviation());
+						sbData.append(descriptiveStatistics.getStandardDeviation());
 						sbData.append(",");
-						sbData.append(summaryStatistics.getMin());
+						sbData.append(descriptiveStatistics.getMin());
 						sbData.append(",");
-						sbData.append(summaryStatistics.getMax());
+						sbData.append(descriptiveStatistics.getMax());
+						sbData.append(",");
+						sbData.append(StatisticsUtils.getConfidenceInterval(descriptiveStatistics, StatisticsUtils.NormCritical.U0050));
+						sbData.append(",");
+						sbData.append(descriptiveStatisticsWithoutExtremes.getMean());
+						sbData.append(",");
+						sbData.append(descriptiveStatisticsWithoutExtremes.getStandardDeviation());
+						sbData.append(",");
+						sbData.append(descriptiveStatisticsWithoutExtremes.getMin());
+						sbData.append(",");
+						sbData.append(descriptiveStatisticsWithoutExtremes.getMax());
+						sbData.append(",");
+						sbData.append(StatisticsUtils.getConfidenceInterval(descriptiveStatisticsWithoutExtremes, StatisticsUtils.NormCritical.U0050));
 						sbData.append("\n");
 					}
 				}
@@ -323,30 +340,45 @@ public abstract class TestRunner extends Observable
 			{
 				GraphTestResult[][][] graphTestResult = (GraphTestResult[][][]) results.get("resultsData");
 
-				sbData.append("Graph ID,Start vertex,Avarage time,Standard deviation,Minimum,Maximum\n");
+				sbData.append(",,All data,,,,,Data without extremes,,,,,\n");
+				sbData.append("Graph ID,Start vertex,Avarage time,Standard deviation,Minimum,Maximum,Confidence Interval,Avarage time,Standard deviation,Minimum,Maximum,Confidence Interval\n");
 
 				for (int vid = 0; vid < graphTestResult[0][0].length; vid++)
 				{
 					for (int graph = 0; graph < graphTestResult[0].length; graph++)
 					{
-						SummaryStatistics summaryStatistics = new SummaryStatistics();
+						DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
 
 						for (int run = 0; run < graphTestResult.length; run++)
 						{
-							summaryStatistics.addValue((double) graphTestResult[run][graph][vid].getValue("timeInSeconds"));
+							descriptiveStatistics.addValue((double) graphTestResult[run][graph][vid].getValue("timeInSeconds"));
 						}
+
+						DescriptiveStatistics descriptiveStatisticsWithoutExtremes = StatisticsUtils.statisticsWithoutExtremes(descriptiveStatistics, StatisticsUtils.GrubbsLevel.L005);
 
 						sbData.append(graph);
 						sbData.append(",");
 						sbData.append(vid);
 						sbData.append(",");
-						sbData.append(summaryStatistics.getMean());
+						sbData.append(descriptiveStatistics.getMean());
 						sbData.append(",");
-						sbData.append(summaryStatistics.getStandardDeviation());
+						sbData.append(descriptiveStatistics.getStandardDeviation());
 						sbData.append(",");
-						sbData.append(summaryStatistics.getMin());
+						sbData.append(descriptiveStatistics.getMin());
 						sbData.append(",");
-						sbData.append(summaryStatistics.getMax());
+						sbData.append(descriptiveStatistics.getMax());
+						sbData.append(",");
+						sbData.append(StatisticsUtils.getConfidenceInterval(descriptiveStatistics, StatisticsUtils.NormCritical.U0050));
+						sbData.append(",");
+						sbData.append(descriptiveStatisticsWithoutExtremes.getMean());
+						sbData.append(",");
+						sbData.append(descriptiveStatisticsWithoutExtremes.getStandardDeviation());
+						sbData.append(",");
+						sbData.append(descriptiveStatisticsWithoutExtremes.getMin());
+						sbData.append(",");
+						sbData.append(descriptiveStatisticsWithoutExtremes.getMax());
+						sbData.append(",");
+						sbData.append(StatisticsUtils.getConfidenceInterval(descriptiveStatisticsWithoutExtremes, StatisticsUtils.NormCritical.U0050));
 						sbData.append("\n");
 					}
 				}
@@ -356,26 +388,41 @@ public abstract class TestRunner extends Observable
 
 				GraphTestResult[][] graphTestResult = (GraphTestResult[][]) results.get("resultsData");
 
-				sbData.append("Graph ID,Avarage time,Standard deviation,Minimum,Maximum\n");
+				sbData.append(",All data,,,,,Data without extremes,,,,,\n");
+				sbData.append("Graph ID,Avarage time,Standard deviation,Minimum,Maximum,Confidence Interval,Avarage time,Standard deviation,Minimum,Maximum,Confidence Interval\n");
 
 				for (int graph = 0; graph < graphTestResult[0].length; graph++)
 				{
-					SummaryStatistics summaryStatistics = new SummaryStatistics();
+					DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
 
 					for (int run = 0; run < graphTestResult.length; run++)
 					{
-						summaryStatistics.addValue((double) graphTestResult[run][graph].getValue("timeInSeconds"));
+						descriptiveStatistics.addValue((double) graphTestResult[run][graph].getValue("timeInSeconds"));
 					}
+
+					DescriptiveStatistics descriptiveStatisticsWithoutExtremes = StatisticsUtils.statisticsWithoutExtremes(descriptiveStatistics, StatisticsUtils.GrubbsLevel.L005);
 
 					sbData.append(graph);
 					sbData.append(",");
-					sbData.append(summaryStatistics.getMean());
+					sbData.append(descriptiveStatistics.getMean());
 					sbData.append(",");
-					sbData.append(summaryStatistics.getStandardDeviation());
+					sbData.append(descriptiveStatistics.getStandardDeviation());
 					sbData.append(",");
-					sbData.append(summaryStatistics.getMin());
+					sbData.append(descriptiveStatistics.getMin());
 					sbData.append(",");
-					sbData.append(summaryStatistics.getMax());
+					sbData.append(descriptiveStatistics.getMax());
+					sbData.append(",");
+					sbData.append(StatisticsUtils.getConfidenceInterval(descriptiveStatistics, StatisticsUtils.NormCritical.U0050));
+					sbData.append(",");
+					sbData.append(descriptiveStatisticsWithoutExtremes.getMean());
+					sbData.append(",");
+					sbData.append(descriptiveStatisticsWithoutExtremes.getStandardDeviation());
+					sbData.append(",");
+					sbData.append(descriptiveStatisticsWithoutExtremes.getMin());
+					sbData.append(",");
+					sbData.append(descriptiveStatisticsWithoutExtremes.getMax());
+					sbData.append(",");
+					sbData.append(StatisticsUtils.getConfidenceInterval(descriptiveStatisticsWithoutExtremes, StatisticsUtils.NormCritical.U0050));
 					sbData.append("\n");
 				}
 
